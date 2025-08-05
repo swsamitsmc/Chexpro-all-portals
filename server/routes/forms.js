@@ -3,6 +3,7 @@ const { body, validationResult } = require('express-validator');
 const nodemailer = require('nodemailer');
 const rateLimit = require('express-rate-limit');
 const router = express.Router();
+const pool = require('../config/db'); // --- DB CHANGE --- Import the connection pool
 
 // Rate limiting to prevent abuse
 const limiter = rateLimit({
@@ -60,10 +61,29 @@ router.post(
 
         const { firstName, lastName, email, phone, companyName, message } = req.body;
 
+        let dbSuccess = false;
+        let dbErrorMessage = '';
+
+        // --- 1. Attempt to save to the database ---
+        try {
+            const dbQuery = 'INSERT INTO contact_submissions (first_name, last_name, email, phone, company_name, message) VALUES (?, ?, ?, ?, ?, ?)';
+            await pool.query(dbQuery, [firstName, lastName, email, phone, companyName, message]);
+            dbSuccess = true;
+        } catch (dbError) {
+            console.error('DATABASE INSERT FAILED for /contact:', dbError);
+            dbErrorMessage = dbError.message;
+            dbSuccess = false;
+        }
+
+        // --- 2. Construct email with DB status and send it ---
+        const dbStatusLine = dbSuccess
+            ? '<p><strong>Database Status:</strong> <span style="color:green;">Successfully saved.</span></p>'
+            : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${escapeHTML(dbErrorMessage)}</p>`;
+
         const mailOptions = {
             from: `"ChexPro Website" <${process.env.SMTP_USER}>`,
             to: process.env.CONTACT_RECIPIENT,
-            subject: 'New Contact Form Submission',
+            subject: dbSuccess ? 'New Contact Form Submission' : '⚠️ ACTION REQUIRED: Contact Form DB Save Failed',
             html: `
                 <h3>New Contact Form Submission</h3>
                 <p><strong>Name:</strong> ${escapeHTML(firstName)} ${escapeHTML(lastName)}</p>
@@ -72,15 +92,26 @@ router.post(
                 <p><strong>Company:</strong> ${escapeHTML(companyName) || 'N/A'}</p>
                 <p><strong>Message:</strong></p>
                 <p>${escapeHTML(message)}</p>
+                <hr>
+                ${dbStatusLine}
             `,
         };
 
         try {
             await transporter.sendMail(mailOptions);
+        } catch (emailError) {
+            // This is the worst case: DB may have failed AND email failed. The lead is now lost.
+            console.error('CRITICAL: EMAIL SENDING FAILED for /contact:', emailError);
+            // We still send a generic server error to the user, as the DB may have failed anyway.
+            return res.status(500).json({ status: 'Error', description: 'A server error occurred while processing your request.' });
+        }
+
+        // --- 3. Send final response to the form submitter ---
+        if (dbSuccess) {
             res.status(200).json({ status: 'Success', description: 'Form submitted successfully.' });
-        } catch (error) {
-            console.error('Email sending error on /contact:', error);
-            res.status(500).json({ status: 'Error', description: 'Failed to send message.' });
+        } else {
+            // As agreed, if the DB failed, the customer gets an error, even though the internal email was sent.
+            res.status(500).json({ status: 'Error', description: 'Your request could not be saved at this time. Please try again later.' });
         }
     }
 );
@@ -106,11 +137,30 @@ router.post(
         }
 
         const { firstName, lastName, jobTitle, companyName, workEmail, phone, screeningsPerYear, servicesOfInterest, message } = req.body;
+        
+        let dbSuccess = false;
+        let dbErrorMessage = '';
 
+        // --- 1. Attempt to save to the database ---
+        try {
+            const dbQuery = 'INSERT INTO demo_requests (first_name, last_name, job_title, company_name, work_email, phone, screenings_per_year, services_of_interest, message) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)';
+            await pool.query(dbQuery, [firstName, lastName, jobTitle, companyName, workEmail, phone, screeningsPerYear, servicesOfInterest, message]);
+            dbSuccess = true;
+        } catch (dbError) {
+            console.error('DATABASE INSERT FAILED for /demo:', dbError);
+            dbErrorMessage = dbError.message;
+            dbSuccess = false;
+        }
+
+        // --- 2. Construct email with DB status and send it ---
+        const dbStatusLine = dbSuccess
+            ? '<p><strong>Database Status:</strong> <span style="color:green;">Successfully saved.</span></p>'
+            : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${escapeHTML(dbErrorMessage)}</p>`;
+        
         const mailOptions = {
             from: `"ChexPro Website" <${process.env.SMTP_USER}>`,
             to: process.env.DEMO_RECIPIENT,
-            subject: 'New Demo Request',
+            subject: dbSuccess ? 'New Demo Request' : '⚠️ ACTION REQUIRED: Demo Request DB Save Failed',
             html: `
                 <h3>New Demo Request</h3>
                 <p><strong>Name:</strong> ${escapeHTML(firstName)} ${escapeHTML(lastName)}</p>
@@ -122,15 +172,23 @@ router.post(
                 <p><strong>Services of Interest:</strong> ${escapeHTML(servicesOfInterest)}</p>
                 <p><strong>Message:</strong></p>
                 <p>${escapeHTML(message) || 'N/A'}</p>
+                <hr>
+                ${dbStatusLine}
             `,
         };
 
-         try {
+        try {
             await transporter.sendMail(mailOptions);
+        } catch (emailError) {
+            console.error('CRITICAL: EMAIL SENDING FAILED for /demo:', emailError);
+            return res.status(500).json({ status: 'Error', description: 'A server error occurred while processing your request.' });
+        }
+
+        // --- 3. Send final response to the form submitter ---
+        if (dbSuccess) {
             res.status(200).json({ status: 'Success', description: 'Demo request submitted successfully.' });
-        } catch (error) {
-            console.error('Email sending error on /demo:', error);
-            res.status(500).json({ status: 'Error', description: 'Failed to send message.' });
+        } else {
+            res.status(500).json({ status: 'Error', description: 'Your request could not be saved at this time. Please try again later.' });
         }
     }
 );
