@@ -1,5 +1,23 @@
+# Created: 2025-08-05
+# Purpose: To prevent committing secrets and unnecessary files to version control,
+# supporting SOC 2 principles of Security and Confidentiality.
+
 # Dependencies
+# Ignore all node_modules directories in the project.
 node_modules/
 
 # Environment variables
-.env
+# Ignore .env files in the root directory and ALL subdirectories.
+# The ** glob pattern is crucial for finding files in sub-folders like /server/
+**/.env
+
+# Logs
+# Prevent staging of log files, which can contain sensitive data.
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Other common ignores for Node projects
+.DS_Store
