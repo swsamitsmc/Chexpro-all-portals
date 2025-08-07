@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
     import PageTransition from '@/hooks/usePageTransition';
     import PageSection from '@/components/PageSection';
@@ -123,7 +123,7 @@ import { useTranslation } from 'react-i18next';
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                See ChexPro in action and learn how our solutions can meet your organization's specific needs. Fill out the form below, and we'll be in touch.
+                See ChexPro in action and learn how our solutions can meet your organization&apos;s specific needs. Fill out the form below, and we&apos;ll be in touch.
               </motion.p>
             </div>
           </PageSection>
@@ -209,7 +209,7 @@ import { useTranslation } from 'react-i18next';
                 <div className="mt-8 p-6 rounded-lg bg-primary/10 border border-primary/30">
                   <h3 className="text-xl font-semibold text-primary mb-3">Need a Quick Quote?</h3>
                   <p className="text-muted-foreground mb-4">
-                    If you already know your requirements and just need pricing, please indicate "Quote Request" in your message. We'll provide a competitive proposal tailored to your volume and service needs.
+                    If you already know your requirements and just need pricing, please indicate &quot;Quote Request&quot; in your message. We&apos;ll provide a competitive proposal tailored to your volume and service needs.
                   </p>
                 </div>
                 <div className="mt-8">
