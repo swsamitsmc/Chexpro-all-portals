@@ -3,7 +3,7 @@ import { getCookie } from '@/lib/cookieUtils';
 import { useCookiePreferences } from '@/hooks/useCookiePreferences';
 
 export function CookieBanner({ onPreferencesClick }) {
-  const [prefs, setPrefs] = useCookiePreferences();
+  const [prefs, updatePreferences] = useCookiePreferences();
   const [consentGiven, setConsentGiven] = useState(() => {
     if (typeof window === 'undefined') return true;
     // Consent is given if the cookie_preferences cookie exists
@@ -11,12 +11,12 @@ export function CookieBanner({ onPreferencesClick }) {
   });
 
   const handleEssentialOnly = () => {
-    setPrefs({ analytics: true, marketing: false, persistentLogin: false });
+    updatePreferences({ analytics: true, marketing: false, persistentLogin: false });
     setConsentGiven(true);
   };
 
   const handleAcceptAll = () => {
-    setPrefs({ analytics: true, marketing: true, persistentLogin: true });
+    updatePreferences({ analytics: true, marketing: true, persistentLogin: true });
     setConsentGiven(true);
   };
 

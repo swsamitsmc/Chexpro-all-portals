@@ -403,7 +403,7 @@ Potential for Future: The vite.config.js includes a custom JavaScript snippet (c
 Current State: Other than the implied future connection for "Client Login," there are no readily identifiable direct integrations with specific third-party services (e.g., CRM, analytics, payment gateways, live chat, or reCAPTCHA) within the current codebase.
 Future Considerations: Any future integration with third-party services would need to be explicitly documented here (e.g., Google Analytics, Intercom chat, payment processors, etc.).
 3.4. Data Persistence (Frontend):
-Current State: There is no explicit client-side data persistence mechanism (e.g., localStorage, sessionStorage, IndexedDB) evident in the provided code or file structure for storing user preferences, authentication tokens, or other persistent data.
+Current State: Client-side data persistence is primarily handled through browser cookies for user preferences, specifically for managing cookie consent. The `js-cookie` library (via `src/lib/cookieUtils.js`) is used to set, get, and erase cookies.
 Future Considerations: When authentication and user-specific features are implemented, it will be necessary to define and document a strategy for storing authentication tokens (e.g., HTTP-only cookies, localStorage) and user session data.
 4. Development & Deployment Workflow
 4.1. Local Development Workflow:

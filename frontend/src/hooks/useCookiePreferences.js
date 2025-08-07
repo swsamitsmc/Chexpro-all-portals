@@ -15,14 +15,15 @@ export function useCookiePreferences() {
     return saved ? JSON.parse(saved) : defaultPrefs;
   });
 
-  useEffect(() => {
-    setCookie(COOKIE_PREF_KEY, JSON.stringify(prefs), {
+  const updatePreferences = (newPrefs) => {
+    setPrefs(newPrefs);
+    setCookie(COOKIE_PREF_KEY, JSON.stringify(newPrefs), {
       days: 365,
       path: '/',
       secure: true,
       sameSite: 'Lax',
     });
-  }, [prefs]);
+  };
 
-  return [prefs, setPrefs];
+  return [prefs, updatePreferences];
 }
