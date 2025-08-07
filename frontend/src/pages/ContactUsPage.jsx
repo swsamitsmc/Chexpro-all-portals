@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+    import { useTranslation } from 'react-i18next';
     import PageTransition from '@/hooks/usePageTransition';
     import PageSection from '@/components/PageSection';
     import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import React, { useState, useEffect } from 'react';
     import { Helmet } from 'react-helmet-async';
 
     const ContactUsPage = () => {
+      const { t } = useTranslation();
       const { toast } = useToast();
       const [formData, setFormData] = useState({
         name: '',
@@ -22,6 +24,20 @@ import React, { useState, useEffect } from 'react';
         message: '',
       });
       const [isSubmitting, setIsSubmitting] = useState(false);
+      const [csrfToken, setCsrfToken] = useState('');
+
+      useEffect(() => {
+        const fetchCsrfToken = async () => {
+          try {
+            const response = await fetch('/api/form/csrf-token');
+            const data = await response.json();
+            setCsrfToken(data.csrfToken);
+          } catch (error) {
+            console.error('Failed to fetch CSRF token:', error);
+          }
+        };
+        fetchCsrfToken();
+      }, []);
 
       const handleChange = (e) => {
         const { name, value } = e.target;
@@ -37,6 +53,7 @@ import React, { useState, useEffect } from 'react';
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRF-Token': csrfToken,
             },
             body: JSON.stringify({
               firstName: formData.name.split(' ')[0],
@@ -115,44 +132,44 @@ import React, { useState, useEffect } from 'react';
               >
                 <Card className="shadow-xl glassmorphism">
                   <CardHeader>
-                    <CardTitle className="text-2xl">Contact Form</CardTitle>
+                    <CardTitle className="text-2xl">{t('contact.contactForm')}</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="name">First Name</Label>
+                          <Label htmlFor="name">{t('contact.firstName')}</Label>
                           <Input id="name" name="name" type="text" value={formData.name} onChange={handleChange} required placeholder="John Doe"/>
                         </div>
                         <div>
                           
-                          <Label htmlFor="company">Company Name</Label>
+                          <Label htmlFor="company">{t('contact.companyName')}</Label>
                           <Input id="company" name="company" type="text" value={formData.company} onChange={handleChange} placeholder="Acme Corp"/>
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="email">Email Address</Label>
+                        <Label htmlFor="email">{t('contact.emailAddress')}</Label>
                         <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="you@example.com"/>
                       </div>
                       <div>
-                        <Label htmlFor="phone">Phone Number</Label>
+                        <Label htmlFor="phone">{t('contact.phoneNumber')}</Label>
                         <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="(555) 555-5555"/>
                       </div>
                       <div>
-                        <Label htmlFor="services">Service(s) Interested In</Label>
+                        <Label htmlFor="services">{t('contact.servicesInterested')}</Label>
                         <Input id="services" name="services" type="text" value={formData.services} onChange={handleChange} placeholder="e.g., Criminal Checks, Employment Verification"/>
                       </div>
                       <div>
-                        <Label htmlFor="message">Message</Label>
+                        <Label htmlFor="message">{t('contact.message')}</Label>
                         <Textarea id="message" name="message" value={formData.message} onChange={handleChange} required rows={5} placeholder="How can we help you today?"/>
                       </div>
                       <div>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
-                          {isSubmitting ? 'Sending...' : 'Send Message'}
+                          {isSubmitting ? 'Sending...' : t('contact.sendMessage')}
                           {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
                         </Button>
                         <p className="text-xs text-muted-foreground mt-2">
-                          Note: We respect your privacy. Your information will only be used to respond to your inquiry.
+                          {t('contact.privacyNote')}
                         </p>
                       </div>
                     </form>
@@ -177,13 +194,13 @@ import React, { useState, useEffect } from 'react';
                 ))}
                 
                 <div className="mt-8">
-                  <h3 className="text-xl font-semibold text-foreground mb-3">Office Hours </h3>
+                  <h3 className="text-xl font-semibold text-foreground mb-3">{t('contact.officeHours')}</h3>
                   <p className="text-muted-foreground">Monday - Friday: 9:00 AM - 6:00 PM (EST)</p>
                   <p className="text-muted-foreground">Saturday - Sunday: Closed</p>
                 </div>
 
                  <div className="mt-8">
-  <h3 className="text-xl font-semibold text-foreground mb-3">Find Us On Map</h3>
+  <h3 className="text-xl font-semibold text-foreground mb-3">{t('contact.findOnMap')}</h3>
   {/* This container maintains a responsive 16:9 aspect ratio and applies rounded corners */}
   <div className="aspect-video rounded-lg overflow-hidden">
     <iframe

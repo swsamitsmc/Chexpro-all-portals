@@ -1,15 +1,9 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
+import { cn } from '@/lib/utils';
 
 // --- Import your SVG logo here ---
 import chexProLogo from '@/assets/images/chexpro-logo.svg'; // Ensure this path and filename are correct
@@ -34,9 +28,9 @@ const Header = () => {
       to={to}
       className={({ isActive }) =>
         cn(
-          navigationMenuTriggerStyle(),
-          "text-sm font-medium font-sans transition-colors hover:text-primary",
-          isActive ? "text-primary font-semibold" : "text-foreground/80"
+          "text-sm font-medium font-sans transition-colors duration-300 rounded-md px-4 py-2",
+          "hover:bg-primary hover:text-primary-foreground",
+          isActive ? "text-primary" : "text-foreground/80"
         )
       }
       onClick={() => setMobileMenuOpen(false)}
@@ -44,6 +38,8 @@ const Header = () => {
       {children}
     </NavLink>
   );
+  
+
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -57,15 +53,11 @@ const Header = () => {
           />
         </Link>
 
-        <NavigationMenu className="hidden lg:flex">
-          <NavigationMenuList>
-            {navLinks.map((link) => (
-              <NavigationMenuItem key={link.to}>
-                <NavItem to={link.to}>{link.label}</NavItem>
-              </NavigationMenuItem>
-            ))}
-          </NavigationMenuList>
-        </NavigationMenu>
+        <nav className="hidden lg:flex space-x-6">
+          {navLinks.map((link) => (
+            <NavItem key={link.to} to={link.to}>{link.label}</NavItem>
+          ))}
+        </nav>
 
         <div className="hidden lg:flex items-center space-x-2">
           <Button variant="outline" asChild>
@@ -111,10 +103,5 @@ const Header = () => {
     </header>
   );
 };
-
-// cn utility function (already provided in lib/utils)
-function cn(...classes) {
-  return classes.filter(Boolean).join(' ');
-}
 
 export default Header;

@@ -21,3 +21,8 @@ yarn-error.log*
 
 # Other common ignores for Node projects
 .DS_Store
+# Build output
+/frontend/dist
+
+# VS Code editor settings
+.vscode/

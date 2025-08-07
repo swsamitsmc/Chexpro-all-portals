@@ -1,5 +1,6 @@
-const mysql = require('mysql2/promise');
-require('dotenv').config();
+import dotenv from 'dotenv';
+dotenv.config();
+import mysql from 'mysql2/promise';
 
 // Create a connection pool. This is more efficient than creating a new connection for every query.
 const pool = mysql.createPool({
@@ -10,18 +11,21 @@ const pool = mysql.createPool({
     database: process.env.DB_DATABASE,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: parseInt(process.env.DB_QUEUE_LIMIT || '0', 10)
 });
 
-// This line was added to help debug connection issues if they arise.
-pool.getConnection()
-    .then(conn => {
+// Initialize and test database connection
+export const initializeDatabase = async () => {
+    try {
+        const conn = await pool.getConnection();
         console.log('MySQL Connection Pool Created and tested successfully.');
-        conn.release(); // release the connection back to the pool
-    })
-    .catch(err => {
-        console.error('[FATAL] Could not create MySQL connection pool.', err);
-    });
+        conn.release();
+        return true;
+    } catch (err) {
+        const sanitizedMessage = (err.message || 'Unknown error').replace(/[\r\n]/g, ' ');
+        console.error('[FATAL] Could not create MySQL connection pool.', sanitizedMessage);
+        return false;
+    }
+};
 
-
-module.exports = pool;
+export default pool;

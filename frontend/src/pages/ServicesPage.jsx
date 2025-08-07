@@ -89,11 +89,28 @@
         { name: 'Individuals', icon: <Search className="h-6 w-6 text-primary" />, description: "Access your personal background report for review or personal records." },
       ];
 
+      const serviceSchema = services.map(service => ({
+        "@context": "https://schema.org",
+        "@type": "Service",
+        "name": service.title,
+        "description": service.details,
+        "serviceType": service.title, // Can be more specific if needed
+        "provider": {
+          "@type": "Organization",
+          "name": "ChexPro",
+          "url": "https://chexpro.com/"
+        },
+        "url": `https://chexpro.com/services#${service.id}`
+      }));
+
       return (
         <PageTransition>
           <Helmet>
         <title>Services - ChexPro | Our Background Screening Solutions</title>
         <meta name="description" content="Discover ChexPro's comprehensive suite of background screening services, including criminal checks, employment verification, education checks, and more tailored solutions." />
+        <script type="application/ld+json">
+          {JSON.stringify(serviceSchema)}
+        </script>
       </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">

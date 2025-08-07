@@ -1,9 +1,16 @@
-const express = require('express');
-const { body, validationResult } = require('express-validator');
-const nodemailer = require('nodemailer');
-const rateLimit = require('express-rate-limit');
+import express from 'express';
+import { body, validationResult } from 'express-validator';
+import nodemailer from 'nodemailer';
+import rateLimit from 'express-rate-limit';
+import csrf from 'csrf';
+import pool from '../config/db.js'; // --- DB CHANGE --- Import the connection pool
+import { validateInputLength } from '../middleware/validation.js';
+// amazonq-ignore-next-line
 const router = express.Router();
-const pool = require('../config/db'); // --- DB CHANGE --- Import the connection pool
+
+// CSRF protection
+const tokens = new csrf();
+const secret = process.env.CSRF_SECRET || tokens.secretSync(); // Use environment variable for production
 
 // Rate limiting to prevent abuse
 const limiter = rateLimit({
@@ -15,15 +22,48 @@ const limiter = rateLimit({
 // Apply the rate limiting middleware to all routes in this file
 router.use(limiter);
 
+// CSRF token endpoint - intentionally public for form submissions
+// No authorization required as this provides tokens for public forms
+router.get('/csrf-token', (req, res) => {
+    const token = tokens.create(secret);
+    res.json({ csrfToken: token });
+});
+
+// CSRF validation middleware
+const validateCSRF = (req, res, next) => {
+    const token = req.headers['x-csrf-token'] || req.body._csrf;
+    if (!token || !tokens.verify(secret, token)) {
+        return res.status(403).json({ error: 'Invalid CSRF token' });
+    }
+    next();
+};
+
+// Origin validation middleware for form submissions
+const validateOrigin = (req, res, next) => {
+    const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',');
+    const origin = req.headers.origin || req.headers.referer;
+    
+    if (!origin || !allowedOrigins.some(allowed => origin.startsWith(allowed.trim()))) {
+        return res.status(403).json({ error: 'Unauthorized origin' });
+    }
+    next();
+};
+
+
+
 // 1. Nodemailer Transporter Setup
 const transporter = nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: process.env.SMTP_PORT,
     secure: process.env.SMTP_SECURE === 'true',
+    requireTLS: true,
     auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASS,
     },
+    tls: {
+        rejectUnauthorized: true
+    }
 });
 
 // Function to escape HTML
@@ -42,9 +82,20 @@ const escapeHTML = (str) => {
     });
 };
 
-// 2. Route for the Contact Form
+// 2. Route for the Contact Form - intentionally public for website visitors
+// CSRF protection and origin validation provide security for this use case
 router.post(
     '/contact',
+    validateOrigin,
+    validateCSRF,
+    validateInputLength([
+        { name: 'firstName', maxLength: 100 },
+        { name: 'lastName', maxLength: 100 },
+        { name: 'email', maxLength: 255 },
+        { name: 'message', maxLength: 2000 },
+        { name: 'phone', maxLength: 20 },
+        { name: 'companyName', maxLength: 255 },
+    ]),
     [
         body('firstName', 'First name is required').notEmpty().trim().escape(),
         body('lastName', 'Last name is required').notEmpty().trim().escape(),
@@ -81,8 +132,8 @@ router.post(
             : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${escapeHTML(dbErrorMessage)}</p>`;
 
         const mailOptions = {
-            from: `"ChexPro Website" <${process.env.SMTP_USER}>`,
-            to: process.env.CONTACT_RECIPIENT,
+            from: `"ChexPro Website" <${escapeHTML(process.env.SMTP_USER)}>`,
+            to: escapeHTML(process.env.CONTACT_RECIPIENT),
             subject: dbSuccess ? 'New Contact Form Submission' : '⚠️ ACTION REQUIRED: Contact Form DB Save Failed',
             html: `
                 <h3>New Contact Form Submission</h3>
@@ -119,6 +170,19 @@ router.post(
 // 3. Route for the Demo Request Form
 router.post(
     '/demo',
+    validateOrigin,
+    validateCSRF,
+    validateInputLength([
+        { name: 'firstName', maxLength: 100 },
+        { name: 'lastName', maxLength: 100 },
+        { name: 'jobTitle', maxLength: 100 },
+        { name: 'companyName', maxLength: 255 },
+        { name: 'workEmail', maxLength: 255 },
+        { name: 'phone', maxLength: 20 },
+        { name: 'screeningsPerYear', maxLength: 50 },
+        { name: 'servicesOfInterest', maxLength: 255 },
+        { name: 'message', maxLength: 2000 },
+    ]),
     [
         body('firstName', 'First name is required').notEmpty().trim().escape(),
         body('lastName', 'Last name is required').notEmpty().trim().escape(),
@@ -158,8 +222,8 @@ router.post(
             : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${escapeHTML(dbErrorMessage)}</p>`;
         
         const mailOptions = {
-            from: `"ChexPro Website" <${process.env.SMTP_USER}>`,
-            to: process.env.DEMO_RECIPIENT,
+            from: `"ChexPro Website" <${escapeHTML(process.env.SMTP_USER)}>`,
+            to: escapeHTML(process.env.DEMO_RECIPIENT),
             subject: dbSuccess ? 'New Demo Request' : '⚠️ ACTION REQUIRED: Demo Request DB Save Failed',
             html: `
                 <h3>New Demo Request</h3>
@@ -171,7 +235,7 @@ router.post(
                 <p><strong>Screenings Per Year:</strong> ${escapeHTML(screeningsPerYear)}</p>
                 <p><strong>Services of Interest:</strong> ${escapeHTML(servicesOfInterest)}</p>
                 <p><strong>Message:</strong></p>
-                <p>${escapeHTML(message) || 'N/A'}</p>
+                <p>${escapeHTML(message || 'N/A')}</p>
                 <hr>
                 ${dbStatusLine}
             `,
@@ -193,4 +257,4 @@ router.post(
     }
 );
 
-module.exports = router;
+export default router;

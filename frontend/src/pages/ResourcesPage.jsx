@@ -1,5 +1,4 @@
-
-    import React, { useState } from 'react';
+import React, { useState } from 'react';
     import PageTransition from '@/hooks/usePageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -88,6 +87,19 @@
         },
       ];
       
+      const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": faqs.map(faq => ({
+          "@type": "Question",
+          "name": faq.question,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": faq.answer
+          }
+        }))
+      };
+
       const [activeTab, setActiveTab] = useState('blog');
 
 
@@ -96,6 +108,9 @@
           <Helmet>
         <title>Resources - ChexPro | Guides, FAQs & Downloads</title>
         <meta name="description" content="Access helpful resources, industry guides, frequently asked questions (FAQs), and downloadable content from ChexPro to aid your background screening process." />
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
       </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">
@@ -123,7 +138,7 @@
           <PageSection>
             <div className="flex justify-center mb-12 border-b">
               <Button 
-                variant={activeTab === 'blog' ? 'default' : 'ghost'} 
+                variant={'ghost'} 
                 onClick={() => setActiveTab('blog')}
                 className="text-lg px-6 py-3 rounded-none border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary hover:bg-primary/10 hover:text-primary"
                 data-state={activeTab === 'blog' ? 'active' : ''}
@@ -231,4 +246,3 @@
     };
 
     export default ResourcesPage;
-  

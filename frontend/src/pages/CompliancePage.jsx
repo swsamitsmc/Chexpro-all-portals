@@ -61,11 +61,27 @@
         }
       ];
 
+      const faqSchema = {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": complianceSections.map(section => ({
+          "@type": "Question",
+          "name": section.title,
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": section.details.join(' ') // Join details array into a single string
+          }
+        }))
+      };
+
       return (
         <PageTransition>
           <Helmet>
         <title>Compliance - ChexPro | FCRA & Data Security Standards</title>
         <meta name="description" content="ChexPro adheres to strict FCRA compliance, data security, and privacy standards to ensure legal, ethical, and responsible background screening practices." />
+        <script type="application/ld+json">
+          {JSON.stringify(faqSchema)}
+        </script>
       </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">
@@ -104,11 +120,8 @@
                       <AccordionItem value={section.id} className="border-b-0" id={section.id}>
                         <AccordionTrigger className="p-6 hover:no-underline">
                           <div className="flex items-center space-x-4">
-                            <div className="p-2 bg-primary/10 rounded-md">{section.icon}</div>
-                            <div>
-                              <h3 className="text-xl font-semibold text-left text-foreground">{section.title}</h3>
-                              <p className="text-sm text-muted-foreground text-left">{section.summary}</p>
-                            </div>
+                            {section.icon}
+                            <span className="text-lg font-semibold">{section.title}</span>
                           </div>
                         </AccordionTrigger>
                         <AccordionContent className="p-6 pt-0">

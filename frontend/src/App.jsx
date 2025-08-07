@@ -1,10 +1,18 @@
 
-    import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import { AnimatePresence } from 'framer-motion';
 import PageLoader from '@/components/ui/PageLoader';
+import RouteChangeTracker from './RouteChangeTracker';
+import { CookieBanner } from '@/components/CookieConsent';
+import { CookiePreferencesModal } from '@/components/CookiePreferences';
+import { useCookiePreferences } from '@/hooks/useCookiePreferences';
+import { setCookie } from '@/lib/cookieUtils';
+import { loadGoogleAnalytics } from '@/lib/googleAnalytics';
+import useGAPageTracking from '@/hooks/useGAPageTracking';
+import BackToTopButton from '@/components/BackToTopButton';
 
 const HomePage = lazy(() => import('@/pages/HomePage'));
 const AboutUsPage = lazy(() => import('@/pages/AboutUsPage'));
@@ -23,9 +31,32 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
 function App() {
   const location = useLocation();
+  const [prefs, setPrefs] = useCookiePreferences();
+  const [showPrefs, setShowPrefs] = useState(false);
+  const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+
+  // Load GA only if analytics cookies allowed
+  useEffect(() => {
+    if (prefs.analytics && GA_MEASUREMENT_ID) {
+      loadGoogleAnalytics(GA_MEASUREMENT_ID);
+    }
+  }, [prefs.analytics, GA_MEASUREMENT_ID]);
+
+  // Track page views only if analytics cookies allowed
+  useGAPageTracking(prefs.analytics && GA_MEASUREMENT_ID);
+
+  // Set marketing cookie stub if allowed
+  useEffect(() => {
+    if (prefs.marketing) {
+      setCookie('marketing_cookie', '1', { days: 365, path: '/', secure: true, sameSite: 'Lax' });
+    } else {
+      setCookie('marketing_cookie', '', { days: -1, path: '/' });
+    }
+  }, [prefs.marketing]);
 
   return (
     <div className="flex flex-col min-h-screen bg-background">
+      <RouteChangeTracker />
       <Header />
       <main className="flex-grow">
         <AnimatePresence mode="wait">
@@ -49,6 +80,14 @@ function App() {
         </AnimatePresence>
       </main>
       <Footer />
+      <BackToTopButton />
+      <CookieBanner onPreferencesClick={() => setShowPrefs(true)} />
+      <CookiePreferencesModal 
+        open={showPrefs}
+        onClose={() => setShowPrefs(false)}
+        prefs={prefs}
+        setPrefs={setPrefs}
+      />
     </div>
   );
 }

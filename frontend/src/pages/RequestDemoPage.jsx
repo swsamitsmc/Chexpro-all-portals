@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
     import PageTransition from '@/hooks/usePageTransition';
     import PageSection from '@/components/PageSection';
     import { Button } from '@/components/ui/button';
@@ -12,6 +13,7 @@ import React, { useState } from 'react';
     import { Helmet } from 'react-helmet-async';
 
     const RequestDemoPage = () => {
+      const { t } = useTranslation();
       const { toast } = useToast();
       const [formData, setFormData] = useState({
         name: '',
@@ -24,6 +26,20 @@ import React, { useState } from 'react';
         message: '',
       });
       const [isSubmitting, setIsSubmitting] = useState(false);
+      const [csrfToken, setCsrfToken] = useState('');
+
+      useEffect(() => {
+        const fetchCsrfToken = async () => {
+          try {
+            const response = await fetch('/api/form/csrf-token');
+            const data = await response.json();
+            setCsrfToken(data.csrfToken);
+          } catch (error) {
+            console.error('Failed to fetch CSRF token:', error);
+          }
+        };
+        fetchCsrfToken();
+      }, []);
 
       const handleChange = (e) => {
         const { name, value } = e.target;
@@ -39,6 +55,7 @@ import React, { useState } from 'react';
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRF-Token': csrfToken,
             },
             body: JSON.stringify({
               firstName: formData.name.split(' ')[0],
@@ -167,7 +184,7 @@ import React, { useState } from 'react';
                           {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
                         </Button>
                          <p className="text-xs text-muted-foreground mt-2">
-                          Note: We respect your privacy. Your information will only be used to contact you regarding this request.
+                          {t('demo.privacyNote')}
                         </p>
                       </div>
                     </form>

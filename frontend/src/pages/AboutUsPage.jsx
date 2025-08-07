@@ -67,7 +67,7 @@
                 <img 
                   className="rounded-lg shadow-xl w-full h-auto object-cover"
                   alt="Diverse team collaborating in a modern office"
-                 src="https://chexpro.com/team.png" />
+                 src="/team.png" />
               </motion.div>
               <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>
                 <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission & Vision</h2>

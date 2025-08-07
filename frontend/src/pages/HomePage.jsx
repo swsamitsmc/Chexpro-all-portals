@@ -96,7 +96,7 @@ const HomePage = () => {
         <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
           We provide a wide range of verification services tailored to meet your specific needs.
         </p>
-        <motion.div 
+        <motion.ul 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           variants={fadeInStagger}
           initial="hidden"
@@ -104,7 +104,7 @@ const HomePage = () => {
           viewport={{ once: true, amount: 0.2 }}
         >
           {services.map((service, index) => (
-            <motion.div key={index} variants={fadeInItem}>
+            <motion.li key={index} variants={fadeInItem}>
               <Card className="h-full hover:shadow-xl transition-shadow duration-300 glassmorphism">
                 <CardHeader className="items-center text-center">
                   {service.icon}
@@ -114,9 +114,9 @@ const HomePage = () => {
                   <p className="text-muted-foreground text-sm">{service.description}</p>
                 </CardContent>
               </Card>
-            </motion.div>
+            </motion.li>
           ))}
-        </motion.div>
+        </motion.ul>
         <div className="text-center mt-12">
           <Button asChild variant="link" className="text-primary text-lg">
             <Link to="/services">Explore All Services &rarr;</Link>
@@ -130,7 +130,7 @@ const HomePage = () => {
         <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
           Experience the ChexPro difference with our commitment to excellence and client satisfaction.
         </p>
-        <motion.div 
+        <motion.ul 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
           variants={fadeInStagger}
           initial="hidden"
@@ -138,15 +138,15 @@ const HomePage = () => {
           viewport={{ once: true, amount: 0.2 }}
         >
           {usps.map((usp, index) => (
-            <motion.div key={index} variants={fadeInItem} className="flex items-start space-x-4 p-4 rounded-lg">
+            <motion.li key={index} variants={fadeInItem} className="flex items-start space-x-4 p-4 rounded-lg">
               <div className="flex-shrink-0 mt-1">{usp.icon}</div>
               <div>
                 <h3 className="text-xl font-semibold text-foreground mb-1">{usp.title}</h3>
                 <p className="text-muted-foreground">{usp.description}</p>
               </div>
-            </motion.div>
+            </motion.li>
           ))}
-        </motion.div>
+        </motion.ul>
       </PageSection>
 
       {/* Target Audience Snippets */}
@@ -186,20 +186,20 @@ const HomePage = () => {
           <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
             We adhere to the strictest industry standards, including FCRA compliance, to ensure data accuracy and protect sensitive information. Your trust is our top priority.
           </p>
-          <div className="flex flex-wrap justify-center items-center gap-8 opacity-75">
-            <span className="text-lg font-semibold">FCRA Compliant</span>
-            <span className="text-lg font-semibold">PBS A Accredited (Placeholder)</span>
-            <span className="text-lg font-semibold">SOC 2 Certified (Placeholder)</span>
-            <span className="text-lg font-semibold">Data Encryption</span>
-          </div>
+          <ul className="flex flex-wrap justify-center items-center gap-8 opacity-75">
+            <li className="text-lg font-semibold">FCRA Compliant</li>
+            <li className="text-lg font-semibold">PBS A Accredited (Placeholder)</li>
+            <li className="text-lg font-semibold">SOC 2 Certified (Placeholder)</li>
+            <li className="text-lg font-semibold">Data Encryption</li>
+          </ul>
           <div className="mt-10">
             <p className="text-sm text-gray-400">Trusted by leading companies (Client Logos Placeholder)</p>
-            <div className="flex justify-center space-x-8 mt-4 opacity-50">
-              <span><img alt="Client Logo 1 Placeholder" src="https://images.unsplash.com/photo-1495224814653-94f36c0a31ea" /></span>
-              <span><img alt="Client Logo 2 Placeholder" src="https://images.unsplash.com/photo-1607004010229-6048c57c2ab1" /></span>
-              <span><img alt="Client Logo 3 Placeholder" src="https://images.unsplash.com/photo-1694208590719-96139a8f2a32" /></span>
-              <span><img alt="Client Logo 4 Placeholder" src="https://images.unsplash.com/photo-1649000808933-1f4aac7cad9a" /></span>
-            </div>
+            <ul className="flex justify-center space-x-8 mt-4 opacity-50">
+              <li><span><img alt="Client Logo 1 Placeholder" src="https://images.unsplash.com/photo-1495224814653-94f36c0a31ea" /></span></li>
+              <li><span><img alt="Client Logo 2 Placeholder" src="https://images.unsplash.com/photo-1607004010229-6048c57c2ab1" /></span></li>
+              <li><span><img alt="Client Logo 3 Placeholder" src="https://images.unsplash.com/photo-1694208590719-96139a8f2a32" /></span></li>
+              <li><span><img alt="Client Logo 4 Placeholder" src="https://images.unsplash.com/photo-1649000808933-1f4aac7cad9a" /></span></li>
+            </ul>
           </div>
         </div>
       </PageSection>
