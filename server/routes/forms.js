@@ -11,6 +11,7 @@ const router = express.Router();
 // CSRF protection
 const tokens = new csrf();
 const secret = process.env.CSRF_SECRET || tokens.secretSync(); // Use environment variable for production
+console.log('CSRF Secret:', secret); // Log the secret for debugging
 
 // Rate limiting to prevent abuse
 const limiter = rateLimit({
