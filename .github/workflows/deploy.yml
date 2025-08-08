@@ -47,7 +47,7 @@ jobs:
             npm run build
 
             echo "### Stamping build with Git commit hash ###"
-            sed -i "s|</body>|</body>|" dist/index.html
+            sed -i "s|</body>|<!-- Deployed: $TIMESTAMP | Commit: $GIT_HASH --></body>|" dist/index.html
 
             echo "### 3. Deploying frontend files ###"
             sudo rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
