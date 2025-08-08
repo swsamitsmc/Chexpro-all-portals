@@ -1,0 +1,61 @@
+# This is the name of the GitHub Actions workflow.
+name: Deploy to OCI
+
+# This section defines when the workflow will run.
+# It triggers on every 'push' to the 'master' branch.
+on:
+  push:
+    branches: [ master ]
+
+# This section defines the jobs to be run.
+jobs:
+  deploy:
+    # The type of machine to run the job on. 'ubuntu-latest' is standard and free.
+    runs-on: ubuntu-latest
+
+    # These are the individual steps the job will perform.
+    steps:
+      # Step 1: Checks out your repository's code so the workflow can access it.
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: Connects to your OCI server via SSH and runs the deployment script.
+      - name: Deploy to OCI Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          # Uses the secrets you created in your GitHub repository settings.
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: 22 # Default SSH port
+          
+          # This is the script that will be executed on your OCI server.
+          # It follows the logic from your PRODUCTION_DEPLOYMENT.md file.
+          script: |
+            echo "### 1. Navigating to build directory and pulling code ###"
+            cd /var/www/chexpro-frontend-build
+            git reset --hard HEAD
+            git pull origin master
+
+            echo "### 2. Building frontend ###"
+            cd frontend
+            npm install
+            npm run build
+
+            echo "### 3. Deploying frontend files ###"
+            sudo rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
+
+            echo "### 4. Deploying backend files ###"
+            cd ../server
+            # Excludes node_modules to ensure a clean install on the server
+            sudo rsync -av --delete --exclude '.env' --exclude 'node_modules/' . /var/www/chexpro-backend/
+
+            echo "### 5. Installing backend dependencies ###"
+            cd /var/www/chexpro-backend
+            npm install --production
+
+            echo "### 6. Restarting backend service with PM2 ###"
+            pm2 reload chexpro-backend --update-env
+
+            echo "### Deployment Complete! ###"
+            pm2 status
