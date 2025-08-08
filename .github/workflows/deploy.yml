@@ -34,17 +34,27 @@ jobs:
           script: |
             echo "### 1. Navigating to build directory and pulling code ###"
             cd /var/www/chexpro-frontend-build
-            git reset --hard HEAD
+            # Add ssh-keyscan to ensure the host key is known
+            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            git reset --hard origin/master
             git pull origin master
 
             echo "### 2. Building frontend ###"
             cd frontend
-            npm install
+            # Added --legacy-peer-deps to prevent dependency conflicts
+            npm install --legacy-peer-deps
             npm run build
+
+            # --- NEW PART TO ADD ---
+            echo "### Stamping build with Git commit hash ###"
+            GIT_HASH=$(git rev-parse --short HEAD)
+            sed -i "s|</body>|</body>|" dist/index.html
+            # --- END OF NEW PART ---
 
             echo "### 3. Deploying frontend files ###"
             sudo rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
 
+           
             echo "### 4. Deploying backend files ###"
             cd ../server
             # Excludes node_modules to ensure a clean install on the server
