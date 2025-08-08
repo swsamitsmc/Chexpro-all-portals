@@ -4,23 +4,47 @@ import nodemailer from 'nodemailer';
 import rateLimit from 'express-rate-limit';
 import csrf from 'csrf';
 import pool from '../config/db.js'; // --- DB CHANGE --- Import the connection pool
-import { validateInputLength } from '../middleware/validation.js';
+import { validateFormInput, validateRequestDemoInput } from '../middleware/inputValidation.js';
+import { sendEmailWithRetry } from '../utils/emailRetry.js';
+import { getEmailRecipient } from '../utils/emailConfig.js';
+import he from 'he';
 // amazonq-ignore-next-line
 const router = express.Router();
 
 // CSRF protection
 const tokens = new csrf();
-const secret = process.env.CSRF_SECRET || tokens.secretSync(); // Use environment variable for production
+let secret = process.env.CSRF_SECRET;
+if (!secret && process.env.NODE_ENV === 'production') {
+    throw new Error('CSRF_SECRET environment variable is not set. This is required in production for persistent CSRF protection.');
+} else if (!secret) {
+    // Fallback for development, but warn that it's not persistent
+    console.warn('CSRF_SECRET environment variable is not set. CSRF tokens will not be persistent across server restarts.');
+    secret = tokens.secretSync();
+}
 
 // Rate limiting to prevent abuse
-const limiter = rateLimit({
+const generalLimiter = rateLimit({
     windowMs: 15 * 60 * 1000, // 15 minutes
     max: 10, // limit each IP to 10 requests per windowMs
     message: 'Too many requests from this IP, please try again after 15 minutes'
 });
 
-// Apply the rate limiting middleware to all routes in this file
-router.use(limiter);
+// Stricter rate limiting for contact forms
+const contactLimiter = rateLimit({
+    windowMs: 5 * 60 * 1000, // 5 minutes
+    max: 3, // limit each IP to 3 contact requests per 5 minutes
+    message: 'Too many contact requests from this IP, please try again after 5 minutes'
+});
+
+// Stricter rate limiting for demo requests
+const demoLimiter = rateLimit({
+    windowMs: 10 * 60 * 1000, // 10 minutes
+    max: 2, // limit each IP to 2 demo requests per 10 minutes
+    message: 'Too many demo requests from this IP, please try again after 10 minutes'
+});
+
+// Apply general rate limiting to all routes
+router.use(generalLimiter);
 
 // CSRF token endpoint - intentionally public for form submissions
 // No authorization required as this provides tokens for public forms
@@ -33,6 +57,12 @@ router.get('/csrf-token', (req, res) => {
 const validateCSRF = (req, res, next) => {
     const token = req.headers['x-csrf-token'] || req.body._csrf;
     if (!token || !tokens.verify(secret, token)) {
+        console.warn('CSRF validation failed', {
+            path: req.path,
+            ip: req.ip,
+            origin: req.headers.origin,
+            referer: req.headers.referer,
+        });
         return res.status(403).json({ error: 'Invalid CSRF token' });
     }
     next();
@@ -41,9 +71,9 @@ const validateCSRF = (req, res, next) => {
 // Origin validation middleware for form submissions
 const validateOrigin = (req, res, next) => {
     const allowedOrigins = (process.env.ALLOWED_ORIGINS || 'http://localhost:5173').split(',');
-    const origin = req.headers.origin || req.headers.referer;
+    const origin = req.headers.origin || req.headers.referer || '';
     
-    if (!origin || !allowedOrigins.some(allowed => origin.startsWith(allowed.trim()))) {
+    if (!allowedOrigins.some(allowed => origin.startsWith(allowed.trim()))) {
         return res.status(403).json({ error: 'Unauthorized origin' });
     }
     next();
@@ -66,36 +96,20 @@ const transporter = nodemailer.createTransport({
     }
 });
 
-// Function to escape HTML
+// Use he library for robust HTML escaping
 const escapeHTML = (str) => {
     if (!str) return str;
-    return str.replace(/[&<>'"/]/g, function (tag) {
-        const chars = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            "'": '&#39;',
-            '"': '&quot;',
-            '/': '&#x2F;'
-        };
-        return chars[tag] || tag;
-    });
+    return he.encode(str);
 };
 
 // 2. Route for the Contact Form - intentionally public for website visitors
 // CSRF protection and origin validation provide security for this use case
 router.post(
     '/contact',
+    contactLimiter,
     validateOrigin,
     validateCSRF,
-    validateInputLength([
-        { name: 'firstName', maxLength: 100 },
-        { name: 'lastName', maxLength: 100 },
-        { name: 'email', maxLength: 255 },
-        { name: 'message', maxLength: 2000 },
-        { name: 'phone', maxLength: 20 },
-        { name: 'companyName', maxLength: 255 },
-    ]),
+    validateFormInput,
     [
         body('firstName', 'First name is required').notEmpty().trim().escape(),
         body('lastName', 'Last name is required').notEmpty().trim().escape(),
@@ -129,11 +143,12 @@ router.post(
         // --- 2. Construct email with DB status and send it ---
         const dbStatusLine = dbSuccess
             ? '<p><strong>Database Status:</strong> <span style="color:green;">Successfully saved.</span></p>'
-            : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${escapeHTML(dbErrorMessage)}</p>`;
+            : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${process.env.NODE_ENV === 'production' ? 'A database error occurred.' : escapeHTML(dbErrorMessage)}</p>`;
 
+        const recipientEmail = await getEmailRecipient('contact');
         const mailOptions = {
             from: `"ChexPro Website" <${escapeHTML(process.env.SMTP_USER)}>`,
-            to: escapeHTML(process.env.CONTACT_RECIPIENT),
+            to: escapeHTML(recipientEmail),
             subject: dbSuccess ? 'New Contact Form Submission' : '⚠️ ACTION REQUIRED: Contact Form DB Save Failed',
             html: `
                 <h3>New Contact Form Submission</h3>
@@ -149,10 +164,10 @@ router.post(
         };
 
         try {
-            await transporter.sendMail(mailOptions);
+            await sendEmailWithRetry(transporter, mailOptions, 3);
         } catch (emailError) {
             // This is the worst case: DB may have failed AND email failed. The lead is now lost.
-            console.error('CRITICAL: EMAIL SENDING FAILED for /contact:', emailError);
+            console.error('CRITICAL: EMAIL SENDING FAILED for /contact after retries:', emailError);
             // We still send a generic server error to the user, as the DB may have failed anyway.
             return res.status(500).json({ status: 'Error', description: 'A server error occurred while processing your request.' });
         }
@@ -170,19 +185,10 @@ router.post(
 // 3. Route for the Demo Request Form
 router.post(
     '/demo',
+    demoLimiter,
     validateOrigin,
     validateCSRF,
-    validateInputLength([
-        { name: 'firstName', maxLength: 100 },
-        { name: 'lastName', maxLength: 100 },
-        { name: 'jobTitle', maxLength: 100 },
-        { name: 'companyName', maxLength: 255 },
-        { name: 'workEmail', maxLength: 255 },
-        { name: 'phone', maxLength: 20 },
-        { name: 'screeningsPerYear', maxLength: 50 },
-        { name: 'servicesOfInterest', maxLength: 255 },
-        { name: 'message', maxLength: 2000 },
-    ]),
+    validateRequestDemoInput,
     [
         body('firstName', 'First name is required').notEmpty().trim().escape(),
         body('lastName', 'Last name is required').notEmpty().trim().escape(),
@@ -219,11 +225,12 @@ router.post(
         // --- 2. Construct email with DB status and send it ---
         const dbStatusLine = dbSuccess
             ? '<p><strong>Database Status:</strong> <span style="color:green;">Successfully saved.</span></p>'
-            : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${escapeHTML(dbErrorMessage)}</p>`;
+            : `<p><strong>Database Status:</strong> <span style="color:red;">FAILED.</span><br><strong>Error:</strong> ${process.env.NODE_ENV === 'production' ? 'A database error occurred.' : escapeHTML(dbErrorMessage)}</p>`;
         
+        const recipientEmail = await getEmailRecipient('demo');
         const mailOptions = {
             from: `"ChexPro Website" <${escapeHTML(process.env.SMTP_USER)}>`,
-            to: escapeHTML(process.env.DEMO_RECIPIENT),
+            to: escapeHTML(recipientEmail),
             subject: dbSuccess ? 'New Demo Request' : '⚠️ ACTION REQUIRED: Demo Request DB Save Failed',
             html: `
                 <h3>New Demo Request</h3>
@@ -242,9 +249,9 @@ router.post(
         };
 
         try {
-            await transporter.sendMail(mailOptions);
+            await sendEmailWithRetry(transporter, mailOptions, 3);
         } catch (emailError) {
-            console.error('CRITICAL: EMAIL SENDING FAILED for /demo:', emailError);
+            console.error('CRITICAL: EMAIL SENDING FAILED for /demo after retries:', emailError);
             return res.status(500).json({ status: 'Error', description: 'A server error occurred while processing your request.' });
         }
 

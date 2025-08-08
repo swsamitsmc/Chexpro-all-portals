@@ -1,41 +1,63 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
 
-export function CookiePreferencesModal({ open, onClose, onSave, prefs, setPrefs }) {
+export function CookiePreferencesModal({
+  open = false,
+  onClose,
+  onSave,
+  prefs = { analytics: false, marketing: false, persistentLogin: false },
+  setPrefs = () => {}
+}) {
   const { t } = useTranslation();
   if (!open) return null;
 
   const handleSave = (e) => {
     e.preventDefault();
-    onSave();
+    if (typeof onSave === 'function') {
+      onSave();
+    }
+    if (typeof onClose === 'function') {
+      onClose();
+    }
+  };
+
+  const updatePrefs = (key, value) => {
+    if (typeof setPrefs === 'function') {
+      setPrefs({ ...prefs, [key]: value });
+    }
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="bg-white p-6 rounded shadow-lg max-w-md w-full">
-        <h2 className="text-lg font-bold mb-4">{t('cookies.preferences')}</h2>
+      <div
+        className="bg-white p-6 rounded shadow-lg max-w-md w-full"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cookie-prefs-title"
+      >
+        <h2 id="cookie-prefs-title" className="text-lg font-bold mb-4">{t('cookies.preferences')}</h2>
         <form onSubmit={handleSave}>
           <label className="flex items-center mb-2">
             <input
               type="checkbox"
-              checked={prefs.analytics}
-              onChange={e => setPrefs({ ...prefs, analytics: e.target.checked })}
+              checked={Boolean(prefs.analytics)}
+              onChange={e => updatePrefs('analytics', e.target.checked)}
             />
             <span className="ml-2">{t('cookies.analytics')}</span>
           </label>
           <label className="flex items-center mb-2">
             <input
               type="checkbox"
-              checked={prefs.marketing}
-              onChange={e => setPrefs({ ...prefs, marketing: e.target.checked })}
+              checked={Boolean(prefs.marketing)}
+              onChange={e => updatePrefs('marketing', e.target.checked)}
             />
             <span className="ml-2">{t('cookies.marketing')}</span>
           </label>
           <label className="flex items-center mb-2">
             <input
               type="checkbox"
-              checked={prefs.persistentLogin}
-              onChange={e => setPrefs({ ...prefs, persistentLogin: e.target.checked })}
+              checked={Boolean(prefs.persistentLogin)}
+              onChange={e => updatePrefs('persistentLogin', e.target.checked)}
             />
             <span className="ml-2">{t('cookies.persistent')}</span>
           </label>
@@ -47,3 +69,15 @@ export function CookiePreferencesModal({ open, onClose, onSave, prefs, setPrefs 
     </div>
   );
 }
+
+CookiePreferencesModal.propTypes = {
+  open: PropTypes.bool,
+  onClose: PropTypes.func,
+  onSave: PropTypes.func,
+  prefs: PropTypes.shape({
+    analytics: PropTypes.bool,
+    marketing: PropTypes.bool,
+    persistentLogin: PropTypes.bool,
+  }),
+  setPrefs: PropTypes.func,
+};

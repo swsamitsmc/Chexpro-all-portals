@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-    import PageTransition from '@/hooks/usePageTransition';
+    import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
     import { Button } from '@/components/ui/button';

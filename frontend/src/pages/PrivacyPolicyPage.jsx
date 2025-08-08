@@ -1,9 +1,12 @@
-import React from 'react';
 import PageSection from '@/components/PageSection';
+import { useTranslation } from 'react-i18next';
 
-const PrivacyPolicyPage = () => (
-  <PageSection className="max-w-3xl mx-auto py-16">
-    <h1 className="text-4xl font-bold mb-6 text-primary">Privacy Policy</h1>
+const PrivacyPolicyPage = () => {
+  const { t } = useTranslation();
+  
+  return (
+    <PageSection className="max-w-3xl mx-auto py-16">
+      <h1 className="text-4xl font-bold mb-6 text-primary">{t('pages.privacy.title')}</h1>
     <p className="mb-4 text-lg text-muted-foreground">At ChexPro, your privacy is our top priority. We are committed to protecting your personal information and maintaining transparency about how we collect, use, and safeguard your data.</p>
     <h2 className="text-2xl font-semibold mt-8 mb-2">Information We Collect</h2>
     <ul className="list-disc ml-6 mb-4 text-muted-foreground">
@@ -25,8 +28,9 @@ const PrivacyPolicyPage = () => (
       <li>Opt-out of marketing communications</li>
       <li>Request information about our data practices</li>
     </ul>
-    <p className="mt-8 text-muted-foreground">For questions or requests regarding your privacy, please contact us at info@chexpro.com.</p>
-  </PageSection>
-);
+      <p className="mt-8 text-muted-foreground">For questions or requests regarding your privacy, please {t('pages.privacy.contactUs')} at info@chexpro.com.</p>
+    </PageSection>
+  );
+};
 
 export default PrivacyPolicyPage;

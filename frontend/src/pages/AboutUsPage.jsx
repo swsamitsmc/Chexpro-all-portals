@@ -1,13 +1,13 @@
 
-    import React from 'react';
-    import PageTransition from '@/hooks/usePageTransition';
+    import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import { Button } from '@/components/ui/button';
     import { Link } from 'react-router-dom';
     import { Target, Eye, HeartHandshake as Handshake, ShieldCheck, Users, Zap } from 'lucide-react';
     import { motion } from 'framer-motion';
-    import { Helmet } from 'react-helmet-async';
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
     const fadeInStagger = {
       hidden: { opacity: 0 },
@@ -26,6 +26,7 @@
     };
 
     const AboutUsPage = () => {
+      const { t } = useTranslation();
       const values = [
         { title: 'Integrity', description: 'Upholding the highest ethical standards in all our operations and interactions.', icon: <ShieldCheck className="h-8 w-8 text-primary" /> },
         { title: 'Accuracy', description: 'Committing to providing precise and reliable information through meticulous verification processes.', icon: <Target className="h-8 w-8 text-primary" /> },
@@ -37,7 +38,7 @@
       return (
         <PageTransition>
           <Helmet>
-      <title>About Us - ChexPro | Our Mission & Values</title>
+      <title>About Us - ChexPro | Our Mission &amp; Values</title>
       <meta name="description" content="Learn about ChexPro's mission, values, and our commitment to accurate and compliant background screening solutions." />
       {/* You can add more meta tags here if needed, e.g., Open Graph tags for social sharing */}
       {/* <meta property="og:title" content="About Us - ChexPro" /> */}
@@ -50,13 +51,13 @@
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
               >
-                About ChexPro
+                {t('navigation.about')}
               </motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                Empowering organizations and individuals with trustworthy background screening solutions.
+                {t('pages.home.metaDescription')}
               </motion.p>
             </div>
           </PageSection>
@@ -70,7 +71,7 @@
                  src="/team.png" />
               </motion.div>
               <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>
-                <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission & Vision</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission &amp; Vision</h2>
                 <div className="space-y-6 text-muted-foreground">
                   <div className="flex items-start space-x-3">
                     <Target className="h-7 w-7 text-primary flex-shrink-0 mt-1" />
@@ -92,7 +93,7 @@
           </PageSection>
 
           <PageSection className="bg-secondary">
-            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">Our Core Values</h2>
+            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('aboutUs.ourValues', { defaultValue: 'Our Core Values' })}</h2>
             <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
               The principles that guide every aspect of our business and client interactions.
             </p>
@@ -122,7 +123,7 @@
           <PageSection>
             <div className="grid md:grid-cols-2 gap-12 items-center">
                <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>
-                <h2 className="text-3xl font-bold text-foreground mb-6">Our Team</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">{t('aboutUs.ourTeam', { defaultValue: 'Our Team' })}</h2>
                 <p className="text-muted-foreground mb-4">
                   ChexPro is powered by a dedicated team of experienced professionals, researchers, and technology experts passionate about delivering excellence in background screening. Our collective expertise ensures that we stay ahead of industry trends and provide our clients with the highest quality service. (Placeholder for more detailed team info).
                 </p>
@@ -144,7 +145,7 @@
             <ShieldCheck className="h-16 w-16 text-primary mx-auto mb-6" />
               <h2 className="text-3xl font-bold mb-4">Commitment to Compliance</h2>
               <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
-                Compliance is not just a requirement; it's a cornerstone of our operations. We are deeply committed to upholding the Fair Credit Reporting Act (FCRA) and all applicable federal, state, and local laws. Our processes are designed to ensure accuracy, data privacy, and fair information practices.
+                Compliance is not just a requirement; it&apos;s a cornerstone of our operations. We are deeply committed to upholding the Fair Credit Reporting Act (FCRA) and all applicable federal, state, and local laws. Our processes are designed to ensure accuracy, data privacy, and fair information practices.
               </p>
               <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white" asChild>
                 <Link to="/compliance">Learn More About Our Compliance Standards</Link>

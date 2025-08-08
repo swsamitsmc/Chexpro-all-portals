@@ -26,3 +26,9 @@ yarn-error.log*
 
 # VS Code editor settings
 .vscode/
+
+# JetBrains IDE folder
+.idea/
+
+# Temporary/old node_modules
+frontend/node_modules_old_1/

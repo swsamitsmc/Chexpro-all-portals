@@ -1,17 +1,19 @@
 import { useState } from 'react';
 import { getCookie } from '@/lib/cookieUtils';
 import { useCookiePreferences } from '@/hooks/useCookiePreferences';
+import { useTranslation } from 'react-i18next';
 
 export function CookieBanner({ onPreferencesClick }) {
+  const { t } = useTranslation();
   const [prefs, updatePreferences] = useCookiePreferences();
   const [consentGiven, setConsentGiven] = useState(() => {
     if (typeof window === 'undefined') return true;
-    // Consent is given if the cookie_preferences cookie exists
-    return getCookie('cookie_preferences') !== null;
+    // Show banner until preferences cookie exists
+    return Boolean(getCookie('cookie_preferences'));
   });
 
   const handleEssentialOnly = () => {
-    updatePreferences({ analytics: true, marketing: false, persistentLogin: false });
+    updatePreferences({ analytics: false, marketing: false, persistentLogin: false });
     setConsentGiven(true);
   };
 
@@ -25,7 +27,7 @@ export function CookieBanner({ onPreferencesClick }) {
     return (
       <div className="fixed bottom-0 left-0 right-0 bg-gray-900 text-white p-4 z-50 flex flex-col md:flex-row items-center justify-between shadow-lg">
         <span>
-          We use essential cookies for analytics. You can also allow marketing and persistent login cookies. See our Privacy Policy for details.
+          {t('cookies.banner')}
         </span>
         <div className="flex gap-2 mt-2 md:mt-0 md:ml-4">
           <button

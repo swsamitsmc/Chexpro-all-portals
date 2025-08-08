@@ -1,6 +1,6 @@
 
     import { Link } from 'react-router-dom';
-    import { Facebook, Twitter, Linkedin, Youtube, Instagram } from 'lucide-react';
+    import { Facebook, X, Linkedin, Youtube, Instagram } from 'lucide-react';
     import { useTranslation } from 'react-i18next';
     import chexProLogo from '@/assets/images/chexpro-logo.svg';
 
@@ -50,7 +50,7 @@
                 <p className="font-semibold text-foreground mb-4">{t('footer.connectWithUs')}</p>
                 <div className="flex space-x-4 mb-4">
                 <a href="https://www.facebook.com/profile.php?id=61577057349515" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="ChexPro Facebook Page"><Facebook size={20} /></a>
-                <a href="https://x.com/chexprobgc" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="ChexPro Twitter Page"><Twitter size={20} /></a>
+                <a href="https://x.com/chexprobgc" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="ChexPro X Page"><X size={20} /></a>
                 <a href="https://www.linkedin.com/company/chexpro/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="ChexPro LinkedIn Page"><Linkedin size={20} /></a>
                 <a href="https://www.youtube.com/@Chexpro" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="ChexPro YouTube Channel"><Youtube size={20} /></a>
                 <a href="https://www.instagram.com/chexpro.na/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors" aria-label="ChexPro Instagram Page"><Instagram size={20} /></a>

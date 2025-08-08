@@ -1,18 +1,16 @@
 import { useLocation } from "react-router-dom";
 import { useEffect } from "react";
-import ReactGA from "react-ga4";
-
-const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID;
+import { ENV_CONFIG } from '@/config/envConfig';
+import { trackPageView } from '@/lib/googleAnalytics';
 
 const RouteChangeTracker = () => {
     const location = useLocation();
 
     useEffect(() => {
         window.scrollTo(0, 0); // Scroll to the top of the page on route change
-        if (GA_MEASUREMENT_ID) {
-            // Send a pageview event to Google Analytics
-            ReactGA.send({ hitType: "pageview", page: location.pathname + location.search });
-        }
+    if (ENV_CONFIG.GA_MEASUREMENT_ID && ENV_CONFIG.ENABLE_ANALYTICS) {
+      trackPageView(location.pathname + location.search);
+    }
     }, [location]); // This effect runs every time the location changes
 
     return null; // This component does not render anything

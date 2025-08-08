@@ -3,7 +3,7 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from '@/App';
 import '@/index.css';
-import i18n from '@/i18n'; // Initialize i18n
+import i18n from '@/i18n/index.js'; // Initialize i18n using folder initializer
 import { BrowserRouter } from 'react-router-dom'; // Import BrowserRouter for routing
 import { Toaster } from '@/components/ui/toaster'; // Import Toaster component
 import { HelmetProvider } from 'react-helmet-async'; // Import HelmetProvider

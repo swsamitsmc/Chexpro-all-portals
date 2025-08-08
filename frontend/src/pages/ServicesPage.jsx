@@ -1,14 +1,14 @@
 
-    import React from 'react';
-    import PageTransition from '@/hooks/usePageTransition';
+    import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
-    import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+    import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import { Button } from '@/components/ui/button';
     import { Link } from 'react-router-dom';
     import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
     import { motion } from 'framer-motion';
     import { Search, Briefcase, GraduationCap, CreditCard, Users, Syringe, HeartPulse, Globe, Home, Building } from 'lucide-react';
     import { Helmet } from 'react-helmet-async';
+    import { useTranslation } from 'react-i18next';
 
     const fadeInItem = {
       hidden: { opacity: 0, y: 20 },
@@ -16,6 +16,7 @@
     };
 
     const ServicesPage = () => {
+      const { t } = useTranslation();
       const services = [
         {
           id: 'criminal-records',
@@ -106,8 +107,8 @@
       return (
         <PageTransition>
           <Helmet>
-        <title>Services - ChexPro | Our Background Screening Solutions</title>
-        <meta name="description" content="Discover ChexPro's comprehensive suite of background screening services, including criminal checks, employment verification, education checks, and more tailored solutions." />
+        <title>{t('pages.services.title', { defaultValue: 'Services - ChexPro | Our Background Screening Solutions' })}</title>
+        <meta name="description" content={t('pages.services.metaDescription', { defaultValue: "Discover ChexPro's comprehensive suite of background screening services, including criminal checks, employment verification, education checks, and more tailored solutions." })} />
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
         </script>
@@ -117,12 +118,12 @@
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
-              >Our Comprehensive Screening Services</motion.h1>
+              >{t('pages.services.heading', { defaultValue: 'Our Comprehensive Screening Services' })}</motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                ChexPro provides a full suite of reliable and compliant background check services tailored to your specific needs.
+                {t('pages.services.intro', { defaultValue: 'ChexPro provides a full suite of reliable and compliant background check services tailored to your specific needs.' })}
               </motion.p>
             </div>
           </PageSection>
@@ -159,9 +160,9 @@
           
           {/* Solutions/Industries Section */}
           <PageSection className="bg-secondary">
-            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">Tailored Solutions for Your Industry</h2>
+            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.services.industriesHeading', { defaultValue: 'Tailored Solutions for Your Industry' })}</h2>
             <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-              We understand that different sectors have unique screening requirements. ChexPro offers specialized solutions.
+              {t('pages.services.industriesIntro', { defaultValue: 'We understand that different sectors have unique screening requirements. ChexPro offers specialized solutions.' })}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {industrySolutions.map((solution, index) => (
@@ -179,19 +180,19 @@
               ))}
             </div>
              <div className="text-center mt-12">
-              <p className="text-md text-muted-foreground">Don't see your industry? We can create custom packages.</p>
+              <p className="text-md text-muted-foreground">{t('pages.services.industriesNote', { defaultValue: "Don't see your industry? We can create custom packages." })}</p>
             </div>
           </PageSection>
 
 
           <PageSection className="gradient-bg text-primary-foreground">
             <div className="container text-center">
-              <h2 className="text-3xl font-bold mb-6">Ready for a Custom Screening Solution?</h2>
+              <h2 className="text-3xl font-bold mb-6">{t('pages.services.ctaTitle', { defaultValue: 'Ready for a Custom Screening Solution?' })}</h2>
               <p className="text-lg max-w-2xl mx-auto mb-10 opacity-90">
-                Let our experts help you design the perfect background check package for your unique requirements.
+                {t('pages.services.ctaDesc', { defaultValue: 'Let our experts help you design the perfect background check package for your unique requirements.' })}
               </p>
-              <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
-                <Link to="/request-demo">Request a Custom Quote</Link>
+              <Button size="lg" asChild>
+                <Link to="/request-demo">{t('pages.services.ctaButton', { defaultValue: 'Request a Custom Quote' })}</Link>
               </Button>
             </div>
           </PageSection>

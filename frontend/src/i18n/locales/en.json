@@ -1,0 +1,224 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "close": "Close",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous"
+  },
+  "navigation": {
+    "home": "Home",
+    "about": "About Us",
+    "services": "Services",
+    "compliance": "Compliance",
+    "resources": "Resources",
+    "contact": "Contact Us",
+    "login": "Client Login",
+    "requestDemo": "Request Demo"
+  },
+  "footer": {
+    "company": "ChexPro",
+    "description": "Professional background screening services",
+    "quickLinks": "Quick Links",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "fcraCompliance": "FCRA Compliance",
+    "dataSecurityPage": "Data Security"
+  },
+  "cookies": {
+    "banner": "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
+    "acceptAll": "Accept All",
+    "preferences": "Preferences",
+    "necessary": "Necessary",
+    "analytics": "Analytics",
+    "marketing": "Marketing"
+  },
+  "pages": {
+    "home": {
+      "title": "Home - ChexPro | Reliable Background Checks, Streamlined",
+      "metaDescription": "ChexPro provides fast, accurate, and compliant background screening solutions for businesses, landlords, staffing firms, and individuals. Make confident decisions.",
+      "heroTitle": "Reliable Background Checks, Streamlined.",
+      "heroSubtitle": "ChexPro offers fast, accurate, and compliant background screening solutions to help you make informed decisions with confidence.",
+      "ctaTitle": "Ready to Elevate Your Screening Process?",
+      "ctaDesc": "Discover how ChexPro can provide you with the insights you need to make confident decisions. Get started today!",
+      "ctaDemoButton": "Request a Free Demo",
+      "ctaContactSales": "Contact Sales",
+      "services": {
+        "title": "Comprehensive Screening Services",
+        "subtitle": "We provide a wide range of verification services tailored to meet your specific needs.",
+        "exploreAll": "Explore All Services →",
+        "items": {
+          "criminal": {
+            "title": "Criminal Records",
+            "desc": "Comprehensive criminal background checks."
+          },
+          "employment": {
+            "title": "Employment Verification",
+            "desc": "Verify past employment history."
+          },
+          "education": {
+            "title": "Education Verification",
+            "desc": "Confirm educational qualifications."
+          },
+          "credit": {
+            "title": "Credit Checks",
+            "desc": "Assess financial responsibility."
+          }
+        }
+      },
+      "trust": {
+        "title": "Committed to Compliance and Security",
+        "desc": "We adhere to the strictest industry standards, including FCRA compliance, to ensure data accuracy and protect sensitive information. Your trust is our top priority.",
+        "badges": {
+          "fcra": "FCRA Compliant",
+          "pbs": "PBSA Member",
+          "soc2": "SOC 2 Complient",
+          "encryption": "Data Encryption"
+        },
+        "clients": {
+          "title": "Trusted by leading companies (Client Logos Placeholder)",
+          "logo1Alt": "Client Logo 1 Placeholder",
+          "logo2Alt": "Client Logo 2 Placeholder",
+          "logo3Alt": "Client Logo 3 Placeholder",
+          "logo4Alt": "Client Logo 4 Placeholder"
+        }
+      },
+      "testimonials": {
+        "title": "What Our Clients Say",
+        "subtitle": "Real stories from satisfied clients who trust ChexPro for their screening needs.",
+        "quote": "ChexPro has transformed our hiring process. Their speed and accuracy are unmatched. Highly recommended! (Placeholder)",
+        "nameRole": "John Doe, HR Manager (Placeholder)",
+        "company": "Tech Solutions Inc. (Placeholder)"
+      }
+    },
+    "why": {
+      "title": "Why Choose ChexPro?",
+      "subtitle": "Experience the ChexPro difference with our commitment to excellence and client satisfaction.",
+      "items": {
+        "speed": {
+          "title": "Unmatched Speed",
+          "desc": "Get results faster than ever without compromising accuracy."
+        },
+        "accuracy": {
+          "title": "Pinpoint Accuracy",
+          "desc": "Leverage advanced data sources for reliable information."
+        },
+        "support": {
+          "title": "Dedicated Support",
+          "desc": "Our expert team is here to assist you every step of the way."
+        },
+        "pricing": {
+          "title": "Transparent Pricing",
+          "desc": "Clear, competitive pricing with no hidden fees."
+        },
+        "platform": {
+          "title": "User-Friendly Platform",
+          "desc": "Intuitive interface for seamless screening management."
+        },
+        "compliance": {
+          "title": "Compliance Expertise",
+          "desc": "Stay compliant with FCRA and industry regulations."
+        }
+      }
+    },
+    "solutions": {
+      "title": "Solutions For Every Need",
+      "subtitle": "ChexPro provides tailored background screening for diverse industries and individual requirements.",
+      "audiences": {
+        "employers": {
+          "name": "Employers",
+          "desc": "Hire with confidence. Streamline your recruitment process with comprehensive background checks for businesses of all sizes."
+        },
+        "landlords": {
+          "name": "Landlords",
+          "desc": "Secure your investment. Make informed tenant decisions with reliable screening services for property managers."
+        },
+        "staffing": {
+          "name": "Staffing Firms",
+          "desc": "Place top talent faster. Enhance your candidate vetting process with efficient and accurate background checks."
+        },
+        "individuals": {
+          "name": "Individuals",
+          "desc": "Know your background. Access your personal history report for peace of mind and preparedness."
+        }
+      }
+    },
+    "services": {
+      "title": "Services - ChexPro | Our Background Screening Solutions",
+      "metaDescription": "Discover ChexPro's comprehensive suite of background screening services, including criminal checks, employment verification, education checks, and more tailored solutions.",
+      "ctaTitle": "Ready for a Custom Screening Solution?",
+      "ctaDesc": "Let our experts help you design the perfect background check package for your unique requirements.",
+      "ctaButton": "Request a Custom Quote"
+    },
+    "notFound": {
+      "title": "Page Not Found"
+    },
+    "terms": {
+      "title": "Terms of Service",
+      "lastUpdated": "Last updated",
+      "effectiveDate": "Effective Date"
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "lastUpdated": "Last updated",
+      "effectiveDate": "Effective Date",
+      "contactUs": "Contact us"
+    },
+    "dataSecurityPage": {
+      "title": "Data Security"
+    },
+    "dataSecurity": {
+      "title": "Data Security",
+      "intro": "At ChexPro, we take data security seriously. Our systems and processes are designed to protect your information at every step.",
+      "measuresHeading": "Our Security Measures",
+      "measures": [
+        "End-to-end encryption for all sensitive data",
+        "Regular security audits and vulnerability assessments",
+        "Strict access controls and authentication protocols",
+        "Compliance with industry standards and regulations"
+      ],
+      "controlHeading": "Your Data, Your Control",
+      "control": [
+        "You can request access to or deletion of your data at any time",
+        "We never sell or share your information without consent"
+      ],
+      "contact": "For questions about our data security practices, please contact us at info@chexpro.com."
+    },
+    "fcraCompliance": {
+      "title": "FCRA Compliance"
+    },
+    "clientLogin": {
+      "title": "Client Login"
+    },
+    "aboutUs": {
+      "ourStory": "Our Story",
+      "ourMission": "Our Mission",
+      "whyChooseUs": "Why Choose Us",
+      "ourTeam": "Our Team"
+    },
+    "requestDemo": {
+      "firstName": "First Name",
+      "lastName": "Last Name",
+      "email": "Email",
+      "phone": "Phone",
+      "company": "Company",
+      "jobTitle": "Job Title",
+      "message": "Message"
+    },
+    "contactUs": {
+      "getInTouch": "Get in Touch"
+    },
+    "resources": {
+      "downloadNow": "Download Now",
+      "learnMore": "Learn More"
+    }
+  }
+}

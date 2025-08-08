@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react"
 
-const TOAST_LIMIT = 1
+import { APP_CONFIG } from '../../config/appConfig';
+
+const TOAST_LIMIT = APP_CONFIG.TOAST_LIMIT;
 
 let count = 0
 function generateId() {
@@ -88,7 +90,7 @@ export function useToast() {
         if (typeof toast.dismiss === 'function') {
           toast.dismiss()
         }
-      }, toast.duration || 5000)
+      }, toast.duration || APP_CONFIG.TOAST_DURATION)
 
       timeouts.push(timeout)
     })

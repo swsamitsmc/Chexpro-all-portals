@@ -1,0 +1,185 @@
+{
+  "common": {
+    "loading": "Cargando...",
+    "error": "Error",
+    "success": "Éxito",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "save": "Guardar",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "previous": "Anterior"
+  },
+  "navigation": {
+    "home": "Inicio",
+    "about": "Acerca de Nosotros",
+    "services": "Servicios",
+    "compliance": "Cumplimiento",
+    "resources": "Recursos",
+    "contact": "Contáctanos",
+    "login": "Acceso de Cliente",
+    "requestDemo": "Solicitar Demo"
+  },
+  "footer": {
+    "company": "ChexPro",
+    "description": "Servicios profesionales de verificación de antecedentes",
+    "quickLinks": "Enlaces Rápidos",
+    "legal": "Legal",
+    "privacyPolicy": "Política de Privacidad",
+    "termsOfService": "Términos de Servicio",
+    "fcraCompliance": "Cumplimiento FCRA",
+    "dataSecurityPage": "Seguridad de Datos"
+  },
+  "cookies": {
+    "banner": "Utilizamos cookies para mejorar su experiencia. Al continuar visitando este sitio, acepta nuestro uso de cookies.",
+    "acceptAll": "Aceptar Todo",
+    "preferences": "Preferencias",
+    "necessary": "Necesarias",
+    "analytics": "Analíticas",
+    "marketing": "Marketing"
+  }
+  ,
+  "pages": {
+    "home": {
+      "title": "Inicio - ChexPro | Verificaciones de Antecedentes Confiables, Simplificadas",
+      "metaDescription": "ChexPro ofrece soluciones de verificación de antecedentes rápidas, precisas y conformes para empresas, arrendadores, firmas de personal e individuos.",
+      "heroTitle": "Verificaciones de Antecedentes Confiables, Simplificadas.",
+      "heroSubtitle": "ChexPro ofrece soluciones de verificación de antecedentes rápidas, precisas y conformes para ayudarle a tomar decisiones con confianza.",
+      "ctaTitle": "¿Listo para elevar su proceso de verificación?",
+      "ctaDesc": "Descubra cómo ChexPro puede brindarle la información que necesita para tomar decisiones con confianza. ¡Comience hoy!",
+      "ctaDemoButton": "Solicitar una demostración gratuita",
+      "ctaContactSales": "Contactar ventas",
+      "services": {
+        "title": "Servicios Integrales de Evaluación",
+        "subtitle": "Ofrecemos una amplia gama de servicios de verificación adaptados a sus necesidades específicas.",
+        "exploreAll": "Explorar todos los servicios →",
+        "items": {
+          "criminal": {
+            "title": "Antecedentes Penales",
+            "desc": "Verificaciones integrales de antecedentes penales."
+          },
+          "employment": {
+            "title": "Verificación de Empleo",
+            "desc": "Verifique el historial laboral anterior."
+          },
+          "education": {
+            "title": "Verificación de Educación",
+            "desc": "Confirme las calificaciones educativas."
+          },
+          "credit": {
+            "title": "Verificaciones de Crédito",
+            "desc": "Evalúe la responsabilidad financiera."
+          }
+        }
+      },
+      "trust": {
+        "title": "Comprometidos con el Cumplimiento y la Seguridad",
+        "desc": "Cumplimos con los estándares más estrictos de la industria, incluido el cumplimiento FCRA, para garantizar la exactitud de los datos y proteger la información sensible. Su confianza es nuestra máxima prioridad.",
+        "badges": {
+          "fcra": "Cumplimiento FCRA",
+          "pbs": "Acreditado PBS A (Marcador)",
+          "soc2": "Certificado SOC 2 (Marcador)",
+          "encryption": "Cifrado de Datos"
+        },
+        "clients": {
+          "title": "Con la confianza de empresas líderes (Marcadores de logotipos de clientes)",
+          "logo1Alt": "Marcador de Logotipo de Cliente 1",
+          "logo2Alt": "Marcador de Logotipo de Cliente 2",
+          "logo3Alt": "Marcador de Logotipo de Cliente 3",
+          "logo4Alt": "Marcador de Logotipo de Cliente 4"
+        }
+      },
+      "testimonials": {
+        "title": "Lo que dicen nuestros clientes",
+        "subtitle": "Historias reales de clientes satisfechos que confían en ChexPro para sus necesidades de evaluación.",
+        "quote": "ChexPro ha transformado nuestro proceso de contratación. Su velocidad y precisión no tienen comparación. ¡Muy recomendado! (Marcador)",
+        "nameRole": "John Doe, Gerente de RR. HH. (Marcador)",
+        "company": "Tech Solutions Inc. (Marcador)"
+      }
+    },
+    "why": {
+      "title": "¿Por qué elegir ChexPro?",
+      "subtitle": "Experimente la diferencia de ChexPro con nuestro compromiso con la excelencia y la satisfacción del cliente.",
+      "items": {
+        "speed": {
+          "title": "Velocidad Inigualable",
+          "desc": "Obtenga resultados más rápido que nunca sin comprometer la precisión."
+        },
+        "accuracy": {
+          "title": "Precisión Exacta",
+          "desc": "Aproveche fuentes de datos avanzadas para obtener información confiable."
+        },
+        "support": {
+          "title": "Soporte Dedicado",
+          "desc": "Nuestro equipo de expertos está aquí para ayudarle en cada paso del camino."
+        },
+        "pricing": {
+          "title": "Precios Transparentes",
+          "desc": "Precios claros y competitivos sin cargos ocultos."
+        },
+        "platform": {
+          "title": "Plataforma Fácil de Usar",
+          "desc": "Interfaz intuitiva para una gestión de evaluaciones sin inconvenientes."
+        },
+        "compliance": {
+          "title": "Experiencia en Cumplimiento",
+          "desc": "Manténgase conforme con FCRA y las regulaciones de la industria."
+        }
+      }
+    },
+    "solutions": {
+      "title": "Soluciones para Cada Necesidad",
+      "subtitle": "ChexPro ofrece evaluaciones de antecedentes a medida para diversos sectores y necesidades individuales.",
+      "audiences": {
+        "employers": {
+          "name": "Empleadores",
+          "desc": "Contrate con confianza. Optimice su proceso de selección con verificaciones integrales para empresas de todos los tamaños."
+        },
+        "landlords": {
+          "name": "Arrendadores",
+          "desc": "Proteja su inversión. Tome decisiones informadas sobre inquilinos con servicios confiables de evaluación para administradores de propiedades."
+        },
+        "staffing": {
+          "name": "Firmas de Personal",
+          "desc": "Coloque talento de primer nivel más rápido. Mejore su proceso de selección con verificaciones eficientes y precisas."
+        },
+        "individuals": {
+          "name": "Individuos",
+          "desc": "Conozca su historial. Acceda a su informe personal para tranquilidad y preparación."
+        }
+      }
+    },
+    "services": {
+      "title": "Servicios - ChexPro | Nuestras Soluciones de Verificación",
+      "metaDescription": "Descubra la suite integral de servicios de ChexPro, incluidos verificaciones penales, verificación de empleo, verificación de educación y más.",
+      "heading": "Nuestros Servicios Integrales",
+      "intro": "ChexPro proporciona un conjunto completo de servicios confiables y conformes, adaptados a sus necesidades.",
+      "industriesHeading": "Soluciones a Medida para su Industria",
+      "industriesIntro": "Entendemos que los diferentes sectores tienen requisitos de verificación únicos. ChexPro ofrece soluciones especializadas.",
+      "industriesNote": "¿No ve su industria? Podemos crear paquetes personalizados.",
+      "ctaTitle": "¿Listo para una Solución Personalizada?",
+      "ctaDesc": "Nuestros expertos le ayudarán a diseñar el paquete perfecto de verificación para sus necesidades.",
+      "ctaButton": "Solicitar una Cotización Personalizada"
+    },
+    "dataSecurity": {
+      "title": "Seguridad de Datos",
+      "intro": "En ChexPro, nos tomamos en serio la seguridad de los datos. Nuestros sistemas y procesos están diseñados para proteger su información en cada paso.",
+      "measuresHeading": "Nuestras Medidas de Seguridad",
+      "measures": [
+        "Cifrado de extremo a extremo para todos los datos sensibles",
+        "Auditorías de seguridad y evaluaciones de vulnerabilidades regulares",
+        "Controles de acceso estrictos y protocolos de autenticación",
+        "Cumplimiento de los estándares y regulaciones de la industria"
+      ],
+      "controlHeading": "Sus Datos, Su Control",
+      "control": [
+        "Puede solicitar acceso o eliminación de sus datos en cualquier momento",
+        "Nunca vendemos ni compartimos su información sin consentimiento"
+      ],
+      "contact": "Para preguntas sobre nuestras prácticas de seguridad de datos, contáctenos en info@chexpro.com."
+    }
+  }
+}

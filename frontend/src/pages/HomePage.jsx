@@ -1,12 +1,12 @@
-import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import PageTransition from '@/hooks/usePageTransition';
+import PageTransition from '@/components/ui/PageTransition';
 import PageSection from '@/components/PageSection';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { CheckCircle, TrendingUp, Users, Award, HeartHandshake as Handshake, ShieldCheck, Building, UserCheck, Briefcase } from 'lucide-react';
-import { Helmet } from 'react-helmet-async'; // <--- Re-import Helmet
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
 
 const fadeInStagger = {
   hidden: { opacity: 0 },
@@ -24,47 +24,67 @@ const fadeInItem = {
 };
 
 const HomePage = () => {
+  const { t } = useTranslation();
+  
   const services = [
-    { title: 'Criminal Records', icon: <Award className="h-8 w-8 text-primary" />, description: 'Comprehensive criminal background checks.' },
-    { title: 'Employment Verification', icon: <Briefcase className="h-8 w-8 text-primary" />, description: 'Verify past employment history.' },
-    { title: 'Education Verification', icon: <Users className="h-8 w-8 text-primary" />, description: 'Confirm educational qualifications.' },
-    { title: 'Credit Checks', icon: <TrendingUp className="h-8 w-8 text-primary" />, description: 'Assess financial responsibility.' },
+    { id: 'criminal-records', title: t('pages.home.services.items.criminal.title'), icon: <Award className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.criminal.desc') },
+    { id: 'employment-verification', title: t('pages.home.services.items.employment.title'), icon: <Briefcase className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.employment.desc') },
+    { id: 'education-verification', title: t('pages.home.services.items.education.title'), icon: <Users className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.education.desc') },
+    { id: 'credit-checks', title: t('pages.home.services.items.credit.title'), icon: <TrendingUp className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.credit.desc') },
   ];
 
   const usps = [
-    { title: 'Unmatched Speed', description: 'Get results faster than ever without compromising accuracy.', icon: <TrendingUp className="h-6 w-6 text-primary" /> },
-    { title: 'Pinpoint Accuracy', description: 'Leverage advanced data sources for reliable information.', icon: <CheckCircle className="h-6 w-6 text-primary" /> },
-    { title: 'Dedicated Support', description: 'Our expert team is here to assist you every step of the way.', icon: <Handshake className="h-6 w-6 text-primary" /> },
-    { title: 'Transparent Pricing', description: 'Clear, competitive pricing with no hidden fees.', icon: <Award className="h-6 w-6 text-primary" /> },
-    { title: 'User-Friendly Platform', description: 'Intuitive interface for seamless screening management.', icon: <UserCheck className="h-6 w-6 text-primary" /> },
-    { title: 'Compliance Expertise', description: 'Stay compliant with FCRA and industry regulations.', icon: <ShieldCheck className="h-6 w-6 text-primary" /> },
+    { title: t('pages.why.items.speed.title'), description: t('pages.why.items.speed.desc'), icon: <TrendingUp className="h-6 w-6 text-primary" /> },
+    { title: t('pages.why.items.accuracy.title'), description: t('pages.why.items.accuracy.desc'), icon: <CheckCircle className="h-6 w-6 text-primary" /> },
+    { title: t('pages.why.items.support.title'), description: t('pages.why.items.support.desc'), icon: <Handshake className="h-6 w-6 text-primary" /> },
+    { title: t('pages.why.items.pricing.title'), description: t('pages.why.items.pricing.desc'), icon: <Award className="h-6 w-6 text-primary" /> },
+    { title: t('pages.why.items.platform.title'), description: t('pages.why.items.platform.desc'), icon: <UserCheck className="h-6 w-6 text-primary" /> },
+    { title: t('pages.why.items.compliance.title'), description: t('pages.why.items.compliance.desc'), icon: <ShieldCheck className="h-6 w-6 text-primary" /> },
   ];
 
   const targetAudiences = [
-    { name: 'Employers', description: 'Hire with confidence. Streamline your recruitment process with comprehensive background checks for businesses of all sizes.', icon: <Briefcase className="h-10 w-10 text-primary" /> },
-    { name: 'Landlords', description: 'Secure your investment. Make informed tenant decisions with reliable screening services for property managers.', icon: <Building className="h-10 w-10 text-primary" /> },
-    { name: 'Staffing Firms', description: 'Place top talent faster. Enhance your candidate vetting process with efficient and accurate background checks.', icon: <Users className="h-10 w-10 text-primary" /> },
-    { name: 'Individuals', description: 'Know your background. Access your personal history report for peace of mind and preparedness.', icon: <UserCheck className="h-10 w-10 text-primary" /> },
+    { name: t('pages.solutions.audiences.employers.name'), description: t('pages.solutions.audiences.employers.desc'), icon: <Briefcase className="h-10 w-10 text-primary" /> },
+    { name: t('pages.solutions.audiences.landlords.name'), description: t('pages.solutions.audiences.landlords.desc'), icon: <Building className="h-10 w-10 text-primary" /> },
+    { name: t('pages.solutions.audiences.staffing.name'), description: t('pages.solutions.audiences.staffing.desc'), icon: <Users className="h-10 w-10 text-primary" /> },
+    { name: t('pages.solutions.audiences.individuals.name'), description: t('pages.solutions.audiences.individuals.desc'), icon: <UserCheck className="h-10 w-10 text-primary" /> },
   ];
 
   return (
     <PageTransition>
-      {/* Re-add Helmet for page-specific title and meta description */}
       <Helmet>
-        <title>Home - ChexPro | Reliable Background Checks, Streamlined</title>
-        <meta name="description" content="ChexPro provides fast, accurate, and compliant background screening solutions for businesses, landlords, staffing firms, and individuals. Make confident decisions." />
+        <title>{t('pages.home.title')}</title>
+        <meta name="description" content={t('pages.home.metaDescription')} />
       </Helmet>
 
       {/* Hero Section */}
       <PageSection className="bg-gradient-to-br from-primary/10 via-background to-accent/10 pt-20 md:pt-32 pb-16 md:pb-24 text-center" fullWidth>
         <div className="container">
           <motion.h1 
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6"
+            className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-4"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
           >
-            Reliable Background Checks, <span className="text-primary">Streamlined.</span>
+            {(() => {
+              const heroTitle = t('pages.home.heroTitle') || '';
+              const trimmed = heroTitle.trim();
+              if (!trimmed) return heroTitle;
+              const lastSpaceIdx = trimmed.lastIndexOf(' ');
+              if (lastSpaceIdx === -1) {
+                return <span className="text-[#3c83f6]">{trimmed}</span>;
+              }
+              const before = trimmed.slice(0, lastSpaceIdx + 1);
+              const lastToken = trimmed.slice(lastSpaceIdx + 1);
+              const match = lastToken.match(/^(.+?)([.,!?;:]*)$/);
+              const word = match ? match[1] : lastToken;
+              const punct = match ? match[2] : '';
+              return (
+                <>
+                  {before}
+                  <span className="text-[#3c83f6]">{word}{punct}</span>
+                </>
+              );
+            })()}
           </motion.h1>
           <motion.p 
             className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-10"
@@ -72,7 +92,7 @@ const HomePage = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.2 }}
           >
-            ChexPro offers fast, accurate, and compliant background screening solutions to help you make informed decisions with confidence.
+            {t('pages.home.heroSubtitle')}
           </motion.p>
           <motion.div 
             className="space-x-4"
@@ -81,10 +101,10 @@ const HomePage = () => {
             transition={{ duration: 0.7, delay: 0.4 }}
           >
             <Button size="lg" asChild>
-              <Link to="/request-demo">Request a Demo</Link>
+              <Link to="/request-demo">{t('navigation.requestDemo')}</Link>
             </Button>
             <Button size="lg" variant="outline" asChild>
-              <Link to="/services">View Services</Link>
+              <Link to="/services">{t('navigation.services')}</Link>
             </Button>
           </motion.div>
         </div>
@@ -92,9 +112,9 @@ const HomePage = () => {
 
       {/* Services Overview */}
       <PageSection>
-        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">Comprehensive Screening Services</h2>
+        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.home.services.title')}</h2>
         <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-          We provide a wide range of verification services tailored to meet your specific needs.
+          {t('pages.home.services.subtitle')}
         </p>
         <motion.ul 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
@@ -105,30 +125,32 @@ const HomePage = () => {
         >
           {services.map((service, index) => (
             <motion.li key={index} variants={fadeInItem}>
-              <Card className="h-full hover:shadow-xl transition-shadow duration-300 glassmorphism">
-                <CardHeader className="items-center text-center">
-                  {service.icon}
-                  <CardTitle className="mt-4 text-xl">{service.title}</CardTitle>
-                </CardHeader>
-                <CardContent className="text-center">
-                  <p className="text-muted-foreground text-sm">{service.description}</p>
-                </CardContent>
-              </Card>
+              <Link to={`/services#${service.id}`} className="block group" aria-label={`${service.title} - ${t('pages.home.services.title')}`}>
+                <Card className="h-full hover:shadow-xl transition-shadow duration-300 glassmorphism group-hover:shadow-primary/30">
+                  <CardHeader className="items-center text-center">
+                    {service.icon}
+                    <CardTitle className="mt-4 text-xl text-foreground group-hover:text-primary transition-colors">{service.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="text-center">
+                    <p className="text-muted-foreground text-sm">{service.description}</p>
+                  </CardContent>
+                </Card>
+              </Link>
             </motion.li>
           ))}
         </motion.ul>
         <div className="text-center mt-12">
           <Button asChild variant="link" className="text-primary text-lg">
-            <Link to="/services">Explore All Services &rarr;</Link>
+            <Link to="/services">{t('pages.home.services.exploreAll')}</Link>
           </Button>
         </div>
       </PageSection>
 
       {/* Why ChexPro */}
       <PageSection className="bg-secondary">
-        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">Why Choose ChexPro?</h2>
+        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.why.title')}</h2>
         <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-          Experience the ChexPro difference with our commitment to excellence and client satisfaction.
+          {t('pages.why.subtitle')}
         </p>
         <motion.ul 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -151,9 +173,9 @@ const HomePage = () => {
 
       {/* Target Audience Snippets */}
       <PageSection>
-        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">Solutions For Every Need</h2>
+        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.solutions.title')}</h2>
         <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-          ChexPro provides tailored background screening for diverse industries and individual requirements.
+          {t('pages.solutions.subtitle')}
         </p>
         <motion.div 
           className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
@@ -182,42 +204,42 @@ const HomePage = () => {
       <PageSection className="bg-gradient-to-r from-gray-800 via-gray-900 to-black text-primary-foreground py-16">
         <div className="container text-center">
           <ShieldCheck className="h-16 w-16 text-primary mx-auto mb-6" />
-          <h2 className="text-3xl font-bold mb-4">Committed to Compliance and Security</h2>
+          <h2 className="text-3xl font-bold mb-4">{t('pages.home.trust.title')}</h2>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
-            We adhere to the strictest industry standards, including FCRA compliance, to ensure data accuracy and protect sensitive information. Your trust is our top priority.
+            {t('pages.home.trust.desc')}
           </p>
           <ul className="flex flex-wrap justify-center items-center gap-8 opacity-75">
-            <li className="text-lg font-semibold">FCRA Compliant</li>
-            <li className="text-lg font-semibold">PBS A Accredited (Placeholder)</li>
-            <li className="text-lg font-semibold">SOC 2 Certified (Placeholder)</li>
-            <li className="text-lg font-semibold">Data Encryption</li>
+            <li className="text-lg font-semibold">{t('pages.home.trust.badges.fcra')}</li>
+            <li className="text-lg font-semibold">{t('pages.home.trust.badges.pbs')}</li>
+            <li className="text-lg font-semibold">{t('pages.home.trust.badges.soc2')}</li>
+            <li className="text-lg font-semibold">{t('pages.home.trust.badges.encryption')}</li>
           </ul>
           <div className="mt-10">
-            <p className="text-sm text-gray-400">Trusted by leading companies (Client Logos Placeholder)</p>
+            <p className="text-sm text-gray-400">{t('pages.home.trust.clients.title')}</p>
             <ul className="flex justify-center space-x-8 mt-4 opacity-50">
-              <li><span><img alt="Client Logo 1 Placeholder" src="https://images.unsplash.com/photo-1495224814653-94f36c0a31ea" /></span></li>
-              <li><span><img alt="Client Logo 2 Placeholder" src="https://images.unsplash.com/photo-1607004010229-6048c57c2ab1" /></span></li>
-              <li><span><img alt="Client Logo 3 Placeholder" src="https://images.unsplash.com/photo-1694208590719-96139a8f2a32" /></span></li>
-              <li><span><img alt="Client Logo 4 Placeholder" src="https://images.unsplash.com/photo-1649000808933-1f4aac7cad9a" /></span></li>
+              <li><span><img alt={t('pages.home.trust.clients.logo1Alt')} src="https://images.unsplash.com/photo-1495224814653-94f36c0a31ea" /></span></li>
+              <li><span><img alt={t('pages.home.trust.clients.logo2Alt')} src="https://images.unsplash.com/photo-1607004010229-6048c57c2ab1" /></span></li>
+              <li><span><img alt={t('pages.home.trust.clients.logo3Alt')} src="https://images.unsplash.com/photo-1694208590719-96139a8f2a32" /></span></li>
+              <li><span><img alt={t('pages.home.trust.clients.logo4Alt')} src="https://images.unsplash.com/photo-1649000808933-1f4aac7cad9a" /></span></li>
             </ul>
           </div>
         </div>
       </PageSection>
 
-      {/* Testimonials Placeholder */}
+      {/* Testimonials */}
       <PageSection>
-        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">What Our Clients Say</h2>
+        <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.home.testimonials.title')}</h2>
         <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-          Real stories from satisfied clients who trust ChexPro for their screening needs.
+          {t('pages.home.testimonials.subtitle')}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {[1, 2, 3].map((i) => (
             <motion.div key={i} variants={fadeInItem}>
               <Card className="h-full glassmorphism">
                 <CardContent className="pt-6">
-                  <p className="italic text-muted-foreground mb-4">"ChexPro has transformed our hiring process. Their speed and accuracy are unmatched. Highly recommended!" (Placeholder)</p>
-                  <p className="font-semibold text-foreground">John Doe, HR Manager (Placeholder)</p>
-                  <p className="text-sm text-primary">Tech Solutions Inc. (Placeholder)</p>
+                  <p className="italic text-muted-foreground mb-4">&quot;{t('pages.home.testimonials.quote')}&quot;</p>
+                  <p className="font-semibold text-foreground">{t('pages.home.testimonials.nameRole')}</p>
+                  <p className="text-sm text-primary">{t('pages.home.testimonials.company')}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -228,16 +250,16 @@ const HomePage = () => {
       {/* CTA Section */}
       <PageSection className="gradient-bg text-primary-foreground">
         <div className="container text-center">
-          <h2 className="text-3xl font-bold mb-6">Ready to Elevate Your Screening Process?</h2>
+          <h2 className="text-3xl font-bold mb-6">{t('pages.home.ctaTitle', { defaultValue: 'Ready to Elevate Your Screening Process?' })}</h2>
           <p className="text-lg max-w-2xl mx-auto mb-10 opacity-90">
-            Discover how ChexPro can provide you with the insights you need to make confident decisions. Get started today!
+            {t('pages.home.ctaDesc', { defaultValue: 'Discover how ChexPro can provide you with the insights you need to make confident decisions. Get started today!' })}
           </p>
           <div className="space-x-4">
-            <Button size="lg" variant="secondary" className="bg-white text-primary hover:bg-white/90" asChild>
-              <Link to="/request-demo">Request a Free Demo</Link>
+            <Button size="lg" asChild>
+              <Link to="/request-demo">{t('pages.home.ctaDemoButton', { defaultValue: 'Request a Free Demo' })}</Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white/10" asChild>
-              <Link to="/contact" className="text-primary">Contact Sales</Link>
+            <Button size="lg" variant="outline" asChild>
+              <Link to="/contact">{t('pages.home.ctaContactSales', { defaultValue: 'Contact Sales' })}</Link>
             </Button>
           </div>
         </div>

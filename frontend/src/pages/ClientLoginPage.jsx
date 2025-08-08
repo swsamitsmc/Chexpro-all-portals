@@ -1,6 +1,6 @@
 
-    import React, { useState } from 'react';
-    import PageTransition from '@/hooks/usePageTransition';
+    import { useState } from 'react';
+    import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
@@ -11,9 +11,11 @@
     import { LogIn, UserCircle } from 'lucide-react';
     import { useToast } from '@/components/ui/use-toast';
     import { Helmet } from 'react-helmet-async';
+    import { useTranslation } from 'react-i18next';
 
 
     const ClientLoginPage = () => {
+      const { t } = useTranslation();
       const [username, setUsername] = useState('');
       const [password, setPassword] = useState('');
       const { toast } = useToast();
@@ -48,7 +50,7 @@
                   <div className="mx-auto mb-4 p-3 inline-block rounded-full bg-primary/10">
                     <UserCircle className="h-12 w-12 text-primary" />
                   </div>
-                  <CardTitle className="text-3xl">Client Login</CardTitle>
+                  <CardTitle className="text-3xl">{t('pages.clientLogin.title')}</CardTitle>
                   <CardDescription>Access your ChexPro account securely.</CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -86,7 +88,7 @@
                       </Link>
                     </p>
                     <p className="text-muted-foreground mt-2">
-                      Don't have an account?{' '}
+                      Don&apos;t have an account?{' '}
                       <Link to="/request-demo" className="font-medium text-primary hover:underline">
                         Request a Demo
                       </Link>

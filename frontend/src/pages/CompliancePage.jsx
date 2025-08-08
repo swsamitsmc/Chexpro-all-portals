@@ -1,8 +1,7 @@
 
-    import React from 'react';
-    import PageTransition from '@/hooks/usePageTransition';
+    import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
-    import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+    import { Card } from '@/components/ui/card';
     import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
     import { ShieldCheck, Lock, FileText, AlertTriangle, Database } from 'lucide-react';
     import { motion } from 'framer-motion';
@@ -77,7 +76,7 @@
       return (
         <PageTransition>
           <Helmet>
-        <title>Compliance - ChexPro | FCRA & Data Security Standards</title>
+        <title>Compliance - ChexPro | FCRA &amp; Data Security Standards</title>
         <meta name="description" content="ChexPro adheres to strict FCRA compliance, data security, and privacy standards to ensure legal, ethical, and responsible background screening practices." />
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}
@@ -95,7 +94,7 @@
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay:0.1}}
               >
-                Compliance & Legal Information
+                Compliance &amp; Legal Information
               </motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
@@ -144,7 +143,7 @@
               <Database className="h-12 w-12 text-primary mx-auto mb-6" />
               <h2 className="text-3xl font-bold text-foreground mb-4">Our Commitment to You</h2>
               <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-                ChexPro is dedicated to maintaining the highest standards of compliance and data security. We continuously monitor regulatory changes and update our systems and processes accordingly. Our goal is to provide you with reliable screening services while ensuring the rights and privacy of individuals are protected. If you have any questions about our compliance practices, please don't hesitate to contact us.
+                ChexPro is dedicated to maintaining the highest standards of compliance and data security. We continuously monitor regulatory changes and update our systems and processes accordingly. Our goal is to provide you with reliable screening services while ensuring the rights and privacy of individuals are protected. If you have any questions about our compliance practices, please don&apos;t hesitate to contact us.
               </p>
             </div>
           </PageSection>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
     import { useTranslation } from 'react-i18next';
-    import PageTransition from '@/hooks/usePageTransition';
+    import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Button } from '@/components/ui/button';
     import { Input } from '@/components/ui/input';
