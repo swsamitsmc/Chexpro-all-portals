@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
     import { useTranslation } from 'react-i18next';
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
@@ -75,7 +75,9 @@ import React, { useState, useEffect } from 'react';
           } else {
             let errorMessage = 'An unexpected error occurred. Please try again.';
             let payload = {};
-            try { payload = await response.json(); } catch {}
+            try { payload = await response.json(); } catch {
+              // Ignore JSON parse errors; payload will remain an empty object
+            }
             if (payload.errors?.length) {
               errorMessage = payload.errors.map(err => err.msg).join(', ');
             } else if (payload.description) {
@@ -89,7 +91,9 @@ import React, { useState, useEffect } from 'react';
                 const r = await fetch('/api/form/csrf-token');
                 const d = await r.json();
                 setCsrfToken(d.csrfToken || '');
-              } catch {}
+              } catch {
+                // Intentionally left empty: ignore JSON parse errors
+              }
             }
             throw new Error(errorMessage);
           }
@@ -124,7 +128,7 @@ import React, { useState, useEffect } from 'react';
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
                 className="inline-flex items-center justify-center w-24 h-24 bg-primary/10 rounded-full mb-6"
               >
-                <Send className="h-10 w-10 text-primary" />
+                <Mail className="h-16 w-16 text-primary" />
               </motion.div>
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"

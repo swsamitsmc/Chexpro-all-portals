@@ -12,20 +12,21 @@ function InfoTile({ icon, title, description, to, className = '' }) {
         className={[
           'h-full text-center glassmorphism hover:shadow-xl transition-all duration-300',
           'group-hover:shadow-primary/30 group-hover:bg-primary/5 group-hover:border-primary/30',
+          'group-hover:scale-105',
           className,
         ].join(' ')}
       >
         <CardHeader className="items-center">
-          <div className="mx-auto mb-4 p-3 inline-block rounded-full bg-primary/10">
+          <div className="mx-auto mb-4 p-3 inline-block rounded-full bg-primary/10 group-hover:bg-primary/20 transition-all duration-300">
             {icon}
           </div>
-          <CardTitle className="text-xl text-foreground transition-colors group-hover:text-primary">
+          <CardTitle className="text-xl text-foreground transition-colors group-hover:text-primary duration-300">
             {title}
           </CardTitle>
         </CardHeader>
         {description ? (
           <CardContent>
-            <p className="text-sm text-muted-foreground">{description}</p>
+            <p className="text-sm text-muted-foreground group-hover:text-foreground transition-colors duration-300">{description}</p>
           </CardContent>
         ) : null}
       </Card>

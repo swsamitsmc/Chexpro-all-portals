@@ -1,7 +1,7 @@
 
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
-    import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+    import { Card } from '@/components/ui/card';
     import InfoTile from '@/components/tiles/InfoTile';
     import { Button } from '@/components/ui/button';
     import { Link } from 'react-router-dom';
@@ -116,6 +116,12 @@
       </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">
+              <motion.div 
+                initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
+                className="inline-block p-4 bg-primary/10 rounded-full mb-6"
+              >
+                <Briefcase className="h-16 w-16 text-primary" />
+              </motion.div>
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
@@ -138,14 +144,14 @@
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
-                  <Card className="overflow-hidden glassmorphism hover:shadow-lg transition-shadow">
+                  <Card className="overflow-hidden glassmorphism hover:shadow-xl hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 group">
                     <AccordionItem value={service.id} className="border-b-0">
                       <AccordionTrigger className="p-6 hover:no-underline">
                         <div className="flex items-center space-x-4">
-                          <div className="p-2 bg-primary/10 rounded-md">{service.icon}</div>
+                          <div className="p-2 bg-primary/10 rounded-md group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">{service.icon}</div>
                           <div>
-                            <h3 className="text-xl font-semibold text-left text-foreground">{service.title}</h3>
-                            <p className="text-sm text-muted-foreground text-left">{service.shortDesc}</p>
+                            <h3 className="text-xl font-semibold text-left text-foreground group-hover:text-primary transition-colors duration-300">{service.title}</h3>
+                            <p className="text-sm text-muted-foreground text-left group-hover:text-foreground transition-colors duration-300">{service.shortDesc}</p>
                           </div>
                         </div>
                       </AccordionTrigger>

@@ -46,7 +46,7 @@ const Header = ({ onLinkHover }) => {
 
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background shadow-lg">
       <div className="container mx-auto px-4 flex items-center h-16 max-w-screen-2xl">
         {/* Logo - Left side */}
         <Link to="/" className="flex items-center flex-shrink-0" onClick={() => setMobileMenuOpen(false)}>
@@ -96,7 +96,7 @@ const Header = ({ onLinkHover }) => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="lg:hidden absolute top-16 left-0 right-0 bg-background/98 backdrop-blur-md supports-[backdrop-filter]:bg-background/90 shadow-lg border-t border-border/40"
+            className="lg:hidden absolute top-16 left-0 right-0 bg-background shadow-lg border-t border-border/40"
           >
             <nav className="flex flex-col px-4 py-2 space-y-1">
               {navLinks.map((link) => (

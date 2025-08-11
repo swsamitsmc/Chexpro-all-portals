@@ -405,6 +405,10 @@
         "compliance": {
           "title": "Compliance",
           "desc": "Adhering strictly to all relevant regulations, including the FCRA, to ensure lawful and fair practices."
+        },
+        "transparency": {
+          "title": "Transparency",
+          "desc": "Communicating openly and honestly about methods, timelines, pricing, limitations, and results."
         }
       },
       "missionVision": {
@@ -424,8 +428,7 @@
       },
       "ourTeamSection": {
         "title": "Our Team",
-        "desc1": "ChexPro is powered by a dedicated team of experienced professionals, researchers, and technology experts passionate about delivering excellence in background screening. Our collective expertise ensures that we stay ahead of industry trends and provide our clients with the highest quality service. (Placeholder for more detailed team info).",
-        "desc2": "We invest in continuous training and development to maintain our edge in compliance, data analysis, and customer support."
+        "desc1": "ChexPro is powered by a dedicated team of experienced professionals, researchers, and technology experts passionate about delivering excellence in background screening. Our collective expertise ensures that we stay ahead of industry trends and provide our clients with the highest quality service."
       },
       "complianceCommitment": {
         "title": "Commitment to Compliance",

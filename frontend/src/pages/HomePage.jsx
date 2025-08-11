@@ -216,21 +216,21 @@ const HomePage = () => {
                 <img
                   className="h-10 w-auto object-contain"
                   alt={t('pages.home.trust.clients.staffingmindAlt')}
-                  src="/src/assets/images/logo-staffingmind.svg"
+                  src="/logo-staffingmind.png"
                 />
               </li>
               <li>
                 <img
                   className="h-10 w-auto object-contain"
                   alt={t('pages.home.trust.clients.globalLogisticsAlt')}
-                  src="/src/assets/images/logo-global-logistics.svg"
+                  src="/logo-global-logistics.jpg"
                 />
               </li>
               <li>
                 <img
                   className="h-10 w-auto object-contain"
                   alt={t('pages.home.trust.clients.secureInvestmentsAlt')}
-                  src="/src/assets/images/logo-secure-investments.svg"
+                  src="/logo-secure-investments.jpg"
                 />
               </li>
             </ul>
@@ -247,11 +247,11 @@ const HomePage = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {testimonials.map((item, idx) => (
             <motion.div key={idx} variants={fadeInItem}>
-              <Card className="h-full glassmorphism">
+              <Card className="h-full glassmorphism hover:shadow-xl hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 group">
                 <CardContent className="pt-6">
-                  <p className="italic text-muted-foreground mb-4">&quot;{item.quote}&quot;</p>
-                  <p className="font-semibold text-foreground">{item.nameRole}</p>
-                  <p className="text-sm text-primary">{item.company}</p>
+                  <p className="italic text-muted-foreground mb-4 group-hover:text-foreground transition-colors duration-300">&quot;{item.quote}&quot;</p>
+                  <p className="font-semibold text-foreground group-hover:text-primary transition-colors duration-300">{item.nameRole}</p>
+                  <p className="text-sm text-primary group-hover:text-primary/80 transition-colors duration-300">{item.company}</p>
                 </CardContent>
               </Card>
             </motion.div>

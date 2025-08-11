@@ -1,11 +1,10 @@
 
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
-    import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
     import InfoTile from '@/components/tiles/InfoTile';
     import { Button } from '@/components/ui/button';
     import { Link } from 'react-router-dom';
-    import { Target, Eye, HeartHandshake as Handshake, ShieldCheck, Users, Zap } from 'lucide-react';
+    import { Target, Eye, HeartHandshake as Handshake, ShieldCheck, Users, Zap, EyeOff } from 'lucide-react';
     import { motion } from 'framer-motion';
 import { Helmet } from 'react-helmet-async';
 import { useTranslation } from 'react-i18next';
@@ -34,6 +33,7 @@ import { useTranslation } from 'react-i18next';
         { title: t('pages.aboutUs.values.clientCentricity.title', { defaultValue: 'Client-Centricity' }), description: t('pages.aboutUs.values.clientCentricity.desc', { defaultValue: "Placing our clients' needs at the forefront, offering tailored solutions and exceptional support." }), icon: <Handshake className="h-8 w-8 text-primary" /> },
         { title: t('pages.aboutUs.values.innovation.title', { defaultValue: 'Innovation' }), description: t('pages.aboutUs.values.innovation.desc', { defaultValue: 'Continuously advancing our technology and methods to deliver cutting-edge screening services.' }), icon: <Zap className="h-8 w-8 text-primary" /> },
         { title: t('pages.aboutUs.values.compliance.title', { defaultValue: 'Compliance' }), description: t('pages.aboutUs.values.compliance.desc', { defaultValue: 'Adhering strictly to all relevant regulations, including the FCRA, to ensure lawful and fair practices.' }), icon: <Users className="h-8 w-8 text-primary" /> },
+        { title: t('pages.aboutUs.values.transparency.title', { defaultValue: 'Transparency' }), description: t('pages.aboutUs.values.transparency.desc', { defaultValue: 'Communicating openly and honestly about methods, timelines, pricing, limitations, and results.' }), icon: <EyeOff className="h-8 w-8 text-primary" /> },
       ];
 
       return (
@@ -48,6 +48,12 @@ import { useTranslation } from 'react-i18next';
     </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">
+              <motion.div 
+                initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
+                className="inline-block p-4 bg-primary/10 rounded-full mb-6"
+              >
+                <Handshake className="h-16 w-16 text-primary" />
+              </motion.div>
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
@@ -123,9 +129,6 @@ import { useTranslation } from 'react-i18next';
                 <h2 className="text-3xl font-bold text-foreground mb-6">{t('pages.aboutUs.ourTeamSection.title')}</h2>
                 <p className="text-muted-foreground mb-4">
                   {t('pages.aboutUs.ourTeamSection.desc1')}
-                </p>
-                <p className="text-muted-foreground">
-                  {t('pages.aboutUs.ourTeamSection.desc2')}
                 </p>
               </motion.div>
               <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>

@@ -97,12 +97,12 @@ const CompliancePage = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.4, delay: index * 0.15 }}
               >
-                <Card className="overflow-hidden glassmorphism hover:shadow-lg transition-shadow">
+                <Card className="overflow-hidden glassmorphism hover:shadow-xl hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 group">
                   <AccordionItem value={section.id} className="border-b-0" id={section.id}>
                     <AccordionTrigger className="p-6 hover:no-underline">
                       <div className="flex items-center space-x-4">
-                        {section.icon}
-                        <span className="text-lg font-semibold">{section.title}</span>
+                        <div className="group-hover:scale-110 transition-transform duration-300">{section.icon}</div>
+                        <span className="text-lg font-semibold group-hover:text-primary transition-colors duration-300">{section.title}</span>
                       </div>
                     </AccordionTrigger>
                     <AccordionContent className="p-6 pt-0">

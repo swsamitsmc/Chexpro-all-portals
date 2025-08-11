@@ -71,7 +71,42 @@ import React, { useEffect, useMemo, useState } from 'react';
         };
       }, [currentLocale]);
 
-      const faqs = t('pages.resources.faqs', { returnObjects: true, defaultValue: [] });
+      // Get FAQ data with fallback
+      let faqs = t('pages.resources.faqs', { returnObjects: true, defaultValue: [] });
+      
+      // Debug: Log FAQ data to console
+      console.log('FAQ Data:', faqs);
+      console.log('FAQ Type:', typeof faqs);
+      console.log('FAQ Length:', Array.isArray(faqs) ? faqs.length : 'Not an array');
+      console.log('Translation function:', t);
+      console.log('Current language:', i18n.language);
+      
+      // Fallback FAQ data if translation fails
+      if (!faqs || !Array.isArray(faqs) || faqs.length === 0) {
+        faqs = [
+          {
+            question: "What is the typical turnaround time for a background check?",
+            answer: "Turnaround times vary by search type; most complete in 24–72 hours. Some county or international checks may take longer."
+          },
+          {
+            question: "Is ChexPro FCRA compliant?",
+            answer: "Yes. We adhere to the FCRA and all applicable laws, prioritizing data privacy and accuracy."
+          },
+          {
+            question: "What information is needed to run a background check?",
+            answer: "Typically, the applicant's full name, date of birth, SSN (for US checks), and current address. Consent is always required."
+          },
+          {
+            question: "How do I dispute information on my report?",
+            answer: "Contact our support team or follow the instructions included with your report to initiate a dispute. We investigate promptly."
+          },
+          {
+            question: "What payment types do you accept?",
+            answer: "We accept major credit cards and ACH for business accounts. Contact sales for billing options."
+          }
+        ];
+        console.log('Using fallback FAQ data');
+      }
       
       const faqSchema = {
         "@context": "https://schema.org",
@@ -124,18 +159,24 @@ import React, { useEffect, useMemo, useState } from 'react';
           <PageSection>
             <div className="flex justify-center mb-12 border-b">
               <Button 
-                variant={'ghost'} 
+                variant="ghost" 
                 onClick={() => setActiveTab('blog')}
-                className="text-lg px-6 py-3 rounded-none border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary hover:bg-primary/10 hover:text-primary"
-                data-state={activeTab === 'blog' ? 'active' : ''}
+                className={`text-lg px-6 py-3 rounded-none border-b-2 transition-all duration-200 hover:bg-transparent ${
+                  activeTab === 'blog' 
+                    ? 'border-primary text-primary bg-primary/5 hover:text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-primary'
+                }`}
               >
                 <FileText className="mr-2 h-5 w-5"/> {t('pages.resources.tabs.blog', { defaultValue: 'Blog' })}
               </Button>
               <Button 
-                variant={activeTab === 'faq' ? 'default' : 'ghost'} 
+                variant="ghost" 
                 onClick={() => setActiveTab('faq')}
-                className="text-lg px-6 py-3 rounded-none border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary hover:bg-primary/10 hover:text-primary"
-                data-state={activeTab === 'faq' ? 'active' : ''}
+                className={`text-lg px-6 py-3 rounded-none border-b-2 transition-all duration-200 hover:bg-transparent ${
+                  activeTab === 'faq' 
+                    ? 'border-primary text-primary bg-primary/5 hover:text-primary' 
+                    : 'border-transparent text-muted-foreground hover:text-primary'
+                }`}
               >
                 <HelpCircle className="mr-2 h-5 w-5"/> {t('pages.resources.tabs.faq', { defaultValue: 'FAQs' })}
               </Button>
@@ -240,30 +281,43 @@ import React, { useEffect, useMemo, useState } from 'react';
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.5 }}
               >
-                <Accordion type="single" collapsible className="w-full space-y-4">
-                  {faqs.map((faq, index) => (
-                     <motion.div 
-                      key={index}
-                      initial={{ opacity: 0, x: -30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.4, delay: index * 0.1 }}
-                    >
-                      <Card className="overflow-hidden glassmorphism hover:shadow-md transition-shadow">
-                        <AccordionItem value={`faq-${index}`} className="border-b-0">
-                          <AccordionTrigger className="p-6 text-left hover:no-underline">
-                            <div className="flex items-center space-x-3">
-                              <Lightbulb className="h-5 w-5 text-primary flex-shrink-0"/>
-                              <span className="font-medium text-foreground">{faq.question}</span>
-                            </div>
-                          </AccordionTrigger>
-                          <AccordionContent className="p-6 pt-0">
-                            <p className="text-muted-foreground">{faq.answer}</p>
-                          </AccordionContent>
-                        </AccordionItem>
-                      </Card>
-                    </motion.div>
-                  ))}
-                </Accordion>
+                {!faqs || !Array.isArray(faqs) || faqs.length === 0 ? (
+                  <div className="text-center py-12">
+                    <HelpCircle className="h-16 w-16 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-xl font-semibold text-foreground mb-2">FAQs Not Available</h3>
+                    <p className="text-muted-foreground mb-6">
+                      We're currently updating our FAQ section. Please check back soon or contact our support team for assistance.
+                    </p>
+                    <Button asChild>
+                      <Link to="/contact">Contact Support</Link>
+                    </Button>
+                  </div>
+                ) : (
+                  <Accordion type="single" collapsible className="w-full space-y-4">
+                    {faqs.map((faq, index) => (
+                       <motion.div 
+                        key={index}
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.4, delay: index * 0.1 }}
+                      >
+                        <Card className="overflow-hidden glassmorphism hover:shadow-xl hover:bg-primary/5 hover:border-primary/30 transition-all duration-300 group">
+                          <AccordionItem value={`faq-${index}`} className="border-b-0">
+                            <AccordionTrigger className="p-6 text-left hover:no-underline">
+                              <div className="flex items-center space-x-3">
+                                <Lightbulb className="h-5 w-5 text-primary flex-shrink-0 group-hover:scale-110 transition-transform duration-300"/>
+                                <span className="font-medium text-foreground group-hover:text-primary transition-colors duration-300">{faq.question}</span>
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="p-6 pt-0">
+                              <p className="text-muted-foreground group-hover:text-foreground transition-colors duration-300">{faq.answer}</p>
+                            </AccordionContent>
+                          </AccordionItem>
+                        </Card>
+                      </motion.div>
+                    ))}
+                  </Accordion>
+                )}
               </motion.div>
             )}
           </PageSection>

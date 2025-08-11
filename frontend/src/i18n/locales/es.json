@@ -316,6 +316,10 @@
         "compliance": {
           "title": "Cumplimiento",
           "desc": "Cumplir estrictamente con todas las regulaciones pertinentes, incluido el FCRA, para garantizar prácticas legales y justas."
+        },
+        "transparency": {
+          "title": "Transparencia",
+          "desc": "Comunicar abierta y honestamente sobre métodos, cronogramas, precios, limitaciones y resultados."
         }
       },
       "missionVision": {
@@ -335,8 +339,7 @@
       },
       "ourTeamSection": {
         "title": "Nuestro Equipo",
-        "desc1": "ChexPro está impulsado por un equipo dedicado de profesionales experimentados, investigadores y expertos en tecnología apasionados por ofrecer excelencia en la verificación de antecedentes. Nuestra experiencia colectiva asegura que nos mantengamos a la vanguardia de las tendencias de la industria y proporcionemos a nuestros clientes un servicio de la más alta calidad. (Espacio reservado para información más detallada del equipo).",
-        "desc2": "Invertimos en capacitación y desarrollo continuo para mantener nuestra ventaja en cumplimiento, análisis de datos y soporte al cliente."
+        "desc1": "ChexPro está impulsado por un equipo dedicado de profesionales experimentados, investigadores y expertos en tecnología apasionados por ofrecer excelencia en la verificación de antecedentes. Nuestra experiencia colectiva asegura que nos mantengamos a la vanguardia de las tendencias de la industria y proporcionemos a nuestros clientes un servicio de la más alta calidad."
       },
       "complianceCommitment": {
         "title": "Compromiso con el Cumplimiento",
