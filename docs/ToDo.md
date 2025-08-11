@@ -321,3 +321,48 @@ A comprehensive security audit identified and resolved the following vulnerabili
 - **Documentation**: ✅ SECURED
 
 **The ChexPro application is now secure and ready for production deployment.**
+
+\
+
+## Status Update (Aug 2025)
+
+- Server dependencies updated and deprecations addressed in `server/package.json`.
+- Added strict authorization to `/health`, `/api/docs`, and `/api/metrics` using Bearer tokens.
+- Production now requires `HEALTH_CHECK_TOKEN` and `METRICS_TOKEN`; development will auto-generate temporary tokens and log them on startup.
+- CSRF verification hardened; session cookie signing has a dev-only fallback.
+
+### Health and Metrics Authorization Tokens
+
+To protect operational endpoints, configure static Bearer tokens via environment variables.
+
+Required in production:
+- `HEALTH_CHECK_TOKEN`: Required to access `GET /health` and `GET /api/docs`.
+- `METRICS_TOKEN`: Required to access `GET /api/metrics`.
+
+Development behavior:
+- If not set and `NODE_ENV !== 'production'`, the server auto-generates temporary tokens and logs them on startup as:
+  - `Dev HEALTH_CHECK_TOKEN: <value>`
+  - `Dev METRICS_TOKEN: <value>`
+
+How to set in `.env`:
+```
+# Operational endpoint tokens (MANDATORY in production)
+HEALTH_CHECK_TOKEN=replace-with-long-random-string
+METRICS_TOKEN=replace-with-long-random-string
+```
+
+Example requests:
+```
+# Health check
+curl -H "Authorization: Bearer $HEALTH_CHECK_TOKEN" http://localhost:3000/health
+
+# API docs
+curl -H "Authorization: Bearer $HEALTH_CHECK_TOKEN" http://localhost:3000/api/docs
+
+# Metrics
+curl -H "Authorization: Bearer $METRICS_TOKEN" http://localhost:3000/api/metrics
+```
+
+Notes:
+- In production, tokens are mandatory and must not be empty. Unauthorized requests receive 401.
+- Rotate tokens regularly and store them in a secret manager. Never commit them to source control.

@@ -58,15 +58,32 @@ app.use(helmet({
 // Enable CORS for specific origins only
 const corsOptions = {
   origin: (origin, callback) => {
-    const allowList = process.env.NODE_ENV === 'production'
-      ? (process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])
-      : (process.env.DEV_FRONTEND_URLS ? process.env.DEV_FRONTEND_URLS.split(',') : ['http://localhost:5173', 'http://localhost:3000']);
-    if (!origin) return callback(null, true); // allow non-browser/server-to-server
-    const allowed = allowList.some((o) => origin.startsWith(o.trim()));
-    if (!allowed) {
-      logger.warn(`CORS denied for origin: ${encodeURIComponent(origin)}`);
+    // In development, allow localhost origins
+    if (process.env.NODE_ENV !== 'production') {
+      const devOrigins = process.env.DEV_FRONTEND_URLS 
+        ? process.env.DEV_FRONTEND_URLS.split(',').map(o => o.trim())
+        : ['http://localhost:5173', 'http://localhost:3000'];
+      
+      if (!origin || devOrigins.some(o => origin.startsWith(o))) {
+        return callback(null, true);
+      }
     }
-    return allowed ? callback(null, true) : callback(new Error('CORS: Origin not allowed'));
+    
+    // In production, only allow the configured frontend URL
+    if (process.env.NODE_ENV === 'production') {
+      const allowedOrigin = process.env.FRONTEND_URL;
+      if (!allowedOrigin) {
+        logger.warn('No FRONTEND_URL configured for production');
+        return callback(new Error('CORS: Frontend URL not configured'));
+      }
+      
+      if (!origin || origin === allowedOrigin) {
+        return callback(null, true);
+      }
+    }
+    
+    logger.warn(`CORS denied for origin: ${encodeURIComponent(origin)}`);
+    return callback(new Error('CORS: Origin not allowed'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -154,8 +171,14 @@ app.use((err, req, res, next) => {
       origin: encodeURIComponent(req.headers.origin || ''),
       referer: encodeURIComponent(req.headers.referer || ''),
       url: encodeURIComponent(req.url || ''),
+      nodeEnv: process.env.NODE_ENV,
+      devFrontendUrls: process.env.DEV_FRONTEND_URLS,
+      frontendUrl: process.env.FRONTEND_URL
     });
-    return res.status(403).json({ error: 'CORS not allowed for this origin' });
+    return res.status(403).json({ 
+      error: 'CORS not allowed for this origin',
+      details: process.env.NODE_ENV === 'development' ? `Origin: ${req.headers.origin}` : undefined
+    });
   }
   // Track error
   trackError(err, {
@@ -184,6 +207,17 @@ app.use((err, req, res, next) => {
 // --- Start Server ---
 app.listen(PORT, async () => {
     console.log(`Backend server is running on http://localhost:${PORT}`);
+    // Dev convenience: autogenerate fallback tokens if missing
+    if (process.env.NODE_ENV !== 'production') {
+      if (!process.env.HEALTH_CHECK_TOKEN) {
+        process.env.HEALTH_CHECK_TOKEN = Math.random().toString(36).slice(2);
+        console.log(`Dev HEALTH_CHECK_TOKEN: ${process.env.HEALTH_CHECK_TOKEN}`);
+      }
+      if (!process.env.METRICS_TOKEN) {
+        process.env.METRICS_TOKEN = Math.random().toString(36).slice(2);
+        console.log(`Dev METRICS_TOKEN: ${process.env.METRICS_TOKEN}`);
+      }
+    }
     await initializeDatabase();
     await initializeSchema();
     

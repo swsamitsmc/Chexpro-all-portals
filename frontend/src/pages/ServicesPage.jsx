@@ -2,6 +2,7 @@
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+    import InfoTile from '@/components/tiles/InfoTile';
     import { Button } from '@/components/ui/button';
     import { Link } from 'react-router-dom';
     import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
@@ -20,74 +21,74 @@
       const services = [
         {
           id: 'criminal-records',
-          title: 'Criminal Record Checks',
+          title: t('pages.servicesPage.services.criminal.title'),
           icon: <Search className="h-8 w-8 text-primary" />,
-          shortDesc: 'Comprehensive search of local, county, state, and federal criminal records.',
-          details: 'Our criminal record checks provide in-depth information to help you assess risk. We access a vast network of databases, including national criminal databases, sex offender registries, and county/statewide repositories. This service is crucial for roles requiring high trust and security.'
+          shortDesc: t('pages.servicesPage.services.criminal.shortDesc'),
+          details: t('pages.servicesPage.services.criminal.details')
         },
         {
           id: 'employment-verification',
-          title: 'Employment Verification',
+          title: t('pages.servicesPage.services.employment.title'),
           icon: <Briefcase className="h-8 w-8 text-primary" />,
-          shortDesc: 'Confirm past employment history, dates, and positions held.',
-          details: 'Verify the accuracy of an applicant\'s claimed work experience. Our team contacts previous employers to confirm job titles, dates of employment, and reasons for leaving (where permissible). This ensures you hire candidates with proven track records.'
+          shortDesc: t('pages.servicesPage.services.employment.shortDesc'),
+          details: t('pages.servicesPage.services.employment.details')
         },
         {
           id: 'education-verification',
-          title: 'Education Verification',
+          title: t('pages.servicesPage.services.education.title'),
           icon: <GraduationCap className="h-8 w-8 text-primary" />,
-          shortDesc: 'Verify academic qualifications, degrees, and attendance.',
-          details: 'Confirm educational credentials directly from institutions. We verify degrees, diplomas, certificates, attendance dates, and honors. Essential for roles where specific educational qualifications are mandatory.'
+          shortDesc: t('pages.servicesPage.services.education.shortDesc'),
+          details: t('pages.servicesPage.services.education.details')
         },
         {
           id: 'credit-checks',
-          title: 'Credit Checks (Employment Purpose)',
+          title: t('pages.servicesPage.services.credit.title'),
           icon: <CreditCard className="h-8 w-8 text-primary" />,
-          shortDesc: 'Assess financial responsibility for relevant positions.',
-          details: 'Provided in compliance with FCRA, employment credit reports offer insights into an applicant\'s financial history. This is particularly relevant for positions involving financial management, access to cash, or fiduciary responsibilities. Requires applicant consent.'
+          shortDesc: t('pages.servicesPage.services.credit.shortDesc'),
+          details: t('pages.servicesPage.services.credit.details')
         },
         {
           id: 'reference-checks',
-          title: 'Reference Checks',
+          title: t('pages.servicesPage.services.reference.title'),
           icon: <Users className="h-8 w-8 text-primary" />,
-          shortDesc: 'Professional and personal reference interviews.',
-          details: 'Gain deeper insights into an applicant\'s skills, work ethic, and character through structured interviews with their provided references. Our team conducts professional interviews to gather qualitative data supporting your hiring decision.'
+          shortDesc: t('pages.servicesPage.services.reference.shortDesc'),
+          details: t('pages.servicesPage.services.reference.details')
         },
         {
           id: 'drug-screening',
-          title: 'Drug Screening Coordination',
+          title: t('pages.servicesPage.services.drug.title'),
           icon: <Syringe className="h-8 w-8 text-primary" />,
-          shortDesc: 'Coordinate pre-employment and ongoing drug testing.',
-          details: 'We partner with certified labs nationwide to offer a range of drug testing panels (e.g., 5-panel, 10-panel). Our coordination service simplifies scheduling and result management, helping maintain a drug-free workplace.'
+          shortDesc: t('pages.servicesPage.services.drug.shortDesc'),
+          details: t('pages.servicesPage.services.drug.details')
         },
         {
           id: 'health-checks',
-          title: 'Medical & Occupational Health Checks',
+          title: t('pages.servicesPage.services.health.title'),
           icon: <HeartPulse className="h-8 w-8 text-primary" />,
-          shortDesc: 'Facilitate job-specific health and medical assessments.',
-          details: 'Coordinate physical exams, DOT physicals, and other occupational health screenings required for specific roles. We work with a network of healthcare providers to ensure compliance with job-related health standards.'
+          shortDesc: t('pages.servicesPage.services.health.shortDesc'),
+          details: t('pages.servicesPage.services.health.details')
         },
         {
           id: 'international-screening',
-          title: 'International Screening',
+          title: t('pages.servicesPage.services.international.title'),
           icon: <Globe className="h-8 w-8 text-primary" />,
-          shortDesc: 'Global checks for candidates with international backgrounds.',
-          details: 'For candidates who have lived, worked, or studied abroad, we offer international criminal record checks, employment verifications, and education verifications. Coverage and availability vary by country.'
+          shortDesc: t('pages.servicesPage.services.international.shortDesc'),
+          details: t('pages.servicesPage.services.international.details')
         },
         {
           id: 'tenant-screening',
-          title: 'Tenant Screening',
+          title: t('pages.servicesPage.services.tenant.title'),
           icon: <Home className="h-8 w-8 text-primary" />,
-          shortDesc: 'Comprehensive screening for landlords and property managers.',
-          details: 'Includes credit reports, eviction history, criminal background checks, and income verification to help landlords make informed decisions and mitigate risks associated with renting properties.'
+          shortDesc: t('pages.servicesPage.services.tenant.shortDesc'),
+          details: t('pages.servicesPage.services.tenant.details')
         },
       ];
       
       const industrySolutions = [
-        { name: 'Employers', icon: <Briefcase className="h-6 w-6 text-primary" />, description: "Tailored screening packages for businesses of all sizes to ensure safe and productive workplaces." },
-        { name: 'Landlords & Property Managers', icon: <Building className="h-6 w-6 text-primary" />, description: "Reliable tenant screening to protect your investments and maintain secure properties." },
-        { name: 'Staffing & Recruitment Firms', icon: <Users className="h-6 w-6 text-primary" />, description: "Fast and accurate candidate vetting to place top talent with confidence." },
-        { name: 'Individuals', icon: <Search className="h-6 w-6 text-primary" />, description: "Access your personal background report for review or personal records." },
+        { name: t('pages.solutions.audiences.employers.name'), icon: <Briefcase className="h-6 w-6 text-primary" />, description: t('pages.solutions.audiences.employers.desc') },
+        { name: t('pages.solutions.audiences.landlords.name'), icon: <Building className="h-6 w-6 text-primary" />, description: t('pages.solutions.audiences.landlords.desc') },
+        { name: t('pages.solutions.audiences.staffing.name'), icon: <Users className="h-6 w-6 text-primary" />, description: t('pages.solutions.audiences.staffing.desc') },
+        { name: t('pages.solutions.audiences.individuals.name'), icon: <Search className="h-6 w-6 text-primary" />, description: t('pages.solutions.audiences.individuals.desc') },
       ];
 
       const serviceSchema = services.map(service => ({
@@ -107,8 +108,8 @@
       return (
         <PageTransition>
           <Helmet>
-        <title>{t('pages.services.title', { defaultValue: 'Services - ChexPro | Our Background Screening Solutions' })}</title>
-        <meta name="description" content={t('pages.services.metaDescription', { defaultValue: "Discover ChexPro's comprehensive suite of background screening services, including criminal checks, employment verification, education checks, and more tailored solutions." })} />
+        <title>{t('pages.servicesPage.title')}</title>
+        <meta name="description" content={t('pages.servicesPage.metaDescription')} />
         <script type="application/ld+json">
           {JSON.stringify(serviceSchema)}
         </script>
@@ -118,12 +119,12 @@
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
-              >{t('pages.services.heading', { defaultValue: 'Our Comprehensive Screening Services' })}</motion.h1>
+              >{t('pages.servicesPage.heading')}</motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                {t('pages.services.intro', { defaultValue: 'ChexPro provides a full suite of reliable and compliant background check services tailored to your specific needs.' })}
+                {t('pages.servicesPage.intro')}
               </motion.p>
             </div>
           </PageSection>
@@ -160,39 +161,35 @@
           
           {/* Solutions/Industries Section */}
           <PageSection className="bg-secondary">
-            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.services.industriesHeading', { defaultValue: 'Tailored Solutions for Your Industry' })}</h2>
+            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.servicesPage.industriesHeading')}</h2>
             <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-              {t('pages.services.industriesIntro', { defaultValue: 'We understand that different sectors have unique screening requirements. ChexPro offers specialized solutions.' })}
+              {t('pages.servicesPage.industriesIntro')}
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
               {industrySolutions.map((solution, index) => (
                 <motion.div key={index} variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true, amount: 0.3}}>
-                <Card className="h-full text-center hover:shadow-xl transition-shadow duration-300">
-                  <CardHeader>
-                    <div className="mx-auto mb-3 p-3 inline-block rounded-full bg-accent/10">{solution.icon}</div>
-                    <CardTitle className="text-xl">{solution.name}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">{solution.description}</p>
-                  </CardContent>
-                </Card>
+                  <InfoTile
+                    icon={solution.icon}
+                    title={solution.name}
+                    description={solution.description}
+                  />
                 </motion.div>
               ))}
             </div>
              <div className="text-center mt-12">
-              <p className="text-md text-muted-foreground">{t('pages.services.industriesNote', { defaultValue: "Don't see your industry? We can create custom packages." })}</p>
+              <p className="text-md text-muted-foreground">{t('pages.servicesPage.industriesNote')}</p>
             </div>
           </PageSection>
 
 
           <PageSection className="gradient-bg text-primary-foreground">
             <div className="container text-center">
-              <h2 className="text-3xl font-bold mb-6">{t('pages.services.ctaTitle', { defaultValue: 'Ready for a Custom Screening Solution?' })}</h2>
+              <h2 className="text-3xl font-bold mb-6">{t('pages.servicesPage.ctaTitle')}</h2>
               <p className="text-lg max-w-2xl mx-auto mb-10 opacity-90">
-                {t('pages.services.ctaDesc', { defaultValue: 'Let our experts help you design the perfect background check package for your unique requirements.' })}
+                {t('pages.servicesPage.ctaDesc')}
               </p>
               <Button size="lg" asChild>
-                <Link to="/request-demo">{t('pages.services.ctaButton', { defaultValue: 'Request a Custom Quote' })}</Link>
+                <Link to="/request-demo">{t('pages.servicesPage.ctaButton')}</Link>
               </Button>
             </div>
           </PageSection>

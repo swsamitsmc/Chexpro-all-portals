@@ -14,11 +14,12 @@ const router = express.Router();
 // CSRF protection
 const tokens = new csrf();
 let secret = process.env.CSRF_SECRET;
-if (!secret && process.env.NODE_ENV === 'production') {
-    throw new Error('CSRF_SECRET environment variable is not set. This is required in production for persistent CSRF protection.');
-} else if (!secret) {
-    // Fallback for development, but warn that it's not persistent
-    console.warn('CSRF_SECRET environment variable is not set. CSRF tokens will not be persistent across server restarts.');
+if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+        throw new Error('CSRF_SECRET environment variable is not set. This is required in production for persistent CSRF protection.');
+    }
+    // Fallback for development only
+    console.warn('CSRF_SECRET is not set. Generating an ephemeral secret for development.');
     secret = tokens.secretSync();
 }
 

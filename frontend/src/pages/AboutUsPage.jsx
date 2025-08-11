@@ -2,6 +2,7 @@
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+    import InfoTile from '@/components/tiles/InfoTile';
     import { Button } from '@/components/ui/button';
     import { Link } from 'react-router-dom';
     import { Target, Eye, HeartHandshake as Handshake, ShieldCheck, Users, Zap } from 'lucide-react';
@@ -28,11 +29,11 @@ import { useTranslation } from 'react-i18next';
     const AboutUsPage = () => {
       const { t } = useTranslation();
       const values = [
-        { title: 'Integrity', description: 'Upholding the highest ethical standards in all our operations and interactions.', icon: <ShieldCheck className="h-8 w-8 text-primary" /> },
-        { title: 'Accuracy', description: 'Committing to providing precise and reliable information through meticulous verification processes.', icon: <Target className="h-8 w-8 text-primary" /> },
-        { title: 'Client-Centricity', description: 'Placing our clients\' needs at the forefront, offering tailored solutions and exceptional support.', icon: <Handshake className="h-8 w-8 text-primary" /> },
-        { title: 'Innovation', description: 'Continuously advancing our technology and methods to deliver cutting-edge screening services.', icon: <Zap className="h-8 w-8 text-primary" /> },
-        { title: 'Compliance', description: 'Adhering strictly to all relevant regulations, including the FCRA, to ensure lawful and fair practices.', icon: <Users className="h-8 w-8 text-primary" /> },
+        { title: t('pages.aboutUs.values.integrity.title', { defaultValue: 'Integrity' }), description: t('pages.aboutUs.values.integrity.desc', { defaultValue: 'Upholding the highest ethical standards in all our operations and interactions.' }), icon: <ShieldCheck className="h-8 w-8 text-primary" /> },
+        { title: t('pages.aboutUs.values.accuracy.title', { defaultValue: 'Accuracy' }), description: t('pages.aboutUs.values.accuracy.desc', { defaultValue: 'Committing to providing precise and reliable information through meticulous verification processes.' }), icon: <Target className="h-8 w-8 text-primary" /> },
+        { title: t('pages.aboutUs.values.clientCentricity.title', { defaultValue: 'Client-Centricity' }), description: t('pages.aboutUs.values.clientCentricity.desc', { defaultValue: "Placing our clients' needs at the forefront, offering tailored solutions and exceptional support." }), icon: <Handshake className="h-8 w-8 text-primary" /> },
+        { title: t('pages.aboutUs.values.innovation.title', { defaultValue: 'Innovation' }), description: t('pages.aboutUs.values.innovation.desc', { defaultValue: 'Continuously advancing our technology and methods to deliver cutting-edge screening services.' }), icon: <Zap className="h-8 w-8 text-primary" /> },
+        { title: t('pages.aboutUs.values.compliance.title', { defaultValue: 'Compliance' }), description: t('pages.aboutUs.values.compliance.desc', { defaultValue: 'Adhering strictly to all relevant regulations, including the FCRA, to ensure lawful and fair practices.' }), icon: <Users className="h-8 w-8 text-primary" /> },
       ];
 
       return (
@@ -71,20 +72,20 @@ import { useTranslation } from 'react-i18next';
                  src="/team.png" />
               </motion.div>
               <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>
-                <h2 className="text-3xl font-bold text-foreground mb-6">Our Mission &amp; Vision</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">{t('pages.aboutUs.missionVision.title')}</h2>
                 <div className="space-y-6 text-muted-foreground">
                   <div className="flex items-start space-x-3">
                     <Target className="h-7 w-7 text-primary flex-shrink-0 mt-1" />
                     <div>
-                      <h3 className="text-xl font-semibold text-foreground mb-1">Mission</h3>
-                      <p>To provide comprehensive, accurate, and timely background screening services that empower our clients to make informed decisions with confidence, fostering safer communities and workplaces.</p>
+                      <h3 className="text-xl font-semibold text-foreground mb-1">{t('pages.aboutUs.missionVision.mission.title')}</h3>
+                      <p>{t('pages.aboutUs.missionVision.mission.desc')}</p>
                     </div>
                   </div>
                   <div className="flex items-start space-x-3">
                     <Eye className="h-7 w-7 text-primary flex-shrink-0 mt-1" />
                     <div>
-                      <h3 className="text-xl font-semibold text-foreground mb-1">Vision</h3>
-                      <p>To be the most trusted and technologically advanced partner in background screening, recognized for our commitment to integrity, innovation, and client success.</p>
+                      <h3 className="text-xl font-semibold text-foreground mb-1">{t('pages.aboutUs.missionVision.vision.title')}</h3>
+                      <p>{t('pages.aboutUs.missionVision.vision.desc')}</p>
                     </div>
                   </div>
                 </div>
@@ -93,9 +94,9 @@ import { useTranslation } from 'react-i18next';
           </PageSection>
 
           <PageSection className="bg-secondary">
-            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('aboutUs.ourValues', { defaultValue: 'Our Core Values' })}</h2>
+            <h2 className="text-3xl font-bold text-center mb-4 text-foreground">{t('pages.aboutUs.coreValues.title')}</h2>
             <p className="text-lg text-muted-foreground text-center max-w-2xl mx-auto mb-12">
-              The principles that guide every aspect of our business and client interactions.
+              {t('pages.aboutUs.coreValues.subtitle')}
             </p>
             <motion.div 
               className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
@@ -106,15 +107,11 @@ import { useTranslation } from 'react-i18next';
             >
               {values.map((value) => (
                 <motion.div key={value.title} variants={fadeInItem}>
-                  <Card className="h-full text-center hover:shadow-xl transition-shadow duration-300 glassmorphism">
-                    <CardHeader>
-                      <div className="mx-auto mb-4 p-3 inline-block rounded-full bg-primary/10">{value.icon}</div>
-                      <CardTitle className="text-xl">{value.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <p className="text-sm text-muted-foreground">{value.description}</p>
-                    </CardContent>
-                  </Card>
+                  <InfoTile
+                    icon={value.icon}
+                    title={value.title}
+                    description={value.description}
+                  />
                 </motion.div>
               ))}
             </motion.div>
@@ -123,12 +120,12 @@ import { useTranslation } from 'react-i18next';
           <PageSection>
             <div className="grid md:grid-cols-2 gap-12 items-center">
                <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>
-                <h2 className="text-3xl font-bold text-foreground mb-6">{t('aboutUs.ourTeam', { defaultValue: 'Our Team' })}</h2>
+                <h2 className="text-3xl font-bold text-foreground mb-6">{t('pages.aboutUs.ourTeamSection.title')}</h2>
                 <p className="text-muted-foreground mb-4">
-                  ChexPro is powered by a dedicated team of experienced professionals, researchers, and technology experts passionate about delivering excellence in background screening. Our collective expertise ensures that we stay ahead of industry trends and provide our clients with the highest quality service. (Placeholder for more detailed team info).
+                  {t('pages.aboutUs.ourTeamSection.desc1')}
                 </p>
                 <p className="text-muted-foreground">
-                  We invest in continuous training and development to maintain our edge in compliance, data analysis, and customer support.
+                  {t('pages.aboutUs.ourTeamSection.desc2')}
                 </p>
               </motion.div>
               <motion.div variants={fadeInItem} initial="hidden" whileInView="visible" viewport={{once: true}}>
@@ -143,23 +140,23 @@ import { useTranslation } from 'react-i18next';
           <PageSection className="bg-gradient-to-r from-gray-800 via-gray-900 to-black text-primary-foreground">
             <div className="container text-center">
             <ShieldCheck className="h-16 w-16 text-primary mx-auto mb-6" />
-              <h2 className="text-3xl font-bold mb-4">Commitment to Compliance</h2>
+              <h2 className="text-3xl font-bold mb-4">{t('pages.aboutUs.complianceCommitment.title')}</h2>
               <p className="text-lg text-gray-300 max-w-3xl mx-auto mb-8">
-                Compliance is not just a requirement; it&apos;s a cornerstone of our operations. We are deeply committed to upholding the Fair Credit Reporting Act (FCRA) and all applicable federal, state, and local laws. Our processes are designed to ensure accuracy, data privacy, and fair information practices.
+                {t('pages.aboutUs.complianceCommitment.desc')}
               </p>
               <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-white" asChild>
-                <Link to="/compliance">Learn More About Our Compliance Standards</Link>
+                <Link to="/compliance">{t('pages.aboutUs.complianceCommitment.button')}</Link>
               </Button>
             </div>
           </PageSection>
 
           <PageSection className="text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-6">Partner with ChexPro</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-6">{t('pages.aboutUs.partner.title')}</h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto mb-10">
-              Ready to experience the ChexPro advantage? Contact us today to discuss your background screening needs.
+              {t('pages.aboutUs.partner.desc')}
             </p>
             <Button size="lg" asChild>
-              <Link to="/contact">Get in Touch</Link>
+              <Link to="/contact">{t('pages.aboutUs.partner.button')}</Link>
             </Button>
           </PageSection>
         </PageTransition>

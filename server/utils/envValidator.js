@@ -3,12 +3,15 @@ const requiredEnvVars = {
   production: [
     'SESSION_SECRET',
     'CSRF_SECRET',
+    'HEALTH_CHECK_TOKEN',
+    'METRICS_TOKEN',
     'SMTP_HOST',
     'SMTP_PORT',
     'SMTP_USER',
     'SMTP_PASS',
     'CONTACT_RECIPIENT',
     'DEMO_RECIPIENT',
+    'FRONTEND_URL',
     'DB_HOST',
     'DB_USER',
     'DB_PASSWORD',
@@ -18,7 +21,8 @@ const requiredEnvVars = {
     'SMTP_HOST',
     'SMTP_PORT',
     'SMTP_USER',
-    'SMTP_PASS'
+    'SMTP_PASS',
+    'DEV_FRONTEND_URLS'
   ]
 };
 

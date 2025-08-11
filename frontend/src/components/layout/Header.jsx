@@ -47,9 +47,9 @@ const Header = ({ onLinkHover }) => {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-4 grid grid-cols-3 items-center h-16 max-w-screen-2xl">
-        <Link to="/" className="flex items-center justify-self-start" onClick={() => setMobileMenuOpen(false)}>
-          {/* Logo */}
+      <div className="container mx-auto px-4 flex items-center h-16 max-w-screen-2xl">
+        {/* Logo - Left side */}
+        <Link to="/" className="flex items-center flex-shrink-0" onClick={() => setMobileMenuOpen(false)}>
           <img
             src={chexProLogo}
             alt="ChexPro Logo"
@@ -57,25 +57,34 @@ const Header = ({ onLinkHover }) => {
           />
         </Link>
 
-        <nav className="hidden lg:flex space-x-6 justify-self-center">
+        {/* Navigation - Center (hidden on mobile) */}
+        <nav className="hidden lg:flex space-x-6 mx-auto">
           {navLinks.map((link) => (
             <NavItem key={link.to} to={link.to}>{t(link.key)}</NavItem>
           ))}
         </nav>
 
-        <div className="hidden lg:flex items-center space-x-2 justify-self-end">
-          <Button className="order-1" variant="outline" asChild>
+        {/* Buttons and Language Switcher - Right side (hidden on mobile) */}
+        <div className="hidden lg:flex items-center space-x-2 flex-shrink-0">
+          <Button variant="outline" asChild>
             <Link to="/login">{t('navigation.login')}</Link>
           </Button>
-          <Button className="order-2" asChild>
+          <Button asChild>
             <Link to="/request-demo">{t('navigation.requestDemo')}</Link>
           </Button>
-          <div className="order-3"><LanguageSwitcher /></div>
+          <LanguageSwitcher />
         </div>
 
-        <div className="lg:hidden justify-self-end">
-          <Button variant="ghost" size="icon" onClick={toggleMobileMenu}>
-            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        {/* Mobile Menu Button - Right side (hidden on desktop) */}
+        <div className="lg:hidden ml-auto">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleMobileMenu}
+            className="text-blue-600 hover:text-blue-700 focus-visible:ring-blue-500 hover:bg-blue-50 active:bg-blue-100 focus:bg-blue-50 dark:hover:bg-blue-900/20 dark:active:bg-blue-900/30"
+            aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6 text-current" /> : <Menu className="h-6 w-6 text-current" />}
           </Button>
         </div>
       </div>
@@ -87,7 +96,7 @@ const Header = ({ onLinkHover }) => {
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.3, ease: "easeInOut" }}
-            className="lg:hidden absolute top-16 left-0 right-0 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 shadow-lg border-t border-border/40"
+            className="lg:hidden absolute top-16 left-0 right-0 bg-background/98 backdrop-blur-md supports-[backdrop-filter]:bg-background/90 shadow-lg border-t border-border/40"
           >
             <nav className="flex flex-col px-4 py-2 space-y-1">
               {navLinks.map((link) => (

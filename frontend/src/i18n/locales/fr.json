@@ -27,11 +27,20 @@
     "company": "ChexPro",
     "description": "Services professionnels de vérification d'antécédents",
     "quickLinks": "Liens Rapides",
+    "aboutUs": "À Propos",
+    "ourServices": "Nos Services",
+    "compliance": "Conformité",
+    "resources": "Ressources",
+    "contact": "Nous Contacter",
     "legal": "Légal",
     "privacyPolicy": "Politique de Confidentialité",
     "termsOfService": "Conditions de Service",
     "fcraCompliance": "Conformité FCRA",
-    "dataSecurityPage": "Sécurité des Données"
+    "dataSecurity": "Sécurité des Données",
+    "dataSecurityPage": "Sécurité des Données",
+    "connectWithUs": "Restez Connectés",
+    "copyright": "© {{year}} ChexPro. Tous droits réservés.",
+    "disclaimer": "ChexPro fournit des solutions de vérification d'antécédents conformes aux lois et réglementations applicables. Les informations fournies sont sujettes à vérification et à un usage légal."
   },
   "cookies": {
     "banner": "Nous utilisons des cookies pour améliorer votre expérience. En continuant à visiter ce site, vous acceptez notre utilisation des cookies.",
@@ -42,7 +51,53 @@
     "marketing": "Marketing"
   }
   ,
+  "demo": {
+    "privacyNote": "En soumettant ce formulaire, vous acceptez d'être contacté par ChexPro au sujet de nos services. Vos informations seront traitées conformément à notre politique de confidentialité."
+  },
+  "contact": {
+    "contactForm": "Formulaire de Contact",
+    "firstName": "Nom Complet",
+    "companyName": "Nom de l'Entreprise",
+    "emailAddress": "Adresse E-mail",
+    "phoneNumber": "Numéro de Téléphone",
+    "servicesInterested": "Services d'Intérêt",
+    "message": "Message",
+    "sendMessage": "Envoyer le Message",
+    "privacyNote": "Nous respectons votre vie privée. Vos informations seront utilisées uniquement pour répondre à votre demande.",
+    "officeHours": "Heures de Bureau",
+    "findOnMap": "Nous Trouver sur la Carte",
+    "contactInformation": "Informations de Contact",
+    "emailUs": "Envoyez-nous un e-mail",
+    "callUs": "Appelez-nous",
+    "ourOffice": "Notre Bureau",
+    "officeHoursWeekdays": "Lundi - Vendredi : 9h00 - 18h00 (EST)",
+    "officeHoursWeekend": "Samedi - Dimanche : Fermé",
+    "phoneText": "États-Unis : {{usNumber}}   Canada : {{caNumber}}"
+  },
   "pages": {
+    "resources": {
+      "metaTitle": "Ressources - ChexPro | Guides, FAQ et Téléchargements",
+      "metaDescription": "Accédez à des ressources utiles, des guides sectoriels, des FAQ et des téléchargements de ChexPro pour soutenir votre processus de vérification.",
+      "heroTitle": "Ressources et Perspectives",
+      "heroSubtitle": "Restez informé grâce à nos derniers articles, guides et réponses aux questions fréquentes sur la vérification d'antécédents.",
+      "tabs": { "blog": "Blog", "faq": "FAQ" },
+      "filters": { "all": "Tous" },
+      "loading": "Chargement…",
+      "empty": "Aucun article pour le moment.",
+      "prev": "Précédent",
+      "next": "Suivant",
+      "pageXofY": "Page {{page}} sur {{pageCount}}",
+      "ctaTitle": "Vous ne trouvez pas ce que vous cherchez ?",
+      "ctaDesc": "Notre équipe est là pour vous aider. Pour toute question spécifique ou information supplémentaire, veuillez nous contacter.",
+      "ctaButton": "Contacter le Support",
+      "faqs": [
+        { "question": "Quel est le délai typique pour une vérification ?", "answer": "Cela varie selon le type de recherche ; la plupart sont terminées en 24–72 heures. Certaines vérifications au niveau du comté ou internationales peuvent prendre plus de temps." },
+        { "question": "ChexPro est-il conforme au FCRA ?", "answer": "Oui. Nous respectons le FCRA et toutes les lois applicables, en priorisant la confidentialité et l'exactitude des données." },
+        { "question": "Quelles informations sont nécessaires pour une vérification ?", "answer": "En général, le nom complet, la date de naissance, le NISS (pour les vérifications US) et l'adresse actuelle. Le consentement est toujours requis." },
+        { "question": "Comment contester une information de mon rapport ?", "answer": "Contactez notre support ou suivez les instructions fournies avec votre rapport pour lancer une contestation. Nous enquêtons rapidement." },
+        { "question": "Quels moyens de paiement acceptez-vous ?", "answer": "Nous acceptons les principales cartes de crédit et l'ACH pour les comptes professionnels. Contactez les ventes pour les options de facturation." }
+      ]
+    },
     "home": {
       "title": "Accueil - ChexPro | Vérifications Fiables, Simplifiées",
       "metaDescription": "ChexPro fournit des solutions de vérification d'antécédents rapides, précises et conformes pour les entreprises, les propriétaires, les agences de recrutement et les particuliers.",
@@ -77,27 +132,40 @@
       },
       "trust": {
         "title": "Engagés en matière de Conformité et de Sécurité",
-        "desc": "Nous respectons les normes les plus strictes de l'industrie, y compris la conformité FCRA, afin d'assurer l'exactitude des données et de protéger les informations sensibles. Votre confiance est notre priorité absolue.",
+        "desc": "Nous respectons strictement le FCRA et les normes de sécurité des données pour garantir l'exactitude, la confidentialité et l'utilisation responsable des informations.",
         "badges": {
           "fcra": "Conforme au FCRA",
-          "pbs": "Accrédité PBS A (Espace réservé)",
-          "soc2": "Certifié SOC 2 (Espace réservé)",
+          "pbs": "Membre PBSA",
+          "soc2": "Certifié SOC 2",
           "encryption": "Chiffrement des Données"
         },
         "clients": {
-          "title": "De grandes entreprises nous font confiance (Logos clients - espace réservé)",
-          "logo1Alt": "Logo Client 1 (Espace réservé)",
-          "logo2Alt": "Logo Client 2 (Espace réservé)",
-          "logo3Alt": "Logo Client 3 (Espace réservé)",
-          "logo4Alt": "Logo Client 4 (Espace réservé)"
+          "title": "De grandes entreprises nous font confiance",
+          "staffingmindAlt": "Logo de StaffingMind Canada Inc.",
+          "globalLogisticsAlt": "Logo de Global Logistics Management Inc.",
+          "secureInvestmentsAlt": "Logo de Secure-Investments Ltd."
         }
       },
       "testimonials": {
         "title": "Ce que disent nos clients",
         "subtitle": "Des témoignages réels de clients satisfaits qui font confiance à ChexPro pour leurs besoins de vérification.",
-        "quote": "ChexPro a transformé notre processus de recrutement. Leur rapidité et leur précision sont inégalées. Fortement recommandé ! (Espace réservé)",
-        "nameRole": "John Doe, Responsable RH (Espace réservé)",
-        "company": "Tech Solutions Inc. (Espace réservé)"
+        "list": [
+          {
+            "quote": "ChexPro a transformé notre processus de recrutement. Leur rapidité et leur précision sont inégalées. Vivement recommandé !",
+            "nameRole": "Tanima Thakur, VP des RH et du Recrutement",
+            "company": "StaffingMind Canada Inc."
+          },
+          {
+            "quote": "La plateforme est incroyablement conviviale et le support client est de premier ordre. Nous avons obtenu nos résultats en un temps record.",
+            "nameRole": "Jane Smith, Directrice des Opérations",
+            "company": "Global Logistics Corp."
+          },
+          {
+            "quote": "Passer à ChexPro a changé la donne pour notre équipe de conformité. Leurs rapports sont approfondis et faciles à comprendre.",
+            "nameRole": "David Lee, Responsable de la Conformité",
+            "company": "Secure-Investments Ltd."
+          }
+        ]
       }
     },
     "why": {
@@ -152,7 +220,7 @@
         }
       }
     },
-    "services": {
+    "servicesInfo": {
       "title": "Services - ChexPro | Nos Solutions de Vérification",
       "metaDescription": "Découvrez la suite complète de services de ChexPro, y compris les vérifications pénales, la vérification de l'emploi, la vérification de l'éducation et plus encore.",
       "heading": "Nos Services Complets",
@@ -163,6 +231,119 @@
       "ctaTitle": "Prêt pour une Solution Personnalisée ?",
       "ctaDesc": "Nos experts vous aideront à concevoir le forfait de vérification idéal pour vos besoins.",
       "ctaButton": "Demander un Devis Personnalisé"
+    },
+    "servicesPage": {
+      "title": "Nos Services de Vérification Complets",
+      "metaDescription": "Découvrez la suite complète des services de vérification d'antécédents de ChexPro. Des vérifications de casier judiciaire aux vérifications internationales, nous proposons des solutions sur mesure pour chaque besoin.",
+      "heading": "Nos Services de Vérification Complets",
+      "intro": "ChexPro propose une suite complète de services de vérification d'antécédents fiables et conformes, adaptés à vos besoins spécifiques.",
+      "services": {
+        "criminal": {
+          "title": "Vérifications Complètes du Casier Judiciaire",
+          "shortDesc": "Recherche approfondie des casiers judiciaires locaux, de comté, d'État et fédéraux pour garantir un lieu de travail sûr et sécurisé.",
+          "details": "Nos vérifications approfondies du casier judiciaire fournissent des informations essentielles pour vous aider à évaluer les risques et à maintenir un environnement sécurisé. Nous accédons à un vaste réseau de bases de données, y compris les casiers judiciaires nationaux, les registres des délinquants sexuels, les référentiels des comtés et des États, et les archives des tribunaux fédéraux. Ce service est essentiel pour tout poste, en particulier ceux qui exigent un haut degré de confiance et de sécurité."
+        },
+        "employment": {
+          "title": "Vérification Approfondie de l'Emploi",
+          "shortDesc": "Confirmez l'historique d'emploi passé, y compris les dates, les postes et les motifs de départ.",
+          "details": "Vérifiez l'exactitude et l'intégrité de l'expérience de travail déclarée par un candidat. Notre équipe dédiée contacte les employeurs précédents pour confirmer les titres de poste, les dates d'emploi, les fonctions et les motifs de départ (lorsque la loi le permet). Cela garantit que vous embauchez des candidats ayant un parcours professionnel éprouvé et honnête."
+        },
+        "education": {
+          "title": "Vérification Fiable de l'Éducation",
+          "shortDesc": "Vérifiez les qualifications académiques, les diplômes, les certifications et la fréquentation de n'importe quelle institution dans le monde.",
+          "details": "Confirmez les diplômes directement auprès de la source. Nous vérifions les diplômes, les certificats, les dates de fréquentation et les distinctions des lycées, collèges, universités et écoles professionnelles du monde entier. Ceci est essentiel pour les postes où des qualifications scolaires spécifiques sont une exigence obligatoire."
+        },
+        "credit": {
+          "title": "Vérifications de Crédit Conformes au FCRA",
+          "shortDesc": "Évaluez la responsabilité financière et la fiabilité pour les postes pertinents en toute conformité légale.",
+          "details": "Fournis en stricte conformité avec le FCRA, nos rapports de crédit à l'emploi offrent des informations précieuses sur les antécédents financiers et le sens des responsabilités d'un candidat. Ceci est particulièrement pertinent pour les postes impliquant la gestion financière, l'accès à des liquidités ou des responsabilités fiduciaires. Cette vérification nécessite toujours le consentement explicite du candidat."
+        },
+        "reference": {
+          "title": "Vérifications de Références Approfondies",
+          "shortDesc": "Obtenez des informations qualitatives grâce à des entretiens de références professionnelles et personnelles.",
+          "details": "Allez au-delà du CV et obtenez des informations plus approfondies sur les compétences, l'éthique de travail, la fiabilité et le caractère d'un candidat. Notre équipe mène des entretiens structurés et professionnels avec les références fournies pour recueillir les données qualitatives dont vous avez besoin pour appuyer votre décision d'embauche."
+        },
+        "drug": {
+          "title": "Coordination Simplifiée du Dépistage de Drogues",
+          "shortDesc": "Coordination sans effort des tests de dépistage de drogues avant l'embauche et en continu avec un réseau national de laboratoires.",
+          "details": "Nous nous associons à des laboratoires certifiés à travers le pays pour offrir une gamme complète de panels de dépistage de drogues (par exemple, 5 panels, 10 panels, panels personnalisés). Notre service de coordination simplifié simplifie la planification, la collecte d'échantillons et la gestion des résultats, vous aidant à maintenir un lieu de travail sûr et sans drogue."
+        },
+        "health": {
+          "title": "Dépistage Médical et de Santé Complet",
+          "shortDesc": "Facilitez les évaluations médicales et de santé spécifiques à l'emploi pour garantir l'aptitude et la sécurité des candidats.",
+          "details": "Nous coordonnons une variété de dépistages de santé, y compris des examens physiques, des examens physiques du DOT et d'autres évaluations de santé au travail requises pour des postes spécifiques. Nous travaillons avec un réseau de prestataires de soins de santé pour garantir la conformité aux normes de santé et de sécurité liées à l'emploi."
+        },
+        "international": {
+          "title": "Vérification Internationale Mondiale",
+          "shortDesc": "Vérifications mondiales complètes pour les candidats ayant des antécédents professionnels ou éducatifs internationaux.",
+          "details": "Pour les candidats qui ont vécu, travaillé ou étudié à l'étranger, nous proposons des vérifications de casier judiciaire international, des vérifications d'emploi et des vérifications d'études. Notre réseau mondial nous permet de fournir une vérification complète, avec une couverture et une disponibilité variant selon les pays."
+        },
+        "tenant": {
+          "title": "Vérification Fiable des Locataires",
+          "shortDesc": "Vérification complète pour les propriétaires et les gestionnaires immobiliers afin de protéger votre investissement.",
+          "details": "Prenez des décisions de location éclairées et atténuez les risques. Notre package de vérification des locataires comprend des rapports de crédit, un historique des expulsions, des vérifications de casier judiciaire et une vérification des revenus pour vous aider à sélectionner des locataires fiables et responsables pour vos propriétés."
+        }
+      },
+      "industriesHeading": "Solutions sur Mesure pour Votre Secteur",
+      "industriesIntro": "Nous comprenons que différents secteurs ont des exigences de vérification uniques. ChexPro propose des solutions spécialisées.",
+      "industriesNote": "Vous ne voyez pas votre secteur? Nous pouvons créer des forfaits personnalisés.",
+      "ctaTitle": "Prêt pour une Solution de Vérification Personnalisée?",
+      "ctaDesc": "Laissez nos experts vous aider à concevoir le package de vérification d'antécédents parfait pour vos besoins uniques.",
+      "ctaButton": "Demander un Devis Personnalisé"
+    },
+    "aboutUs": {
+      "values": {
+        "integrity": {
+          "title": "Intégrité",
+          "desc": "Maintenir les normes éthiques les plus élevées dans toutes nos opérations et interactions."
+        },
+        "accuracy": {
+          "title": "Précision",
+          "desc": "S'engager à fournir des informations précises et fiables grâce à des processus de vérification méticuleux."
+        },
+        "clientCentricity": {
+          "title": "Orientation Client",
+          "desc": "Placer les besoins de nos clients au premier plan, en offrant des solutions sur mesure et un support exceptionnel."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "desc": "Faire progresser continuellement notre technologie et nos méthodes pour offrir des services de vérification de pointe."
+        },
+        "compliance": {
+          "title": "Conformité",
+          "desc": "Respecter strictement toutes les réglementations pertinentes, y compris le FCRA, afin de garantir des pratiques légales et équitables."
+        }
+      },
+      "missionVision": {
+        "title": "Notre Mission et Vision",
+        "mission": {
+          "title": "Mission",
+          "desc": "Fournir des services de vérification d'antécédents complets, précis et rapides qui permettent à nos clients de prendre des décisions éclairées en toute confiance, favorisant des communautés et des lieux de travail plus sûrs."
+        },
+        "vision": {
+          "title": "Vision",
+          "desc": "Être le partenaire le plus fiable et technologiquement avancé dans le domaine de la vérification d'antécédents, reconnu pour notre engagement envers l'intégrité, l'innovation et le succès de nos clients."
+        }
+      },
+      "coreValues": {
+        "title": "Nos Valeurs Fondamentales",
+        "subtitle": "Les principes qui guident chaque aspect de notre entreprise et de nos interactions avec les clients."
+      },
+      "ourTeamSection": {
+        "title": "Notre Équipe",
+        "desc1": "ChexPro est animé par une équipe dévouée de professionnels expérimentés, de chercheurs et d'experts en technologie passionnés par l'excellence en matière de vérification d'antécédents. Notre expertise collective garantit que nous restons à la pointe des tendances de l'industrie et que nous fournissons à nos clients un service de la plus haute qualité. (Espace réservé pour des informations plus détaillées sur l'équipe).",
+        "desc2": "Nous investissons dans la formation et le développement continus pour maintenir notre avantage en matière de conformité, d'analyse de données et de support client."
+      },
+      "complianceCommitment": {
+        "title": "Engagement envers la Conformité",
+        "desc": "La conformité n'est pas seulement une exigence; c'est une pierre angulaire de nos opérations. Nous sommes profondément engagés à respecter la Fair Credit Reporting Act (FCRA) et toutes les lois fédérales, étatiques et locales applicables. Nos processus sont conçus pour garantir l'exactitude, la confidentialité des données et des pratiques d'information équitables.",
+        "button": "En Savoir Plus Sur Nos Normes de Conformité"
+      },
+      "partner": {
+        "title": "Devenez Partenaire de ChexPro",
+        "desc": "Prêt à découvrir l'avantage ChexPro? Contactez-nous dès aujourd'hui pour discuter de vos besoins en matière de vérification d'antécédents.",
+        "button": "Nous Contacter"
+      }
     },
     "dataSecurity": {
       "title": "Sécurité des Données",
@@ -180,6 +361,166 @@
         "Nous ne vendons ni ne partageons jamais vos informations sans consentement"
       ],
       "contact": "Pour toute question concernant nos pratiques de sécurité des données, veuillez nous contacter à info@chexpro.com."
+    },
+    "requestDemo": {
+      "metaTitle": "Demander une Démo - ChexPro | Optimisez votre Vérification",
+      "metaDescription": "Demandez une démo gratuite de la plateforme de vérification d'antécédents de ChexPro pour voir comment nos solutions optimisées peuvent bénéficier à votre entreprise.",
+      "heroTitle": "Demander une Démo ou un Devis",
+      "heroSubtitle": "Voyez ChexPro en action et découvrez comment nos solutions peuvent répondre aux besoins spécifiques de votre organisation. Remplissez le formulaire ci-dessous et nous vous contacterons.",
+      "formTitle": "Formulaire de Demande de Démo / Devis",
+      "formDescription": "Fournissez vos détails et notre équipe vous contactera rapidement.",
+      "fullName": "Nom Complet",
+      "fullNamePlaceholder": "Jean Dupont",
+      "jobTitle": "Poste",
+      "jobTitlePlaceholder": "Responsable RH",
+      "companyName": "Nom de l'Entreprise",
+      "companyNamePlaceholder": "Entreprise ABC",
+      "workEmail": "Adresse E-mail Professionnelle",
+      "workEmailPlaceholder": "vous@entreprise.com",
+      "phoneNumber": "Numéro de Téléphone",
+      "phoneNumberPlaceholder": "(555) 555-5555",
+      "estimatedScreenings": "Vérifications Estimées par An",
+      "estimatedScreeningsPlaceholder": "ex., 50-100, 500+",
+      "servicesOfInterest": "Services d'Intérêt",
+      "servicesOfInterestPlaceholder": "ex., Pénal, Emploi, Tests de Drogues",
+      "additionalInfo": "Informations Supplémentaires ou Questions",
+      "additionalInfoPlaceholder": "Dites-nous plus sur vos besoins...",
+      "submitRequest": "Soumettre la Demande",
+      "submitting": "Soumission...",
+      "whatToExpect": "À quoi s'attendre de votre Démo :",
+      "benefits": {
+        "personalized": "Visite guidée personnalisée de notre plateforme.",
+        "streamline": "Découvrez comment ChexPro peut rationaliser votre flux de travail.",
+        "questions": "Obtenez des réponses à vos questions spécifiques."
+      },
+      "quickQuote": {
+        "title": "Besoin d'un Devis Rapide ?",
+        "description": "Si vous connaissez déjà vos exigences et avez juste besoin de tarifs, indiquez \"Demande de Devis\" dans votre message. Nous vous fournirons une proposition compétitive adaptée à votre volume et à vos besoins de service."
+      },
+      "successTitle": "Demande de Démo Soumise !",
+      "successDescription": "Merci ! Notre équipe vous contactera bientôt pour programmer votre démo."
+    },
+    "compliance": {
+      "header": "Informations de Conformité et Légales",
+      "subheader": "Chez ChexPro, nous privilégions le respect des normes légales et des meilleures pratiques du secteur afin d'assurer l'intégrité et l'utilisation légale de nos services.",
+      "ourCommitment": "Notre Engagement envers Vous",
+      "commitmentText": "ChexPro s'engage à maintenir les normes les plus élevées en matière de conformité et de sécurité des données. Nous surveillons en permanence les évolutions réglementaires et mettons à jour nos systèmes et processus en conséquence. Notre objectif est de vous fournir des services de vérification fiables tout en garantissant la protection des droits et de la vie privée des individus. Pour toute question concernant nos pratiques de conformité, n'hésitez pas à nous contacter.",
+      "sections": {
+        "fcra": {
+          "title": "Conformité FCRA",
+          "summary": "ChexPro est entièrement engagé à respecter la Fair Credit Reporting Act (FCRA).",
+          "details": [
+            "La FCRA est une loi fédérale qui réglemente la manière dont les agences d'évaluation des consommateurs (CRA) collectent, utilisent et partagent les informations des consommateurs.",
+            "Nous veillons à ce que tous nos processus de vérification d'antécédents respectent les exigences de la FCRA, y compris l'obtention du consentement approprié, la fourniture aux consommateurs de copies de leurs rapports et le respect des procédures de résolution des litiges.",
+            "Notre plateforme est conçue pour aider les employeurs et autres utilisateurs à satisfaire à leurs obligations FCRA, notamment la fourniture des avis de pré‑décision défavorable et de décision défavorable.",
+            "Nous fournissons des ressources et des formations à nos clients pour les aider à comprendre leurs responsabilités au titre de la FCRA."
+          ]
+        },
+        "dataSecurity": {
+          "title": "Sécurité et Confidentialité des Données",
+          "summary": "La protection des informations sensibles est primordiale chez ChexPro.",
+          "details": [
+            "Nous mettons en œuvre des mesures de sécurité robustes, notamment le chiffrement des données en transit et au repos, pour protéger les informations personnelles.",
+            "Nos systèmes utilisent l'authentification multi‑facteurs, des contrôles d'accès et des audits de sécurité réguliers pour prévenir tout accès non autorisé.",
+            "Nous respectons les meilleures pratiques du secteur en matière de confidentialité des données et avons mis en place des politiques et procédures pour gérer de manière responsable le traitement et la conservation des données.",
+            "Notre infrastructure est conçue pour une haute disponibilité et une reprise après sinistre afin d'assurer un service continu et l'intégrité des données."
+          ]
+        },
+        "disclaimers": {
+          "title": "Avertissements Importants",
+          "summary": "Informations clés concernant l'utilisation de nos services et rapports.",
+          "details": [
+            "Les rapports de vérification d'antécédents fournis par ChexPro ne peuvent être utilisés qu'à des fins autorisées telles que définies par la FCRA et les autres lois applicables.",
+            "Les clients sont responsables d'utiliser les informations obtenues des vérifications d'antécédents conformément à toutes les exigences légales, y compris les lois anti‑discrimination.",
+            "Bien que ChexPro s'efforce d'atteindre une précision maximale, les informations proviennent de diverses bases de données publiques et privées et des inexactitudes ou des informations obsolètes peuvent survenir. Nous disposons de processus pour contester et corriger les informations.",
+            "ChexPro ne fournit pas de conseils juridiques. Les clients doivent consulter leur conseil juridique concernant leurs obligations spécifiques de conformité."
+          ]
+        },
+        "clientResponsibilities": {
+          "title": "Responsabilités du Client",
+          "summary": "Comprendre vos obligations lors de l'utilisation des services de ChexPro.",
+          "details": [
+            "Obtenir l'autorisation et le consentement appropriés des personnes avant de demander une vérification d'antécédents.",
+            "Utiliser les informations de vérification d'antécédents uniquement pour la finalité autorisée indiquée au moment de la demande.",
+            "Respecter toutes les exigences de la FCRA, y compris les processus de notification de pré‑décision et de décision défavorables si une décision défavorable est prise en tout ou en partie sur la base d'un rapport de consommateur.",
+            "Gérer et éliminer de manière sécurisée les rapports de consommateurs et les informations sensibles.",
+            "Informer ChexPro de tout litige ou inexactitude constaté dans les rapports."
+          ]
+        }
+      }
+    },
+    "contactUs": {
+      "getInTouch": "Nous contacter",
+      "heroSubtitle": "Nous sommes là pour répondre à vos questions et vous aider à trouver les meilleures solutions de vérification. Contactez-nous dès aujourd'hui !"
+    },
+    "fcraCompliance": {
+      "title": "Conformité FCRA",
+      "summary": "ChexPro respecte pleinement la Fair Credit Reporting Act (FCRA), garantissant que tous les services de vérification d'antécédents sont effectués légalement et éthiquement.",
+      "keyPrinciples": "Principes clés de la FCRA",
+      "principles": [
+        "Consentement : Nous obtenons un consentement écrit avant toute vérification d'antécédents",
+        "Exactitude : Nous nous efforçons de fournir des informations précises et à jour",
+        "Mesures défavorables : Nous fournissons les notifications requises si une décision défavorable est prise sur la base des résultats de la vérification",
+        "Accès : Les individus ont le droit d'accéder à leurs rapports et de contester les informations"
+      ],
+      "yourRightsTitle": "Vos droits en vertu de la FCRA",
+      "rights": [
+        "Recevoir une copie de votre rapport de vérification d'antécédents",
+        "Contester les informations inexactes ou incomplètes",
+        "Être informé si des informations de votre rapport sont utilisées contre vous"
+      ],
+      "contactLine": "Pour toute information sur la conformité FCRA, veuillez nous contacter à info@chexpro.com."
+    },
+    "privacy": {
+      "title": "Politique de Confidentialité",
+      "intro": "Chez ChexPro, votre vie privée est notre priorité. Nous nous engageons à protéger vos informations personnelles et à rester transparents quant à la manière dont nous collectons, utilisons et protégeons vos données.",
+      "infoWeCollectTitle": "Informations que nous collectons",
+      "infoWeCollect": [
+        "Informations d'identification personnelle (nom, adresse e-mail, numéro de téléphone, etc.)",
+        "Données de vérification d'antécédents fournies par vous ou par des tiers autorisés",
+        "Données d'utilisation et cookies pour l'analyse du site web"
+      ],
+      "howWeUseTitle": "Comment nous utilisons vos informations",
+      "howWeUse": [
+        "Fournir et améliorer nos services de vérification d'antécédents",
+        "Communiquer avec vous concernant vos demandes et votre compte",
+        "Respecter les exigences légales et réglementaires"
+      ],
+      "dataProtectionTitle": "Protection des Données",
+      "dataProtection": "Nous mettons en œuvre des mesures de sécurité conformes aux normes du secteur pour protéger vos données contre tout accès, divulgation ou modification non autorisés. Toutes les informations sensibles sont chiffrées et stockées de manière sécurisée.",
+      "yourRightsTitle": "Vos Droits",
+      "yourRights": [
+        "Accéder, mettre à jour ou supprimer vos informations personnelles",
+        "Refuser de recevoir des communications marketing",
+        "Demander des informations sur nos pratiques en matière de données"
+      ],
+      "contactLine": "Pour toute question ou demande relative à votre vie privée, veuillez nous contacter à info@chexpro.com.",
+      "lastUpdated": "Dernière mise à jour",
+      "effectiveDate": "Date d'entrée en vigueur",
+      "contactUs": "Nous contacter"
+    },
+    "terms": {
+      "title": "Conditions de Service",
+      "intro": "Bienvenue chez ChexPro. En utilisant nos services de vérification d'antécédents, vous acceptez les conditions suivantes :",
+      "useOfServicesTitle": "Utilisation des Services",
+      "useOfServices": [
+        "Les services sont fournis uniquement à des fins légales",
+        "Vous devez fournir des informations exactes et complètes",
+        "L'utilisation ou l'accès non autorisé est strictement interdit"
+      ],
+      "limitationOfLiabilityTitle": "Limitation de Responsabilité",
+      "limitationOfLiability": "ChexPro n'est pas responsable des dommages résultant de l'utilisation ou de l'impossibilité d'utiliser nos services, y compris, sans s'y limiter, la perte de données, l'interruption d'activité ou les inexactitudes des résultats de vérification.",
+      "userResponsibilitiesTitle": "Responsabilités de l'Utilisateur",
+      "userResponsibilities": [
+        "Maintenir la confidentialité de vos identifiants de compte",
+        "Respecter toutes les lois et réglementations applicables",
+        "Signaler immédiatement toute activité non autorisée"
+      ],
+      "changesTitle": "Modifications des Conditions",
+      "changes": "ChexPro se réserve le droit de mettre à jour ces conditions à tout moment. L'utilisation continue de nos services vaut acceptation de toute modification.",
+      "contactLine": "Pour toute question concernant ces conditions, veuillez nous contacter à info@chexpro.com.",
+      "lastUpdated": "Dernière mise à jour",
+      "effectiveDate": "Date d'entrée en vigueur"
     }
   }
 }

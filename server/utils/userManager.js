@@ -22,7 +22,7 @@ export const createUser = async (username, email, password) => {
 export const validatePersistentToken = async (token) => {
   try {
     const [rows] = await pool.query(
-      'SELECT pt.user_id, u.username FROM persistent_tokens pt JOIN users u ON pt.user_id = u.id WHERE pt.expires_at > NOW() AND u.active = 1',
+      'SELECT pt.user_id, pt.token_hash, u.username FROM persistent_tokens pt JOIN users u ON pt.user_id = u.id WHERE pt.expires_at > NOW() AND u.active = 1',
       []
     );
     

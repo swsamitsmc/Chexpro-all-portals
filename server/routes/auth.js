@@ -26,10 +26,30 @@ router.post('/login', loginLimiter, async (req, res) => {
   const sessionCsrf = req.cookies?.csrf_token;
   
   // Sanitize and validate CSRF tokens with constant-time comparison
+  // Ensure equal length before timingSafeEqual to avoid throwing
   if (!csrfToken || !sessionCsrf || 
       typeof csrfToken !== 'string' || typeof sessionCsrf !== 'string' ||
-      csrfToken.length > 256 || sessionCsrf.length > 256 ||
-      !crypto.timingSafeEqual(Buffer.from(csrfToken), Buffer.from(sessionCsrf))) {
+      csrfToken.length > 256 || sessionCsrf.length > 256) {
+    console.warn('CSRF validation failed on /login', {
+      ip: req.ip,
+      origin: req.headers.origin,
+      referer: req.headers.referer,
+    });
+    return res.status(403).json({ error: 'Invalid CSRF token' });
+  }
+
+  try {
+    const a = Buffer.from(csrfToken);
+    const b = Buffer.from(sessionCsrf);
+    if (a.length !== b.length || !crypto.timingSafeEqual(a, b)) {
+      console.warn('CSRF validation failed on /login', {
+        ip: req.ip,
+        origin: req.headers.origin,
+        referer: req.headers.referer,
+      });
+      return res.status(403).json({ error: 'Invalid CSRF token' });
+    }
+  } catch (e) {
     console.warn('CSRF validation failed on /login', {
       ip: req.ip,
       origin: req.headers.origin,

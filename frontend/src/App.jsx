@@ -19,6 +19,7 @@ const AboutUsPage = lazyWithPreload(() => import('@/pages/AboutUsPage'));
 const ServicesPage = lazyWithPreload(() => import('@/pages/ServicesPage'));
 const CompliancePage = lazyWithPreload(() => import('@/pages/CompliancePage'));
 const ResourcesPage = lazyWithPreload(() => import('@/pages/ResourcesPage'));
+const ResourcePostPage = lazyWithPreload(() => import('@/pages/ResourcePostPage'));
 const ContactUsPage = lazyWithPreload(() => import('@/pages/ContactUsPage'));
 const ClientLoginPage = lazyWithPreload(() => import('@/pages/ClientLoginPage'));
 const RequestDemoPage = lazyWithPreload(() => import('@/pages/RequestDemoPage'));
@@ -35,6 +36,7 @@ const pages = {
   '/services': ServicesPage,
   '/compliance': CompliancePage,
   '/resources': ResourcesPage,
+  '/resources/:slug': ResourcePostPage,
   '/contact': ContactUsPage,
   '/login': ClientLoginPage,
   '/request-demo': RequestDemoPage,

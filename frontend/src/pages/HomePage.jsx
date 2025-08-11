@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import InfoTile from '@/components/tiles/InfoTile';
 import PageTransition from '@/components/ui/PageTransition';
 import PageSection from '@/components/PageSection';
 import { Link } from 'react-router-dom';
@@ -41,6 +42,9 @@ const HomePage = () => {
     { title: t('pages.why.items.platform.title'), description: t('pages.why.items.platform.desc'), icon: <UserCheck className="h-6 w-6 text-primary" /> },
     { title: t('pages.why.items.compliance.title'), description: t('pages.why.items.compliance.desc'), icon: <ShieldCheck className="h-6 w-6 text-primary" /> },
   ];
+
+  const rawTestimonials = t('pages.home.testimonials.list', { returnObjects: true });
+  const testimonials = Array.isArray(rawTestimonials) ? rawTestimonials : [];
 
   const targetAudiences = [
     { name: t('pages.solutions.audiences.employers.name'), description: t('pages.solutions.audiences.employers.desc'), icon: <Briefcase className="h-10 w-10 text-primary" /> },
@@ -95,7 +99,7 @@ const HomePage = () => {
             {t('pages.home.heroSubtitle')}
           </motion.p>
           <motion.div 
-            className="space-x-4"
+            className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, delay: 0.4 }}
@@ -125,17 +129,12 @@ const HomePage = () => {
         >
           {services.map((service, index) => (
             <motion.li key={index} variants={fadeInItem}>
-              <Link to={`/services#${service.id}`} className="block group" aria-label={`${service.title} - ${t('pages.home.services.title')}`}>
-                <Card className="h-full hover:shadow-xl transition-shadow duration-300 glassmorphism group-hover:shadow-primary/30">
-                  <CardHeader className="items-center text-center">
-                    {service.icon}
-                    <CardTitle className="mt-4 text-xl text-foreground group-hover:text-primary transition-colors">{service.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-center">
-                    <p className="text-muted-foreground text-sm">{service.description}</p>
-                  </CardContent>
-                </Card>
-              </Link>
+              <InfoTile
+                to={`/services#${service.id}`}
+                icon={service.icon}
+                title={service.title}
+                description={service.description}
+              />
             </motion.li>
           ))}
         </motion.ul>
@@ -186,15 +185,11 @@ const HomePage = () => {
         >
           {targetAudiences.map((audience) => (
             <motion.div key={audience.name} variants={fadeInItem}>
-              <Card className="h-full text-center hover:shadow-lg transition-shadow duration-300">
-                <CardHeader>
-                  <div className="mx-auto mb-4 p-3 inline-block rounded-full bg-primary/10">{audience.icon}</div>
-                  <CardTitle className="text-xl">{audience.name}</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-muted-foreground">{audience.description}</p>
-                </CardContent>
-              </Card>
+              <InfoTile
+                icon={audience.icon}
+                title={audience.name}
+                description={audience.description}
+              />
             </motion.div>
           ))}
         </motion.div>
@@ -216,11 +211,28 @@ const HomePage = () => {
           </ul>
           <div className="mt-10">
             <p className="text-sm text-gray-400">{t('pages.home.trust.clients.title')}</p>
-            <ul className="flex justify-center space-x-8 mt-4 opacity-50">
-              <li><span><img alt={t('pages.home.trust.clients.logo1Alt')} src="https://images.unsplash.com/photo-1495224814653-94f36c0a31ea" /></span></li>
-              <li><span><img alt={t('pages.home.trust.clients.logo2Alt')} src="https://images.unsplash.com/photo-1607004010229-6048c57c2ab1" /></span></li>
-              <li><span><img alt={t('pages.home.trust.clients.logo3Alt')} src="https://images.unsplash.com/photo-1694208590719-96139a8f2a32" /></span></li>
-              <li><span><img alt={t('pages.home.trust.clients.logo4Alt')} src="https://images.unsplash.com/photo-1649000808933-1f4aac7cad9a" /></span></li>
+            <ul className="flex justify-center items-center gap-8 mt-4 opacity-80">
+              <li>
+                <img
+                  className="h-10 w-auto object-contain"
+                  alt={t('pages.home.trust.clients.staffingmindAlt')}
+                  src="/src/assets/images/logo-staffingmind.svg"
+                />
+              </li>
+              <li>
+                <img
+                  className="h-10 w-auto object-contain"
+                  alt={t('pages.home.trust.clients.globalLogisticsAlt')}
+                  src="/src/assets/images/logo-global-logistics.svg"
+                />
+              </li>
+              <li>
+                <img
+                  className="h-10 w-auto object-contain"
+                  alt={t('pages.home.trust.clients.secureInvestmentsAlt')}
+                  src="/src/assets/images/logo-secure-investments.svg"
+                />
+              </li>
             </ul>
           </div>
         </div>
@@ -233,13 +245,13 @@ const HomePage = () => {
           {t('pages.home.testimonials.subtitle')}
         </p>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {[1, 2, 3].map((i) => (
-            <motion.div key={i} variants={fadeInItem}>
+          {testimonials.map((item, idx) => (
+            <motion.div key={idx} variants={fadeInItem}>
               <Card className="h-full glassmorphism">
                 <CardContent className="pt-6">
-                  <p className="italic text-muted-foreground mb-4">&quot;{t('pages.home.testimonials.quote')}&quot;</p>
-                  <p className="font-semibold text-foreground">{t('pages.home.testimonials.nameRole')}</p>
-                  <p className="text-sm text-primary">{t('pages.home.testimonials.company')}</p>
+                  <p className="italic text-muted-foreground mb-4">&quot;{item.quote}&quot;</p>
+                  <p className="font-semibold text-foreground">{item.nameRole}</p>
+                  <p className="text-sm text-primary">{item.company}</p>
                 </CardContent>
               </Card>
             </motion.div>
@@ -254,7 +266,7 @@ const HomePage = () => {
           <p className="text-lg max-w-2xl mx-auto mb-10 opacity-90">
             {t('pages.home.ctaDesc', { defaultValue: 'Discover how ChexPro can provide you with the insights you need to make confident decisions. Get started today!' })}
           </p>
-          <div className="space-x-4">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
             <Button size="lg" asChild>
               <Link to="/request-demo">{t('pages.home.ctaDemoButton', { defaultValue: 'Request a Free Demo' })}</Link>
             </Button>

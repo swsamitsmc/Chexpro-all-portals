@@ -27,11 +27,20 @@
     "company": "ChexPro",
     "description": "Professional background screening services",
     "quickLinks": "Quick Links",
+    "aboutUs": "About Us",
+    "ourServices": "Our Services",
+    "compliance": "Compliance",
+    "resources": "Resources",
+    "contact": "Contact Us",
     "legal": "Legal",
     "privacyPolicy": "Privacy Policy",
     "termsOfService": "Terms of Service",
     "fcraCompliance": "FCRA Compliance",
-    "dataSecurityPage": "Data Security"
+    "dataSecurity": "Data Security",
+    "dataSecurityPage": "Data Security",
+    "connectWithUs": "Connect With Us",
+    "copyright": "© {{year}} ChexPro. All rights reserved.",
+    "disclaimer": "ChexPro provides background screening solutions in compliance with applicable laws and regulations. Information provided is subject to verification and legal use."
   },
   "cookies": {
     "banner": "We use cookies to enhance your experience. By continuing to visit this site you agree to our use of cookies.",
@@ -41,7 +50,53 @@
     "analytics": "Analytics",
     "marketing": "Marketing"
   },
+  "demo": {
+    "privacyNote": "By submitting this form, you agree to be contacted by ChexPro about our services. Your information will be handled in accordance with our Privacy Policy."
+  },
+  "contact": {
+    "contactForm": "Contact Form",
+    "firstName": "Full Name",
+    "companyName": "Company Name",
+    "emailAddress": "Email Address",
+    "phoneNumber": "Phone Number",
+    "servicesInterested": "Services of Interest",
+    "message": "Message",
+    "sendMessage": "Send Message",
+    "privacyNote": "We respect your privacy. Your information will only be used to respond to your inquiry.",
+    "officeHours": "Office Hours",
+    "findOnMap": "Find Us on the Map",
+    "contactInformation": "Contact Information",
+    "emailUs": "Email Us",
+    "callUs": "Call Us",
+    "ourOffice": "Our Office",
+    "officeHoursWeekdays": "Monday - Friday: 9:00 AM - 6:00 PM (EST)",
+    "officeHoursWeekend": "Saturday - Sunday: Closed",
+    "phoneText": "US: {{usNumber}}   Canada: {{caNumber}}"
+  },
   "pages": {
+    "resources": {
+      "metaTitle": "Resources - ChexPro | Guides, FAQs & Downloads",
+      "metaDescription": "Access helpful resources, industry guides, FAQs, and downloads from ChexPro to aid your background screening process.",
+      "heroTitle": "Resources & Insights",
+      "heroSubtitle": "Stay informed with our latest articles, guides, and answers to frequently asked questions about background screening.",
+      "tabs": { "blog": "Blog", "faq": "FAQs" },
+      "filters": { "all": "All" },
+      "loading": "Loading…",
+      "empty": "No posts yet.",
+      "prev": "Previous",
+      "next": "Next",
+      "pageXofY": "Page {{page}} of {{pageCount}}",
+      "ctaTitle": "Can't Find What You're Looking For?",
+      "ctaDesc": "Our team is here to help. If you have specific questions or need more information, please reach out to us.",
+      "ctaButton": "Contact Support",
+      "faqs": [
+        { "question": "What is the typical turnaround time for a background check?", "answer": "Turnaround times vary by search type; most complete in 24–72 hours. Some county or international checks may take longer." },
+        { "question": "Is ChexPro FCRA compliant?", "answer": "Yes. We adhere to the FCRA and all applicable laws, prioritizing data privacy and accuracy." },
+        { "question": "What information is needed to run a background check?", "answer": "Typically, the applicant's full name, date of birth, SSN (for US checks), and current address. Consent is always required." },
+        { "question": "How do I dispute information on my report?", "answer": "Contact our support team or follow the instructions included with your report to initiate a dispute. We investigate promptly." },
+        { "question": "What payment types do you accept?", "answer": "We accept major credit cards and ACH for business accounts. Contact sales for billing options." }
+      ]
+    },
     "home": {
       "title": "Home - ChexPro | Reliable Background Checks, Streamlined",
       "metaDescription": "ChexPro provides fast, accurate, and compliant background screening solutions for businesses, landlords, staffing firms, and individuals. Make confident decisions.",
@@ -76,27 +131,40 @@
       },
       "trust": {
         "title": "Committed to Compliance and Security",
-        "desc": "We adhere to the strictest industry standards, including FCRA compliance, to ensure data accuracy and protect sensitive information. Your trust is our top priority.",
+        "desc": "We adhere to strict FCRA and data security standards to ensure accuracy, privacy, and responsible use of information.",
         "badges": {
           "fcra": "FCRA Compliant",
           "pbs": "PBSA Member",
-          "soc2": "SOC 2 Complient",
+          "soc2": "SOC 2 Compliant",
           "encryption": "Data Encryption"
         },
         "clients": {
-          "title": "Trusted by leading companies (Client Logos Placeholder)",
-          "logo1Alt": "Client Logo 1 Placeholder",
-          "logo2Alt": "Client Logo 2 Placeholder",
-          "logo3Alt": "Client Logo 3 Placeholder",
-          "logo4Alt": "Client Logo 4 Placeholder"
+          "title": "Trusted by leading companies and organizations",
+          "staffingmindAlt": "StaffingMind Canada Inc. logo",
+          "globalLogisticsAlt": "Global Logistics Management Inc. logo",
+          "secureInvestmentsAlt": "Secure-Investments Ltd. logo"
         }
       },
       "testimonials": {
         "title": "What Our Clients Say",
         "subtitle": "Real stories from satisfied clients who trust ChexPro for their screening needs.",
-        "quote": "ChexPro has transformed our hiring process. Their speed and accuracy are unmatched. Highly recommended! (Placeholder)",
-        "nameRole": "John Doe, HR Manager (Placeholder)",
-        "company": "Tech Solutions Inc. (Placeholder)"
+        "list": [
+          {
+            "quote": "ChexPro has transformed our hiring process. Their speed and accuracy are unmatched. Highly recommended!",
+            "nameRole": "Tanima Thakur, VP HR and Recruitment",
+            "company": "StaffingMind Canada Inc."
+          },
+          {
+            "quote": "The platform is incredibly user-friendly, and the customer support is top-notch. We got our results in record time.",
+            "nameRole": "Jane Smith, Operations Manager",
+            "company": "Global Logistics Management Inc."
+          },
+          {
+            "quote": "Switching to ChexPro was a game-changer for our compliance team. Their reports are thorough and easy to understand.",
+            "nameRole": "David Lee, Compliance Officer",
+            "company": "Secure-Investments Ltd."
+          }
+        ]
       }
     },
     "why": {
@@ -151,9 +219,68 @@
         }
       }
     },
-    "services": {
+    "servicesInfo": {
       "title": "Services - ChexPro | Our Background Screening Solutions",
       "metaDescription": "Discover ChexPro's comprehensive suite of background screening services, including criminal checks, employment verification, education checks, and more tailored solutions.",
+      "ctaTitle": "Ready for a Custom Screening Solution?",
+      "ctaDesc": "Let our experts help you design the perfect background check package for your unique requirements.",
+      "ctaButton": "Request a Custom Quote"
+    },
+    "servicesPage": {
+      "title": "Our Comprehensive Screening Services",
+      "metaDescription": "Explore ChexPro's full suite of background screening services. From criminal record checks to international screening, we provide tailored solutions for every need.",
+      "heading": "Our Comprehensive Screening Services",
+      "intro": "ChexPro provides a full suite of reliable and compliant background check services tailored to your specific needs.",
+      "services": {
+        "criminal": {
+          "title": "Comprehensive Criminal Record Checks",
+          "shortDesc": "In-depth search of local, county, state, and federal criminal records to ensure a safe and secure workplace.",
+          "details": "Our extensive criminal record checks provide critical information to help you assess risk and maintain a secure environment. We access a vast network of databases, including national criminal records, sex offender registries, county and statewide repositories, and federal court records. This service is essential for any role, especially those requiring a high degree of trust and security."
+        },
+        "employment": {
+          "title": "Thorough Employment Verification",
+          "shortDesc": "Confirm past employment history, including dates, positions, and reasons for leaving.",
+          "details": "Verify the accuracy and integrity of an applicant's claimed work experience. Our dedicated team contacts previous employers to confirm job titles, dates of employment, job duties, and reasons for leaving (where permissible by law). This ensures you hire candidates with a proven and honest track record."
+        },
+        "education": {
+          "title": "Reliable Education Verification",
+          "shortDesc": "Verify academic qualifications, degrees, certifications, and attendance from any institution worldwide.",
+          "details": "Confirm educational credentials directly from the source. We verify degrees, diplomas, certificates, attendance dates, and honors from high schools, colleges, universities, and vocational schools across the globe. This is essential for roles where specific educational qualifications are a mandatory requirement."
+        },
+        "credit": {
+          "title": "FCRA-Compliant Credit Checks",
+          "shortDesc": "Assess financial responsibility and trustworthiness for relevant positions with full legal compliance.",
+          "details": "Provided in strict compliance with the FCRA, our employment credit reports offer valuable insights into an applicant's financial history and sense of responsibility. This is particularly relevant for positions involving financial management, access to cash, or fiduciary duties. This check always requires explicit applicant consent."
+        },
+        "reference": {
+          "title": "In-Depth Reference Checks",
+          "shortDesc": "Gain qualitative insights through professional and personal reference interviews.",
+          "details": "Go beyond the resume and gain deeper insights into an applicant's skills, work ethic, reliability, and character. Our team conducts structured, professional interviews with their provided references to gather the qualitative data you need to support your hiring decision."
+        },
+        "drug": {
+          "title": "Streamlined Drug Screening Coordination",
+          "shortDesc": "Effortless coordination of pre-employment and ongoing drug testing with a nationwide network of labs.",
+          "details": "We partner with certified labs across the country to offer a comprehensive range of drug testing panels (e.g., 5-panel, 10-panel, custom panels). Our streamlined coordination service simplifies scheduling, sample collection, and results management, helping you maintain a safe and drug-free workplace."
+        },
+        "health": {
+          "title": "Comprehensive Health & Medical Screening",
+          "shortDesc": "Facilitate job-specific health and medical assessments to ensure candidate fitness and safety.",
+          "details": "We coordinate a variety of health screenings, including physical exams, DOT physicals, and other occupational health assessments required for specific roles. We work with a network of healthcare providers to ensure compliance with job-related health and safety standards."
+        },
+        "international": {
+          "title": "Global International Screening",
+          "shortDesc": "Comprehensive global checks for candidates with international work or education backgrounds.",
+          "details": "For candidates who have lived, worked, or studied abroad, we offer international criminal record checks, employment verifications, and education verifications. Our global network allows us to provide comprehensive screening, with coverage and availability varying by country."
+        },
+        "tenant": {
+          "title": "Reliable Tenant Screening",
+          "shortDesc": "Comprehensive screening for landlords and property managers to protect your investment.",
+          "details": "Make informed rental decisions and mitigate risks. Our tenant screening package includes credit reports, eviction history, criminal background checks, and income verification to help you select reliable and responsible tenants for your properties."
+        }
+      },
+      "industriesHeading": "Tailored Solutions for Your Industry",
+      "industriesIntro": "We understand that different sectors have unique screening requirements. ChexPro offers specialized solutions.",
+      "industriesNote": "Don't see your industry? We can create custom packages.",
       "ctaTitle": "Ready for a Custom Screening Solution?",
       "ctaDesc": "Let our experts help you design the perfect background check package for your unique requirements.",
       "ctaButton": "Request a Custom Quote"
@@ -163,11 +290,51 @@
     },
     "terms": {
       "title": "Terms of Service",
+      "intro": "Welcome to ChexPro. By using our background screening services, you agree to the following terms and conditions:",
+      "useOfServicesTitle": "Use of Services",
+      "useOfServices": [
+        "Services are provided for lawful purposes only",
+        "You must provide accurate and complete information",
+        "Unauthorized use or access is strictly prohibited"
+      ],
+      "limitationOfLiabilityTitle": "Limitation of Liability",
+      "limitationOfLiability": "ChexPro is not liable for any damages resulting from the use or inability to use our services, including but not limited to loss of data, business interruption, or inaccuracies in screening results.",
+      "userResponsibilitiesTitle": "User Responsibilities",
+      "userResponsibilities": [
+        "Maintain confidentiality of your account credentials",
+        "Comply with all applicable laws and regulations",
+        "Report any unauthorized activity immediately"
+      ],
+      "changesTitle": "Changes to Terms",
+      "changes": "ChexPro reserves the right to update these terms at any time. Continued use of our services constitutes acceptance of any changes.",
+      "contactLine": "For questions regarding these terms, please contact us at info@chexpro.com.",
       "lastUpdated": "Last updated",
       "effectiveDate": "Effective Date"
     },
     "privacy": {
       "title": "Privacy Policy",
+      "intro": "At ChexPro, your privacy is our top priority. We are committed to protecting your personal information and maintaining transparency about how we collect, use, and safeguard your data.",
+      "infoWeCollectTitle": "Information We Collect",
+      "infoWeCollect": [
+        "Personal identification information (Name, email address, phone number, etc.)",
+        "Background check data provided by you or authorized third parties",
+        "Usage data and cookies for website analytics"
+      ],
+      "howWeUseTitle": "How We Use Your Information",
+      "howWeUse": [
+        "To provide and improve our background screening services",
+        "To communicate with you regarding your requests and account",
+        "To comply with legal and regulatory requirements"
+      ],
+      "dataProtectionTitle": "Data Protection",
+      "dataProtection": "We implement industry-standard security measures to protect your data from unauthorized access, disclosure, or alteration. All sensitive information is encrypted and stored securely.",
+      "yourRightsTitle": "Your Rights",
+      "yourRights": [
+        "Access, update, or delete your personal information",
+        "Opt-out of marketing communications",
+        "Request information about our data practices"
+      ],
+      "contactLine": "For questions or requests regarding your privacy, please contact us at info@chexpro.com.",
       "lastUpdated": "Last updated",
       "effectiveDate": "Effective Date",
       "contactUs": "Contact us"
@@ -193,7 +360,22 @@
       "contact": "For questions about our data security practices, please contact us at info@chexpro.com."
     },
     "fcraCompliance": {
-      "title": "FCRA Compliance"
+      "title": "FCRA Compliance",
+      "summary": "ChexPro is fully compliant with the Fair Credit Reporting Act (FCRA), ensuring that all background screening services are conducted lawfully and ethically.",
+      "keyPrinciples": "Key FCRA Principles",
+      "principles": [
+        "Consent: We obtain written consent before conducting any background check",
+        "Accuracy: We strive to provide accurate and up-to-date information",
+        "Adverse Action: We provide required notifications if adverse action is taken based on screening results",
+        "Access: Individuals have the right to access and dispute information in their reports"
+      ],
+      "yourRightsTitle": "Your Rights Under FCRA",
+      "rights": [
+        "Receive a copy of your background report",
+        "Dispute inaccurate or incomplete information",
+        "Be informed if information in your report is used against you"
+      ],
+      "contactLine": "For more information about FCRA compliance, please contact us at info@chexpro.com."
     },
     "clientLogin": {
       "title": "Client Login"
@@ -202,23 +384,156 @@
       "ourStory": "Our Story",
       "ourMission": "Our Mission",
       "whyChooseUs": "Why Choose Us",
-      "ourTeam": "Our Team"
+      "ourTeam": "Our Team",
+      "values": {
+        "integrity": {
+          "title": "Integrity",
+          "desc": "Upholding the highest ethical standards in all our operations and interactions."
+        },
+        "accuracy": {
+          "title": "Accuracy",
+          "desc": "Committing to providing precise and reliable information through meticulous verification processes."
+        },
+        "clientCentricity": {
+          "title": "Client-Centricity",
+          "desc": "Placing our clients' needs at the forefront, offering tailored solutions and exceptional support."
+        },
+        "innovation": {
+          "title": "Innovation",
+          "desc": "Continuously advancing our technology and methods to deliver cutting-edge screening services."
+        },
+        "compliance": {
+          "title": "Compliance",
+          "desc": "Adhering strictly to all relevant regulations, including the FCRA, to ensure lawful and fair practices."
+        }
+      },
+      "missionVision": {
+        "title": "Our Mission & Vision",
+        "mission": {
+          "title": "Mission",
+          "desc": "To provide comprehensive, accurate, and timely background screening services that empower our clients to make informed decisions with confidence, fostering safer communities and workplaces."
+        },
+        "vision": {
+          "title": "Vision",
+          "desc": "To be the most trusted and technologically advanced partner in background screening, recognized for our commitment to integrity, innovation, and client success."
+        }
+      },
+      "coreValues": {
+        "title": "Our Core Values",
+        "subtitle": "The principles that guide every aspect of our business and client interactions."
+      },
+      "ourTeamSection": {
+        "title": "Our Team",
+        "desc1": "ChexPro is powered by a dedicated team of experienced professionals, researchers, and technology experts passionate about delivering excellence in background screening. Our collective expertise ensures that we stay ahead of industry trends and provide our clients with the highest quality service. (Placeholder for more detailed team info).",
+        "desc2": "We invest in continuous training and development to maintain our edge in compliance, data analysis, and customer support."
+      },
+      "complianceCommitment": {
+        "title": "Commitment to Compliance",
+        "desc": "Compliance is not just a requirement; it's a cornerstone of our operations. We are deeply committed to upholding the Fair Credit Reporting Act (FCRA) and all applicable federal, state, and local laws. Our processes are designed to ensure accuracy, data privacy, and fair information practices.",
+        "button": "Learn More About Our Compliance Standards"
+      },
+      "partner": {
+        "title": "Partner with ChexPro",
+        "desc": "Ready to experience the ChexPro advantage? Contact us today to discuss your background screening needs.",
+        "button": "Get in Touch"
+      }
     },
     "requestDemo": {
-      "firstName": "First Name",
-      "lastName": "Last Name",
-      "email": "Email",
-      "phone": "Phone",
-      "company": "Company",
+      "metaTitle": "Request a Demo - ChexPro | Streamline Your Screening",
+      "metaDescription": "Request a free demo of ChexPro's background screening platform to see how our streamlined solutions can benefit your business.",
+      "heroTitle": "Request a Demo or Quote",
+      "heroSubtitle": "See ChexPro in action and learn how our solutions can meet your organization's specific needs. Fill out the form below, and we'll be in touch.",
+      "formTitle": "Demo / Quote Request Form",
+      "formDescription": "Provide your details, and our team will contact you promptly.",
+      "fullName": "Full Name",
+      "fullNamePlaceholder": "John Doe",
       "jobTitle": "Job Title",
-      "message": "Message"
+      "jobTitlePlaceholder": "HR Manager",
+      "companyName": "Company Name",
+      "companyNamePlaceholder": "Acme Corp",
+      "workEmail": "Work Email Address",
+      "workEmailPlaceholder": "you@company.com",
+      "phoneNumber": "Phone Number",
+      "phoneNumberPlaceholder": "(555) 555-5555",
+      "estimatedScreenings": "Estimated Screenings per Year",
+      "estimatedScreeningsPlaceholder": "e.g., 50-100, 500+",
+      "servicesOfInterest": "Services of Interest",
+      "servicesOfInterestPlaceholder": "e.g., Criminal, Employment, Drug Screening",
+      "additionalInfo": "Additional Information or Questions",
+      "additionalInfoPlaceholder": "Tell us more about your needs...",
+      "submitRequest": "Submit Request",
+      "submitting": "Submitting...",
+      "whatToExpect": "What to Expect from Your Demo:",
+      "benefits": {
+        "personalized": "Personalized walkthrough of our platform.",
+        "streamline": "Discover how ChexPro can streamline your workflow.",
+        "questions": "Get answers to your specific questions."
+      },
+      "quickQuote": {
+        "title": "Need a Quick Quote?",
+        "description": "If you already know your requirements and just need pricing, please indicate \"Quote Request\" in your message. We'll provide a competitive proposal tailored to your volume and service needs."
+      },
+      "successTitle": "Demo Request Submitted!",
+      "successDescription": "Thank you! Our team will contact you soon to schedule your demo."
     },
     "contactUs": {
-      "getInTouch": "Get in Touch"
+      "getInTouch": "Get in Touch",
+      "heroSubtitle": "We're here to answer your questions and help you find the best screening solutions. Reach out to us today!"
     },
     "resources": {
       "downloadNow": "Download Now",
       "learnMore": "Learn More"
+    },
+    "compliance": {
+      "title": "Compliance - ChexPro | FCRA & Data Security Standards",
+      "metaDescription": "ChexPro adheres to strict FCRA compliance, data security, and privacy standards to ensure legal, ethical, and responsible background screening practices.",
+      "header": "Compliance & Legal Information",
+      "subheader": "At ChexPro, we prioritize adherence to legal standards and industry best practices to ensure the integrity and lawful use of our services.",
+      "ourCommitment": "Our Commitment to You",
+      "commitmentText": "ChexPro is dedicated to maintaining the highest standards of compliance and data security. We continuously monitor regulatory changes and update our systems and processes accordingly. Our goal is to provide you with reliable screening services while ensuring the rights and privacy of individuals are protected. If you have any questions about our compliance practices, please don't hesitate to contact us.",
+      "sections": {
+        "fcra": {
+          "title": "FCRA Compliance",
+          "summary": "ChexPro is fully committed to complying with the Fair Credit Reporting Act (FCRA).",
+          "details": [
+            "The FCRA is a federal law that regulates how consumer reporting agencies (CRAs) collect, use, and share consumer information.",
+            "We ensure that all our background screening processes adhere to FCRA requirements, including obtaining proper consent, providing consumers with copies of their reports, and following dispute resolution procedures.",
+            "Our platform is designed to help employers and other users meet their FCRA obligations, such as providing pre-adverse and adverse action notices.",
+            "We provide resources and training to our clients to help them understand their responsibilities under the FCRA."
+          ]
+        },
+        "dataSecurity": {
+          "title": "Data Security & Privacy",
+          "summary": "Protecting sensitive information is paramount at ChexPro.",
+          "details": [
+            "We employ robust security measures, including data encryption in transit and at rest, to safeguard personal information.",
+            "Our systems utilize multi-factor authentication, access controls, and regular security audits to prevent unauthorized access.",
+            "We adhere to industry best practices for data privacy and have implemented policies and procedures to manage data handling and retention responsibly.",
+            "Our infrastructure is designed for high availability and disaster recovery to ensure continuous service and data integrity."
+          ]
+        },
+        "disclaimers": {
+          "title": "Important Disclaimers",
+          "summary": "Key information regarding the use of our services and reports.",
+          "details": [
+            "Background check reports provided by ChexPro are for permissible purposes only as defined by the FCRA and other applicable laws.",
+            "Clients are responsible for using the information obtained from background checks in a manner consistent with all legal requirements, including anti-discrimination laws.",
+            "While ChexPro strives for maximum accuracy, information is sourced from various public and private databases, and occasional inaccuracies or outdated information may occur. We have processes for disputing and correcting information.",
+            "ChexPro does not provide legal advice. Clients should consult with their legal counsel regarding their specific compliance obligations."
+          ]
+        },
+        "clientResponsibilities": {
+          "title": "Client Responsibilities",
+          "summary": "Understanding your obligations when using ChexPro services.",
+          "details": [
+            "Obtain proper authorization and consent from individuals before requesting a background check.",
+            "Use background check information only for the permissible purpose stated at the time of request.",
+            "Comply with all FCRA requirements, including pre-adverse and adverse action notification processes if making an adverse decision based in whole or in part on a consumer report.",
+            "Securely handle and dispose of consumer reports and sensitive information.",
+            "Notify ChexPro of any disputes or inaccuracies found in reports."
+          ]
+        }
+      }
     }
   }
 }

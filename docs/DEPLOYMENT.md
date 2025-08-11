@@ -107,3 +107,19 @@ Access metrics at `/api/metrics` with proper authentication.
 ## Support
 
 For deployment support, refer to the technical documentation or contact the development team.
+
+How to set HEALTH_CHECK_TOKEN and METRICS_TOKEN
+In production, set these in your .env:
+HEALTH_CHECK_TOKEN=replace-with-long-random-string
+METRICS_TOKEN=replace-with-long-random-string
+Use them in the Authorization header:
+# Health
+curl -H "Authorization: Bearer $HEALTH_CHECK_TOKEN" http://localhost:3000/health
+# API docs
+curl -H "Authorization: Bearer $HEALTH_CHECK_TOKEN" http://localhost:3000/api/docs
+# Metrics
+curl -H "Authorization: Bearer $METRICS_TOKEN" http://localhost:3000/api/metrics
+In development, if unset, the server now prints temporary tokens at startup:
+Dev HEALTH_CHECK_TOKEN: <value>
+Dev METRICS_TOKEN: <value>
+Edits: server/utils/envValidator.js, server/index.js, docs/ToDo.md.

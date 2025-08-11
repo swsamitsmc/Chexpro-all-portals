@@ -8,9 +8,11 @@ if (!SESSION_SECRET && process.env.NODE_ENV === 'production') {
   console.warn('SESSION_SECRET environment variable is not set. Using a default secret for development. Set SESSION_SECRET in production for secure session management.');
 }
 
+const ACTIVE_SESSION_SECRET = SESSION_SECRET || 'dev-insecure-session-secret';
+
 
 function signSessionId(sessionId) {
-  return crypto.createHmac('sha256', SESSION_SECRET)
+  return crypto.createHmac('sha256', ACTIVE_SESSION_SECRET)
                .update(sessionId)
                .digest('hex');
 }

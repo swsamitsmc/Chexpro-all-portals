@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -7,6 +7,8 @@ import React, { useState } from 'react';
     import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
     import { motion } from 'framer-motion';
     import { BookOpen, HelpCircle, FileText, Lightbulb, ArrowRight } from 'lucide-react';
+    import { useTranslation } from 'react-i18next';
+    import { fetchStrapiPosts, fetchStrapiCategories } from '@/lib/strapiClient';
     import { Helmet } from 'react-helmet-async';
 
     const fadeInStagger = {
@@ -25,67 +27,51 @@ import React, { useState } from 'react';
     };
 
     const ResourcesPage = () => {
-      const blogPosts = [
-        {
-          id: 1,
-          title: 'Understanding the FCRA: A Guide for Employers',
-          date: 'May 15, 2025',
-          excerpt: 'The Fair Credit Reporting Act (FCRA) plays a crucial role in background screening. Learn its key provisions and how they impact your hiring process...',
-          category: 'Compliance',
-          imageAlt: 'Legal document with a magnifying glass',
-          imagePlaceholder: 'Legal document with a magnifying glass representing FCRA compliance.'
-        },
-        {
-          id: 2,
-          title: 'Top 5 Benefits of Comprehensive Background Screening',
-          date: 'May 10, 2025',
-          excerpt: 'Beyond just due diligence, thorough background checks offer numerous advantages for businesses of all sizes. Discover the key benefits...',
-          category: 'Best Practices',
-          imageAlt: 'Business people shaking hands',
-          imagePlaceholder: 'Business professionals shaking hands, symbolizing successful hiring.'
-        },
-        {
-          id: 3,
-          title: 'Navigating Drug Screening in the Modern Workplace',
-          date: 'May 5, 2025',
-          excerpt: 'Drug screening policies are evolving. Understand the current landscape, types of tests, and legal considerations for your organization...',
-          category: 'Screening Services',
-          imageAlt: 'Scientific lab equipment',
-          imagePlaceholder: 'Scientific lab equipment representing drug screening processes.'
-        },
-        {
-          id: 4,
-          title: 'How to Read and Interpret a Background Check Report',
-          date: 'April 28, 2025',
-          excerpt: 'A background check report contains valuable information, but understanding it is key. This guide breaks down common sections and terms...',
-          category: 'How-To Guides',
-          imageAlt: 'Person reviewing a report',
-          imagePlaceholder: 'Person carefully reviewing a detailed report.'
-        },
-      ];
+      const { t, i18n } = useTranslation();
+      const currentLocale = useMemo(() => (i18n.language || 'en').split('-')[0], [i18n.language]);
+      const [blogPosts, setBlogPosts] = useState([]);
+      const [page, setPage] = useState(1);
+      const [pageCount, setPageCount] = useState(1);
+      const [isLoading, setIsLoading] = useState(true);
+      const [error, setError] = useState(null);
+      const [categories, setCategories] = useState([]);
+      const [activeCategory, setActiveCategory] = useState('all');
+      useEffect(() => {
+        let isActive = true;
+        setIsLoading(true);
+        setError(null);
+        const categorySlug = activeCategory !== 'all' ? activeCategory : undefined;
+        fetchStrapiPosts({ locale: currentLocale, page, pageSize: 9, categorySlug })
+          .then(({ posts, pagination }) => {
+            if (!isActive) return;
+            setBlogPosts(posts);
+            setPageCount(pagination.pageCount || 1);
+          })
+          .catch((err) => {
+            if (!isActive) return;
+            // Provide more debug info for 400s
+            setError(err.message || 'Failed to load posts');
+          })
+          .finally(() => isActive && setIsLoading(false));
+        return () => {
+          isActive = false;
+        };
+      }, [currentLocale, page, activeCategory]);
 
-      const faqs = [
-        {
-          question: 'What is the typical turnaround time for a background check?',
-          answer: 'Turnaround times can vary depending on the complexity of the search and the types of checks ordered. Most common searches are completed within 24-72 hours. Some searches, like county criminal record searches or international checks, may take longer.'
-        },
-        {
-          question: 'Is ChexPro FCRA compliant?',
-          answer: 'Yes, ChexPro is fully compliant with the Fair Credit Reporting Act (FCRA) and all applicable federal, state, and local laws. We are committed to upholding the highest standards of data privacy and accuracy.'
-        },
-        {
-          question: 'What information is needed to run a background check?',
-          answer: 'Typically, you will need the applicant\'s full name, date of birth, Social Security number (for US checks), and current address. For employment or education verification, details about previous employers or institutions are also required. Applicant consent is always necessary.'
-        },
-        {
-          question: 'How do I dispute information on my background check report?',
-          answer: 'If you believe there is inaccurate or incomplete information on your report, you have the right to dispute it under the FCRA. Please contact our support team or follow the instructions provided with your report to initiate a dispute. We will investigate and correct any verified inaccuracies promptly.'
-        },
-        {
-          question: 'What types of payment do you accept?',
-          answer: 'We accept various payment methods, including major credit cards and ACH transfers for business accounts. Please contact our sales team for specific billing and payment options.'
-        },
-      ];
+      useEffect(() => {
+        let active = true;
+        fetchStrapiCategories({ locale: currentLocale })
+          .then((cats) => {
+            if (!active) return;
+            setCategories(cats);
+          })
+          .catch(() => {});
+        return () => {
+          active = false;
+        };
+      }, [currentLocale]);
+
+      const faqs = t('pages.resources.faqs', { returnObjects: true, defaultValue: [] });
       
       const faqSchema = {
         "@context": "https://schema.org",
@@ -106,8 +92,8 @@ import React, { useState } from 'react';
       return (
         <PageTransition>
           <Helmet>
-        <title>Resources - ChexPro | Guides, FAQs & Downloads</title>
-        <meta name="description" content="Access helpful resources, industry guides, frequently asked questions (FAQs), and downloadable content from ChexPro to aid your background screening process." />
+        <title>{t('pages.resources.metaTitle')}</title>
+        <meta name="description" content={t('pages.resources.metaDescription')} />
         <script type="application/ld+json">
           {JSON.stringify(faqSchema)}
         </script>
@@ -124,13 +110,13 @@ import React, { useState } from 'react';
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.1}}
               >
-                Resources & Insights
+                {t('pages.resources.heroTitle', { defaultValue: 'Resources & Insights' })}
               </motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                Stay informed with our latest articles, guides, and answers to frequently asked questions about background screening.
+                {t('pages.resources.heroSubtitle', { defaultValue: 'Stay informed with our latest articles, guides, and FAQs about background screening.' })}
               </motion.p>
             </div>
           </PageSection>
@@ -143,7 +129,7 @@ import React, { useState } from 'react';
                 className="text-lg px-6 py-3 rounded-none border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary hover:bg-primary/10 hover:text-primary"
                 data-state={activeTab === 'blog' ? 'active' : ''}
               >
-                <FileText className="mr-2 h-5 w-5"/> Blog
+                <FileText className="mr-2 h-5 w-5"/> {t('pages.resources.tabs.blog', { defaultValue: 'Blog' })}
               </Button>
               <Button 
                 variant={activeTab === 'faq' ? 'default' : 'ghost'} 
@@ -151,7 +137,7 @@ import React, { useState } from 'react';
                 className="text-lg px-6 py-3 rounded-none border-b-2 data-[state=active]:border-primary data-[state=active]:text-primary hover:bg-primary/10 hover:text-primary"
                 data-state={activeTab === 'faq' ? 'active' : ''}
               >
-                <HelpCircle className="mr-2 h-5 w-5"/> FAQs
+                <HelpCircle className="mr-2 h-5 w-5"/> {t('pages.resources.tabs.faq', { defaultValue: 'FAQs' })}
               </Button>
             </div>
 
@@ -166,14 +152,45 @@ import React, { useState } from 'react';
                 whileInView="visible"
                 viewport={{ once: true, amount: 0.1 }}
               >
+                <div className="col-span-full flex flex-wrap items-center gap-3 mb-2">
+                  <Button
+                    variant={activeCategory === 'all' ? 'default' : 'outline'}
+                    onClick={() => { setActiveCategory('all'); setPage(1); }}
+                  >
+                    {t('pages.resources.filters.all', { defaultValue: 'All' })}
+                  </Button>
+                  {categories.map((cat) => (
+                    <Button
+                      key={cat.slug}
+                      variant={activeCategory === cat.slug ? 'default' : 'outline'}
+                      onClick={() => { setActiveCategory(cat.slug); setPage(1); }}
+                    >
+                      {cat.name}
+                    </Button>
+                  ))}
+                </div>
+                {isLoading && (
+                  <div className="col-span-full text-center text-muted-foreground">{t('pages.resources.loading', { defaultValue: 'Loading…' })}</div>
+                )}
+                {error && (
+                  <div className="col-span-full text-center text-destructive">{error}</div>
+                )}
+                {!isLoading && !error && blogPosts.length === 0 && (
+                  <div className="col-span-full text-center text-muted-foreground">{t('pages.resources.empty', { defaultValue: 'No posts yet.' })}</div>
+                )}
                 {blogPosts.map((post) => (
                   <motion.div key={post.id} variants={fadeInItem}>
                     <Card className="h-full overflow-hidden flex flex-col group hover:shadow-xl transition-all duration-300 ease-in-out">
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
-                        <img  
-                          alt={post.imageAlt} 
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                         src="https://images.unsplash.com/photo-1675023112817-52b789fd2ef0" />
+                        {post.imageUrl ? (
+                          <img  
+                            alt={post.imageAlt} 
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                            src={post.imageUrl}
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-muted" aria-hidden />
+                        )}
                          <div className="absolute top-0 left-0 bg-primary text-primary-foreground text-xs font-semibold px-2 py-1 m-2 rounded">
                           {post.category}
                         </div>
@@ -186,13 +203,32 @@ import React, { useState } from 'react';
                         <p className="text-sm text-muted-foreground mb-4">{post.excerpt}</p>
                       </CardContent>
                       <div className="p-6 pt-0">
-                        <Button variant="link" className="p-0 text-primary group-hover:underline">
-                          Read More <ArrowRight className="ml-2 h-4 w-4" />
+                        <Button asChild variant="link" className="p-0 text-primary group-hover:underline">
+                          <Link to={`/resources/${post.slug}`}>
+                            {t('resources.learnMore', { defaultValue: 'Read More' })} <ArrowRight className="ml-2 h-4 w-4" />
+                          </Link>
                         </Button>
                       </div>
                     </Card>
                   </motion.div>
                 ))}
+                <div className="col-span-full flex items-center justify-center gap-4 mt-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.max(1, p - 1))}
+                    disabled={page <= 1}
+                  >
+                    {t('pages.resources.prev', { defaultValue: 'Previous' })}
+                  </Button>
+                  <span className="text-sm text-muted-foreground">{t('pages.resources.pageXofY', { page, pageCount, defaultValue: 'Page {{page}} of {{pageCount}}' })}</span>
+                  <Button
+                    variant="outline"
+                    onClick={() => setPage((p) => Math.min(pageCount, p + 1))}
+                    disabled={page >= pageCount}
+                  >
+                    {t('pages.resources.next', { defaultValue: 'Next' })}
+                  </Button>
+                </div>
               </motion.div>
             )}
 
@@ -216,7 +252,7 @@ import React, { useState } from 'react';
                         <AccordionItem value={`faq-${index}`} className="border-b-0">
                           <AccordionTrigger className="p-6 text-left hover:no-underline">
                             <div className="flex items-center space-x-3">
-                              <Lightbulb className="h-5 w-5 text-accent flex-shrink-0"/>
+                              <Lightbulb className="h-5 w-5 text-primary flex-shrink-0"/>
                               <span className="font-medium text-foreground">{faq.question}</span>
                             </div>
                           </AccordionTrigger>
@@ -233,12 +269,12 @@ import React, { useState } from 'react';
           </PageSection>
 
           <PageSection className="bg-secondary text-center">
-            <h2 className="text-3xl font-bold text-foreground mb-4">Can't Find What You're Looking For?</h2>
+            <h2 className="text-3xl font-bold text-foreground mb-4">{t('pages.resources.ctaTitle', { defaultValue: "Can't Find What You're Looking For?" })}</h2>
             <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-8">
-              Our team is here to help. If you have specific questions or need more information, please reach out to us.
+              {t('pages.resources.ctaDesc', { defaultValue: 'Our team is here to help. If you have specific questions or need more information, please reach out to us.' })}
             </p>
             <Button size="lg" asChild>
-              <Link to="/contact">Contact Support</Link>
+              <Link to="/contact">{t('pages.resources.ctaButton', { defaultValue: 'Contact Support' })}</Link>
             </Button>
           </PageSection>
         </PageTransition>

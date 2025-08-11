@@ -72,16 +72,29 @@ import { useTranslation } from 'react-i18next';
 
           if (response.ok) {
             toast({
-              title: "Demo Request Submitted!",
-              description: "Thank you! Our team will contact you soon to schedule your demo.",
+              title: t('pages.requestDemo.successTitle'),
+              description: t('pages.requestDemo.successDescription'),
               variant: "default",
             });
             setFormData({ name: '', company: '', jobTitle: '', email: '', phone: '', estScreenings: '', servicesOfInterest: '', message: '' });
           } else {
-            const errorData = await response.json();
-            const errorMessage = errorData.errors && errorData.errors.length > 0 
-              ? errorData.errors.map(err => err.msg).join(', ')
-              : 'An unexpected error occurred. Please try again.';
+            let errorMessage = 'An unexpected error occurred. Please try again.';
+            let payload = {};
+            try { payload = await response.json(); } catch {}
+            if (payload.errors?.length) {
+              errorMessage = payload.errors.map(err => err.msg).join(', ');
+            } else if (payload.description) {
+              errorMessage = payload.description;
+            } else if (payload.error) {
+              errorMessage = payload.error;
+            }
+            if (response.status === 403 && (payload.error || '').toLowerCase().includes('csrf')) {
+              try {
+                const r = await fetch('/api/form/csrf-token');
+                const d = await r.json();
+                setCsrfToken(d.csrfToken || '');
+              } catch {}
+            }
             throw new Error(errorMessage);
           }
         } catch (error) {
@@ -96,16 +109,16 @@ import { useTranslation } from 'react-i18next';
       };
       
       const benefits = [
-        { icon: <CalendarCheck className="h-6 w-6 text-primary" />, text: "Personalized walkthrough of our platform." },
-        { icon: <TrendingUp className="h-6 w-6 text-primary" />, text: "Discover how ChexPro can streamline your workflow." },
-        { icon: <CheckCircle className="h-6 w-6 text-primary" />, text: "Get answers to your specific questions." },
+        { icon: <CalendarCheck className="h-6 w-6 text-primary" />, text: t('pages.requestDemo.benefits.personalized') },
+        { icon: <TrendingUp className="h-6 w-6 text-primary" />, text: t('pages.requestDemo.benefits.streamline') },
+        { icon: <CheckCircle className="h-6 w-6 text-primary" />, text: t('pages.requestDemo.benefits.questions') },
       ];
 
       return (
         <PageTransition>
           <Helmet>
-        <title>Request a Demo - ChexPro | Streamline Your Screening</title>
-        <meta name="description" content="Request a free demo of ChexPro's background screening platform to see how our streamlined solutions can benefit your business." />
+        <title>{t('pages.requestDemo.metaTitle')}</title>
+        <meta name="description" content={t('pages.requestDemo.metaDescription')} />
       </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">
@@ -118,12 +131,12 @@ import { useTranslation } from 'react-i18next';
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay:0.1}}
-              >Request a Demo or Quote</motion.h1>
+              >{t('pages.requestDemo.heroTitle')}</motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                See ChexPro in action and learn how our solutions can meet your organization&apos;s specific needs. Fill out the form below, and we&apos;ll be in touch.
+                {t('pages.requestDemo.heroSubtitle')}
               </motion.p>
             </div>
           </PageSection>
@@ -137,50 +150,50 @@ import { useTranslation } from 'react-i18next';
               >
                 <Card className="shadow-xl glassmorphism">
                   <CardHeader>
-                    <CardTitle className="text-2xl">Demo / Quote Request Form</CardTitle>
-                    <CardDescription>Provide your details, and our team will contact you promptly.</CardDescription>
+                    <CardTitle className="text-2xl">{t('pages.requestDemo.formTitle')}</CardTitle>
+                    <CardDescription>{t('pages.requestDemo.formDescription')}</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <form onSubmit={handleSubmit} className="space-y-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="name">Full Name</Label>
-                          <Input id="name" name="name" type="text" value={formData.name} onChange={handleChange} required placeholder="John Doe"/>
+                          <Label htmlFor="name">{t('pages.requestDemo.fullName')}</Label>
+                          <Input id="name" name="name" type="text" value={formData.name} onChange={handleChange} required placeholder={t('pages.requestDemo.fullNamePlaceholder')}/>
                         </div>
                         <div>
-                          <Label htmlFor="jobTitle">Job Title</Label>
-                          <Input id="jobTitle" name="jobTitle" type="text" value={formData.jobTitle} onChange={handleChange} required placeholder="HR Manager"/>
+                          <Label htmlFor="jobTitle">{t('pages.requestDemo.jobTitle')}</Label>
+                          <Input id="jobTitle" name="jobTitle" type="text" value={formData.jobTitle} onChange={handleChange} required placeholder={t('pages.requestDemo.jobTitlePlaceholder')}/>
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="company">Company Name</Label>
-                        <Input id="company" name="company" type="text" value={formData.company} onChange={handleChange} required placeholder="Acme Corp"/>
+                        <Label htmlFor="company">{t('pages.requestDemo.companyName')}</Label>
+                        <Input id="company" name="company" type="text" value={formData.company} onChange={handleChange} required placeholder={t('pages.requestDemo.companyNamePlaceholder')}/>
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div>
-                          <Label htmlFor="email">Work Email Address</Label>
-                          <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder="you@company.com"/>
+                          <Label htmlFor="email">{t('pages.requestDemo.workEmail')}</Label>
+                          <Input id="email" name="email" type="email" value={formData.email} onChange={handleChange} required placeholder={t('pages.requestDemo.workEmailPlaceholder')}/>
                         </div>
                         <div>
-                          <Label htmlFor="phone">Phone Number</Label>
-                          <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder="(555) 555-5555"/>
+                          <Label htmlFor="phone">{t('pages.requestDemo.phoneNumber')}</Label>
+                          <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} required placeholder={t('pages.requestDemo.phoneNumberPlaceholder')}/>
                         </div>
                       </div>
                       <div>
-                        <Label htmlFor="estScreenings">Estimated Screenings per Year</Label>
-                        <Input id="estScreenings" name="estScreenings" type="text" value={formData.estScreenings} onChange={handleChange} placeholder="e.g., 50-100, 500+"/>
+                        <Label htmlFor="estScreenings">{t('pages.requestDemo.estimatedScreenings')}</Label>
+                        <Input id="estScreenings" name="estScreenings" type="text" value={formData.estScreenings} onChange={handleChange} placeholder={t('pages.requestDemo.estimatedScreeningsPlaceholder')}/>
                       </div>
                       <div>
-                        <Label htmlFor="servicesOfInterest">Services of Interest</Label>
-                        <Input id="servicesOfInterest" name="servicesOfInterest" type="text" value={formData.servicesOfInterest} onChange={handleChange} placeholder="e.g., Criminal, Employment, Drug Screening"/>
+                        <Label htmlFor="servicesOfInterest">{t('pages.requestDemo.servicesOfInterest')}</Label>
+                        <Input id="servicesOfInterest" name="servicesOfInterest" type="text" value={formData.servicesOfInterest} onChange={handleChange} placeholder={t('pages.requestDemo.servicesOfInterestPlaceholder')}/>
                       </div>
                       <div>
-                        <Label htmlFor="message">Additional Information or Questions</Label>
-                        <Textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={4} placeholder="Tell us more about your needs..."/>
+                        <Label htmlFor="message">{t('pages.requestDemo.additionalInfo')}</Label>
+                        <Textarea id="message" name="message" value={formData.message} onChange={handleChange} rows={4} placeholder={t('pages.requestDemo.additionalInfoPlaceholder')}/>
                       </div>
                       <div>
                         <Button type="submit" className="w-full" disabled={isSubmitting}>
-                          {isSubmitting ? 'Submitting...' : 'Submit Request'}
+                          {isSubmitting ? t('pages.requestDemo.submitting') : t('pages.requestDemo.submitRequest')}
                           {!isSubmitting && <Send className="ml-2 h-4 w-4" />}
                         </Button>
                          <p className="text-xs text-muted-foreground mt-2">
@@ -197,7 +210,7 @@ import { useTranslation } from 'react-i18next';
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               >
-                <h2 className="text-3xl font-semibold text-foreground mb-2">What to Expect from Your Demo:</h2>
+                <h2 className="text-3xl font-semibold text-foreground mb-2">{t('pages.requestDemo.whatToExpect')}</h2>
                 <ul className="space-y-4">
                   {benefits.map(benefit => (
                      <li key={benefit.text} className="flex items-start space-x-3 p-3 rounded-md bg-secondary/50">
@@ -207,9 +220,9 @@ import { useTranslation } from 'react-i18next';
                   ))}
                 </ul>
                 <div className="mt-8 p-6 rounded-lg bg-primary/10 border border-primary/30">
-                  <h3 className="text-xl font-semibold text-primary mb-3">Need a Quick Quote?</h3>
+                  <h3 className="text-xl font-semibold text-primary mb-3">{t('pages.requestDemo.quickQuote.title')}</h3>
                   <p className="text-muted-foreground mb-4">
-                    If you already know your requirements and just need pricing, please indicate &quot;Quote Request&quot; in your message. We&apos;ll provide a competitive proposal tailored to your volume and service needs.
+                    {t('pages.requestDemo.quickQuote.description')}
                   </p>
                 </div>
                 <div className="mt-8">

@@ -73,10 +73,24 @@ import React, { useState, useEffect } from 'react';
             });
             setFormData({ name: '', company: '', email: '', phone: '', services: '', message: '' });
           } else {
-            const errorData = await response.json();
-            const errorMessage = errorData.errors && errorData.errors.length > 0 
-              ? errorData.errors.map(err => err.msg).join(', ')
-              : 'An unexpected error occurred. Please try again.';
+            let errorMessage = 'An unexpected error occurred. Please try again.';
+            let payload = {};
+            try { payload = await response.json(); } catch {}
+            if (payload.errors?.length) {
+              errorMessage = payload.errors.map(err => err.msg).join(', ');
+            } else if (payload.description) {
+              errorMessage = payload.description;
+            } else if (payload.error) {
+              errorMessage = payload.error;
+            }
+            // If CSRF failed (server likely restarted), refresh token for next attempt
+            if (response.status === 403 && (payload.error || '').toLowerCase().includes('csrf')) {
+              try {
+                const r = await fetch('/api/form/csrf-token');
+                const d = await r.json();
+                setCsrfToken(d.csrfToken || '');
+              } catch {}
+            }
             throw new Error(errorMessage);
           }
         } catch (error) {
@@ -90,35 +104,37 @@ import React, { useState, useEffect } from 'react';
         }
       };
 
+      const usPhone = "+1 872 256 1009";
+      const caPhone = "+1 437 922 7779";
       const contactInfo = [
-        { icon: <Mail className="h-6 w-6 text-primary" />, text: "info@chexpro.com", label: "Email Us"},
-        { icon: <Phone className="h-6 w-6 text-primary" />, text: "US : +1 872 256 1009   Canada: +1 437 922 7779", label: "Call Us"},
-        { icon: <MapPin className="h-6 w-6 text-primary" />, text: "30 N Gould St Ste R, Sheridan, WY 82801", label: "Our Office"},
+        { icon: <Mail className="h-6 w-6 text-primary" />, text: "info@chexpro.com", label: t('contact.emailUs', { defaultValue: 'Email Us' }) },
+        { icon: <Phone className="h-6 w-6 text-primary" />, text: t('contact.phoneText', { usNumber: usPhone, caNumber: caPhone, defaultValue: `US: ${usPhone}   Canada: ${caPhone}` }), label: t('contact.callUs', { defaultValue: 'Call Us' }) },
+        { icon: <MapPin className="h-6 w-6 text-primary" />, text: "30 N Gould St Ste R, Sheridan, WY 82801", label: t('contact.ourOffice', { defaultValue: 'Our Office' }) },
       ];
 
       return (
         <PageTransition>
           <Helmet>
-        <title>Contact Us - ChexPro | Get in Touch</title>
+        <title>{`${t('navigation.contact', { defaultValue: 'Contact Us' })} - ChexPro | ${t('pages.contactUs.getInTouch', { defaultValue: 'Get in Touch' })}`}</title>
         <meta name="description" content="Contact ChexPro for sales inquiries, customer support, or general questions about our background screening services. Reach out today." />
       </Helmet>
           <PageSection className="bg-gradient-to-b from-primary/5 via-transparent to-transparent pt-20 md:pt-28 pb-16 md:pb-24">
             <div className="container text-center">
               <motion.div 
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5}}
-                className="inline-block p-4 bg-primary/10 rounded-full mb-6"
+                className="inline-flex items-center justify-center w-24 h-24 bg-primary/10 rounded-full mb-6"
               >
-                <Send className="h-16 w-16 text-primary" />
+                <Send className="h-10 w-10 text-primary" />
               </motion.div>
               <motion.h1 
                 className="text-4xl md:text-5xl font-bold text-foreground mb-4"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay:0.1}}
-              >Get in Touch</motion.h1>
+              >{t('pages.contactUs.getInTouch', { defaultValue: 'Get in Touch' })}</motion.h1>
               <motion.p 
                 className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto"
                 initial={{ opacity:0, y: -20}} animate={{opacity:1, y:0}} transition={{duration: 0.5, delay: 0.2}}
               >
-                We're here to answer your questions and help you find the best screening solutions. Reach out to us today!
+                {t('pages.contactUs.heroSubtitle', { defaultValue: "We're here to answer your questions and help you find the best screening solutions. Reach out to us today!" })}
               </motion.p>
             </div>
           </PageSection>
@@ -182,7 +198,7 @@ import React, { useState, useEffect } from 'react';
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.6, ease: "easeOut", delay: 0.2 }}
               >
-                <h2 className="text-3xl font-semibold text-foreground mb-6">Contact Information</h2>
+                <h2 className="text-3xl font-semibold text-foreground mb-6">{t('contact.contactInformation', { defaultValue: 'Contact Information' })}</h2>
                 {contactInfo.map(info => (
                   <div key={info.label} className="flex items-start space-x-4 p-4 rounded-lg bg-secondary/50">
                     <div className="flex-shrink-0 mt-1">{info.icon}</div>
@@ -195,8 +211,8 @@ import React, { useState, useEffect } from 'react';
                 
                 <div className="mt-8">
                   <h3 className="text-xl font-semibold text-foreground mb-3">{t('contact.officeHours')}</h3>
-                  <p className="text-muted-foreground">Monday - Friday: 9:00 AM - 6:00 PM (EST)</p>
-                  <p className="text-muted-foreground">Saturday - Sunday: Closed</p>
+                  <p className="text-muted-foreground">{t('contact.officeHoursWeekdays', { defaultValue: 'Monday - Friday: 9:00 AM - 6:00 PM (EST)' })}</p>
+                  <p className="text-muted-foreground">{t('contact.officeHoursWeekend', { defaultValue: 'Saturday - Sunday: Closed' })}</p>
                 </div>
 
                  <div className="mt-8">
