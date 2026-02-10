@@ -120,7 +120,7 @@ jobs:
           RULE_ID=$(oci network nsg rules list --nsg-id ${{ secrets.OCI_NSG_OCID }} --all | jq -r --arg ip "$RUNNER_IP/32" '.data[] | select(.source==$ip and .description=="Temp GitHub Action Access") | .id')
           
           if [ ! -z "$RULE_ID" ]; then
-            oci network nsg rules remove --nsg-id ${{ secrets.OCI_NSG_OCID }} --security-rule-ids "[\"$RULE_ID\"]" --force
+            echo "y" | oci network nsg rules remove --nsg-id ${{ secrets.OCI_NSG_OCID }} --security-rule-ids "[\"$RULE_ID\"]"
             echo "Access revoked."
           else
             echo "Rule not found or already removed."
