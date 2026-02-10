@@ -80,7 +80,11 @@ import { useTranslation } from 'react-i18next';
           } else {
             let errorMessage = 'An unexpected error occurred. Please try again.';
             let payload = {};
-            try { payload = await response.json(); } catch {}
+            try { 
+              payload = await response.json(); 
+            } catch {
+              // Ignore JSON parse errors; payload will remain an empty object
+            }
             if (payload.errors?.length) {
               errorMessage = payload.errors.map(err => err.msg).join(', ');
             } else if (payload.description) {
@@ -93,7 +97,9 @@ import { useTranslation } from 'react-i18next';
                 const r = await fetch('/api/form/csrf-token');
                 const d = await r.json();
                 setCsrfToken(d.csrfToken || '');
-              } catch {}
+              } catch {
+                // Intentionally left empty: ignore JSON parse errors
+              }
             }
             throw new Error(errorMessage);
           }

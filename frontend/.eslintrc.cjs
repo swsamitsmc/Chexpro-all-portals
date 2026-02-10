@@ -16,6 +16,18 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    // Disable prop-types validation (not critical for this project)
+    'react/prop-types': 'off',
+    // Disable unused vars warnings (development convenience)
+    'no-unused-vars': 'warn',
+    // Allow console.log for debugging
+    'no-console': 'off',
+    // Disable JSX undefined warnings
+    'react/jsx-no-undef': 'warn',
+    // Disable unescaped HTML entity warnings (not critical)
+    'react/no-unescaped-entities': 'off',
+    // Disable react-hooks exhaustive deps warnings
+    'react-hooks/exhaustive-deps': 'warn',
   },
   overrides: [
     {

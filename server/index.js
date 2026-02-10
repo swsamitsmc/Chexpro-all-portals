@@ -27,8 +27,14 @@ import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import compression from 'compression';
+import hpp from 'hpp';
+import crypto from 'crypto';
+import { generateHelmetCsp, securityHeaders } from './utils/cspConfig.js';
+import mfaRoutes from './routes/mfa.js';
 import formRoutes from './routes/forms.js';
 import authRoutes from './routes/auth.js';
+import dashboardRoutes from './routes/dashboard.js';
 import { initializeDatabase } from './config/db.js';
 import { initializeSchema } from './utils/dbInit.js';
 import { cleanupExpiredTokens } from './utils/userManager.js';
@@ -42,46 +48,43 @@ const PORT = process.env.PORT || 3000;
 
 // --- Middleware ---
 
-// Security headers
+// Gzip compression for faster responses
+app.use(compression());
+
+// Prevent HTTP Parameter Pollution
+app.use(hpp());
+
+// Security headers with CSP
+// NOTE: CSP is configured in utils/cspConfig.js - using the centralized configuration
 app.use(helmet({
-  contentSecurityPolicy: process.env.NODE_ENV === 'production' ? {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-      scriptSrc: ["'self'"],
-      imgSrc: ["'self'", 'data:', 'https:'],
-    },
-  } : false,
+  contentSecurityPolicy: false, // Disabled - use cspConfig.js for CSP headers
   crossOriginEmbedderPolicy: false,
 }));
 
-// Enable CORS for specific origins only
+// Add additional security headers
+Object.entries(securityHeaders).forEach(([header, value]) => {
+  if (value !== undefined) {
+    app.use((req, res, next) => {
+      res.setHeader(header, value);
+      next();
+    });
+  }
+});
+
+// Enable CORS for specific origins only - Consolidated configuration
 const corsOptions = {
   origin: (origin, callback) => {
-    // In development, allow localhost origins
-    if (process.env.NODE_ENV !== 'production') {
-      const devOrigins = process.env.DEV_FRONTEND_URLS 
-        ? process.env.DEV_FRONTEND_URLS.split(',').map(o => o.trim())
-        : ['http://localhost:5173', 'http://localhost:3000'];
-      
-      if (!origin || devOrigins.some(o => origin.startsWith(o))) {
-        return callback(null, true);
-      }
+    // Use consolidated ALLOWED_ORIGINS for all environments
+    const allowedOrigins = process.env.ALLOWED_ORIGINS
+      ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+      : process.env.NODE_ENV !== 'production'
+        ? ['http://localhost:5173', 'http://localhost:3000']
+        : [];
+
+    if (!origin || allowedOrigins.some(o => origin.startsWith(o))) {
+      return callback(null, true);
     }
-    
-    // In production, only allow the configured frontend URL
-    if (process.env.NODE_ENV === 'production') {
-      const allowedOrigin = process.env.FRONTEND_URL;
-      if (!allowedOrigin) {
-        logger.warn('No FRONTEND_URL configured for production');
-        return callback(new Error('CORS: Frontend URL not configured'));
-      }
-      
-      if (!origin || origin === allowedOrigin) {
-        return callback(null, true);
-      }
-    }
-    
+
     logger.warn(`CORS denied for origin: ${encodeURIComponent(origin)}`);
     return callback(new Error('CORS: Origin not allowed'));
   },
@@ -120,6 +123,10 @@ app.use(globalLimiter);
 app.use('/api/form', formRoutes);
 // Auth-related routes for cookie demo
 app.use('/api/auth', authRoutes);
+// Dashboard routes for client portal
+app.use('/api/dashboard', dashboardRoutes);
+// MFA routes for two-factor authentication
+app.use('/api/mfa', mfaRoutes);
 
 // Health check endpoint to verify the server is running
 app.get('/health', (req, res) => {
@@ -207,15 +214,15 @@ app.use((err, req, res, next) => {
 // --- Start Server ---
 app.listen(PORT, async () => {
     console.log(`Backend server is running on http://localhost:${PORT}`);
-    // Dev convenience: autogenerate fallback tokens if missing
+    // Dev convenience: autogenerate fallback tokens if missing (without logging)
     if (process.env.NODE_ENV !== 'production') {
       if (!process.env.HEALTH_CHECK_TOKEN) {
-        process.env.HEALTH_CHECK_TOKEN = Math.random().toString(36).slice(2);
-        console.log(`Dev HEALTH_CHECK_TOKEN: ${process.env.HEALTH_CHECK_TOKEN}`);
+        process.env.HEALTH_CHECK_TOKEN = crypto.randomBytes(32).toString('hex');
+        logger.info('Generated development HEALTH_CHECK_TOKEN');
       }
       if (!process.env.METRICS_TOKEN) {
-        process.env.METRICS_TOKEN = Math.random().toString(36).slice(2);
-        console.log(`Dev METRICS_TOKEN: ${process.env.METRICS_TOKEN}`);
+        process.env.METRICS_TOKEN = crypto.randomBytes(32).toString('hex');
+        logger.info('Generated development METRICS_TOKEN');
       }
     }
     await initializeDatabase();

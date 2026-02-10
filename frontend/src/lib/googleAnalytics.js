@@ -2,6 +2,13 @@
 export function loadGoogleAnalytics(measurementId) {
   if (!measurementId || typeof window === 'undefined') return;
   if (window.GA_INITIALIZED) return;
+
+  // Validate measurement ID format (G-XXXXXXXXXX)
+  if (!/^G-[A-Z0-9]{10}$/.test(measurementId)) {
+    console.warn('Invalid GA measurement ID format:', measurementId);
+    return;
+  }
+
   window.GA_INITIALIZED = true;
 
   // Inject GA script

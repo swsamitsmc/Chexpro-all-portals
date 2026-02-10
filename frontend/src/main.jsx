@@ -12,7 +12,12 @@ import { I18nextProvider } from 'react-i18next';
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <HelmetProvider> 
-      <BrowserRouter>
+      <BrowserRouter 
+      future={{
+        v7_startTransition: true,
+        v7_relativeSplatPath: true
+      }}
+    >
         <I18nextProvider i18n={i18n}>
           <App />
           <Toaster />

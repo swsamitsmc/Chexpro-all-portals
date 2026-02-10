@@ -44,12 +44,12 @@ console.log(`   Port: ${smtpConfig.port || 'Not configured'}`);
 console.log(`   User: ${smtpConfig.user || 'Not configured'}`);
 console.log(`   Password: ${smtpConfig.pass ? '***configured***' : 'Not configured'}\n`);
 
-// Security configuration check
+// Security configuration check (sanitized output)
 console.log('🔐 Security configuration:');
-console.log(`   Session Secret: ${process.env.SESSION_SECRET ? '***configured***' : 'Not configured'}`);
-console.log(`   CSRF Secret: ${process.env.CSRF_SECRET ? '***configured***' : 'Not configured'}`);
-console.log(`   Health Check Token: ${process.env.HEALTH_CHECK_TOKEN ? '***configured***' : 'Not configured'}`);
-console.log(`   Metrics Token: ${process.env.METRICS_TOKEN ? '***configured***' : 'Not configured'}\n`);
+console.log(`   Session Secret: ${process.env.SESSION_SECRET ? '✅ Configured' : '❌ Not configured'}`);
+console.log(`   CSRF Secret: ${process.env.CSRF_SECRET ? '✅ Configured' : '❌ Not configured'}`);
+console.log(`   Health Check Token: ${process.env.HEALTH_CHECK_TOKEN ? '✅ Configured' : '❌ Not configured'}`);
+console.log(`   Metrics Token: ${process.env.METRICS_TOKEN ? '✅ Configured' : '❌ Not configured'}\n`);
 
 console.log('✅ Configuration validation completed successfully!');
 console.log('🚀 ChexPro is ready to launch!');

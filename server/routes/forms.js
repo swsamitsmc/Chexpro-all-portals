@@ -11,17 +11,17 @@ import he from 'he';
 // amazonq-ignore-next-line
 const router = express.Router();
 
-// CSRF protection
-const tokens = new csrf();
-let secret = process.env.CSRF_SECRET;
-if (!secret) {
-    if (process.env.NODE_ENV === 'production') {
-        throw new Error('CSRF_SECRET environment variable is not set. This is required in production for persistent CSRF protection.');
-    }
-    // Fallback for development only
-    console.warn('CSRF_SECRET is not set. Generating an ephemeral secret for development.');
-    secret = tokens.secretSync();
+// CSRF protection configuration
+const CSRF_SECRET = process.env.CSRF_SECRET;
+if (!CSRF_SECRET) {
+  const errorMsg = 'CSRF_SECRET environment variable is not set. This is required in all environments for CSRF protection.';
+  console.error(`[SECURITY] ${errorMsg}`);
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(errorMsg);
+  }
 }
+
+const tokens = new csrf(CSRF_SECRET);
 
 // Rate limiting to prevent abuse
 const generalLimiter = rateLimit({
@@ -50,14 +50,14 @@ router.use(generalLimiter);
 // CSRF token endpoint - intentionally public for form submissions
 // No authorization required as this provides tokens for public forms
 router.get('/csrf-token', (req, res) => {
-    const token = tokens.create(secret);
+    const token = tokens.create(CSRF_SECRET);
     res.json({ csrfToken: token });
 });
 
 // CSRF validation middleware
 const validateCSRF = (req, res, next) => {
     const token = req.headers['x-csrf-token'] || req.body._csrf;
-    if (!token || !tokens.verify(secret, token)) {
+    if (!token || !tokens.verify(CSRF_SECRET, token)) {
         console.warn('CSRF validation failed', {
             path: req.path,
             ip: req.ip,
@@ -136,7 +136,11 @@ router.post(
             await pool.query(dbQuery, [firstName, lastName, email, phone, companyName, message]);
             dbSuccess = true;
         } catch (dbError) {
-            console.error('DATABASE INSERT FAILED for /contact:', dbError);
+            console.error('DATABASE INSERT FAILED for /contact:', { 
+                error: dbError.message,
+                code: dbError.code,
+                errno: dbError.errno 
+            });
             dbErrorMessage = dbError.message;
             dbSuccess = false;
         }
@@ -168,7 +172,10 @@ router.post(
             await sendEmailWithRetry(transporter, mailOptions, 3);
         } catch (emailError) {
             // This is the worst case: DB may have failed AND email failed. The lead is now lost.
-            console.error('CRITICAL: EMAIL SENDING FAILED for /contact after retries:', emailError);
+            console.error('CRITICAL: EMAIL SENDING FAILED for /contact after retries:', { 
+                error: emailError.message,
+                code: emailError.code 
+            });
             // We still send a generic server error to the user, as the DB may have failed anyway.
             return res.status(500).json({ status: 'Error', description: 'A server error occurred while processing your request.' });
         }
@@ -218,7 +225,11 @@ router.post(
             await pool.query(dbQuery, [firstName, lastName, jobTitle, companyName, workEmail, phone, screeningsPerYear, servicesOfInterest, message]);
             dbSuccess = true;
         } catch (dbError) {
-            console.error('DATABASE INSERT FAILED for /demo:', dbError);
+            console.error('DATABASE INSERT FAILED for /demo:', { 
+                error: dbError.message,
+                code: dbError.code,
+                errno: dbError.errno 
+            });
             dbErrorMessage = dbError.message;
             dbSuccess = false;
         }
@@ -252,7 +263,10 @@ router.post(
         try {
             await sendEmailWithRetry(transporter, mailOptions, 3);
         } catch (emailError) {
-            console.error('CRITICAL: EMAIL SENDING FAILED for /demo after retries:', emailError);
+            console.error('CRITICAL: EMAIL SENDING FAILED for /demo after retries:', { 
+                error: emailError.message,
+                code: emailError.code 
+            });
             return res.status(500).json({ status: 'Error', description: 'A server error occurred while processing your request.' });
         }
 

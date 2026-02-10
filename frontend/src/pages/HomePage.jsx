@@ -1,5 +1,6 @@
+import { useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import InfoTile from '@/components/tiles/InfoTile';
 import PageTransition from '@/components/ui/PageTransition';
 import PageSection from '@/components/PageSection';
@@ -27,31 +28,33 @@ const fadeInItem = {
 const HomePage = () => {
   const { t } = useTranslation();
   
-  const services = [
+  // Memoize with language indicator to prevent unnecessary recreations
+  const lang = t['language'] || 'en';
+  const services = useMemo(() => [
     { id: 'criminal-records', title: t('pages.home.services.items.criminal.title'), icon: <Award className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.criminal.desc') },
     { id: 'employment-verification', title: t('pages.home.services.items.employment.title'), icon: <Briefcase className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.employment.desc') },
     { id: 'education-verification', title: t('pages.home.services.items.education.title'), icon: <Users className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.education.desc') },
     { id: 'credit-checks', title: t('pages.home.services.items.credit.title'), icon: <TrendingUp className="h-8 w-8 text-primary" />, description: t('pages.home.services.items.credit.desc') },
-  ];
+  ], [lang]);
 
-  const usps = [
+  const usps = useMemo(() => [
     { title: t('pages.why.items.speed.title'), description: t('pages.why.items.speed.desc'), icon: <TrendingUp className="h-6 w-6 text-primary" /> },
     { title: t('pages.why.items.accuracy.title'), description: t('pages.why.items.accuracy.desc'), icon: <CheckCircle className="h-6 w-6 text-primary" /> },
     { title: t('pages.why.items.support.title'), description: t('pages.why.items.support.desc'), icon: <Handshake className="h-6 w-6 text-primary" /> },
     { title: t('pages.why.items.pricing.title'), description: t('pages.why.items.pricing.desc'), icon: <Award className="h-6 w-6 text-primary" /> },
     { title: t('pages.why.items.platform.title'), description: t('pages.why.items.platform.desc'), icon: <UserCheck className="h-6 w-6 text-primary" /> },
     { title: t('pages.why.items.compliance.title'), description: t('pages.why.items.compliance.desc'), icon: <ShieldCheck className="h-6 w-6 text-primary" /> },
-  ];
+  ], [lang]);
 
   const rawTestimonials = t('pages.home.testimonials.list', { returnObjects: true });
   const testimonials = Array.isArray(rawTestimonials) ? rawTestimonials : [];
 
-  const targetAudiences = [
+  const targetAudiences = useMemo(() => [
     { name: t('pages.solutions.audiences.employers.name'), description: t('pages.solutions.audiences.employers.desc'), icon: <Briefcase className="h-10 w-10 text-primary" /> },
     { name: t('pages.solutions.audiences.landlords.name'), description: t('pages.solutions.audiences.landlords.desc'), icon: <Building className="h-10 w-10 text-primary" /> },
     { name: t('pages.solutions.audiences.staffing.name'), description: t('pages.solutions.audiences.staffing.desc'), icon: <Users className="h-10 w-10 text-primary" /> },
     { name: t('pages.solutions.audiences.individuals.name'), description: t('pages.solutions.audiences.individuals.desc'), icon: <UserCheck className="h-10 w-10 text-primary" /> },
-  ];
+  ], [lang]);
 
   return (
     <PageTransition>

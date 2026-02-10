@@ -28,4 +28,21 @@ export const initializeDatabase = async () => {
     }
 };
 
+// Graceful shutdown handler - close database connections when process terminates
+const gracefulShutdown = async () => {
+    console.log('Received shutdown signal. Closing database connections...');
+    try {
+        await pool.end();
+        console.log('Database connections closed gracefully.');
+        process.exit(0);
+    } catch (error) {
+        console.error('Error closing database connections:', error);
+        process.exit(1);
+    }
+};
+
+// Register graceful shutdown handlers
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
+
 export default pool;

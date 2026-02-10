@@ -108,8 +108,8 @@ import { useState, useEffect } from 'react';
         }
       };
 
-      const usPhone = "+1 872 256 1009";
-      const caPhone = "+1 437 922 7779";
+      const usPhone = t('contact.phoneNumbers.us', { defaultValue: '+1 872 256 1009' });
+      const caPhone = t('contact.phoneNumbers.ca', { defaultValue: '+1 437 922 7779' });
       const contactInfo = [
         { icon: <Mail className="h-6 w-6 text-primary" />, text: "info@chexpro.com", label: t('contact.emailUs', { defaultValue: 'Email Us' }) },
         { icon: <Phone className="h-6 w-6 text-primary" />, text: t('contact.phoneText', { usNumber: usPhone, caNumber: caPhone, defaultValue: `US: ${usPhone}   Canada: ${caPhone}` }), label: t('contact.callUs', { defaultValue: 'Call Us' }) },
@@ -173,7 +173,7 @@ import { useState, useEffect } from 'react';
                       </div>
                       <div>
                         <Label htmlFor="phone">{t('contact.phoneNumber')}</Label>
-                        <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="(555) 555-5555"/>
+                        <Input id="phone" name="phone" type="tel" value={formData.phone} onChange={handleChange} placeholder="(555) 555-5555" pattern="^[\d\s-()+.]{10,20}$" title="Please enter a valid phone number (10-20 digits)"/>
                       </div>
                       <div>
                         <Label htmlFor="services">{t('contact.servicesInterested')}</Label>

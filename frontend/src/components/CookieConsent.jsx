@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 export function CookieBanner({ onPreferencesClick }) {
   const { t } = useTranslation();
-  const [prefs, updatePreferences] = useCookiePreferences();
+  const [, updatePreferences] = useCookiePreferences();
   const [consentGiven, setConsentGiven] = useState(() => {
     if (typeof window === 'undefined') return true;
     // Show banner until preferences cookie exists

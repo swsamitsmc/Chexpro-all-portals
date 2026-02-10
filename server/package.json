@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
+    "compression": "^1.7.5",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "csrf": "^3.1.0",
@@ -24,9 +25,15 @@
     "express-validator": "^7.1.0",
     "he": "^1.2.0",
     "helmet": "^8.1.0",
+    "hpp": "^0.2.3",
+    "ioredis": "^5.4.1",
+    "jsonwebtoken": "^9.0.2",
     "morgan": "^1.10.1",
     "mysql2": "^3.14.3",
     "nodemailer": "^7.0.5",
+    "otpauth": "^9.3.4",
+    "qrcode": "^1.5.4",
+    "response-time": "^2.3.2",
     "winston": "^3.17.0"
   },
   "devDependencies": {

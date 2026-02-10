@@ -1,18 +1,29 @@
 // Middleware to set session, CSRF, and persistent login cookies in a SOC2/FCRA compliant way
+//
+// Cookie SameSite Policy:
+// - Session and CSRF cookies: 'Strict' - Cookie is only sent in a first-party context
+//   This provides maximum security for sensitive session tokens
+// - Persistent login cookies: 'Lax' - Cookie is sent with top-level navigations and safe HTTP methods
+//   This allows users to stay logged in while navigating within the site
+//
+// The difference is intentional:
+// - Strict prevents CSRF attacks on sensitive operations
+// - Lax provides better UX for persistent sessions while maintaining reasonable security
+
 import crypto from 'crypto';
 
+// Validate SESSION_SECRET at startup
 const SESSION_SECRET = process.env.SESSION_SECRET;
-if (!SESSION_SECRET && process.env.NODE_ENV === 'production') {
-  throw new Error('SESSION_SECRET environment variable is not set. This is required in production for secure session management.');
-} else if (!SESSION_SECRET) {
-  console.warn('SESSION_SECRET environment variable is not set. Using a default secret for development. Set SESSION_SECRET in production for secure session management.');
+if (!SESSION_SECRET) {
+  const errorMsg = 'SESSION_SECRET environment variable is not set. This is required in all environments for secure session management.';
+  console.error(`[SECURITY] ${errorMsg}`);
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error(errorMsg);
+  }
 }
 
-const ACTIVE_SESSION_SECRET = SESSION_SECRET || 'dev-insecure-session-secret';
-
-
 function signSessionId(sessionId) {
-  return crypto.createHmac('sha256', ACTIVE_SESSION_SECRET)
+  return crypto.createHmac('sha256', SESSION_SECRET)
                .update(sessionId)
                .digest('hex');
 }

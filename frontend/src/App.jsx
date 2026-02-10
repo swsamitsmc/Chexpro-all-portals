@@ -1,7 +1,8 @@
 
-import React, { Suspense, useEffect, useState } from 'react';
-import { Routes, Route, useLocation } from 'react-router-dom';
+import { Suspense, useEffect } from 'react';
+import { Routes, Route, useLocation, Outlet } from 'react-router-dom';
 import AppLayout from '@/components/layout/AppLayout';
+import ClientLayout from '@/components/layout/ClientLayout';
 import { AnimatePresence } from 'framer-motion';
 import PageLoader from '@/components/ui/PageLoader';
 import PageTransition from '@/components/ui/PageTransition';
@@ -30,7 +31,10 @@ const FCRACompliancePage = lazyWithPreload(() => import('@/pages/FCRAComplianceP
 const DataSecurityPage = lazyWithPreload(() => import('@/pages/DataSecurityPage'));
 const NotFoundPage = lazyWithPreload(() => import('@/pages/NotFoundPage'));
 
-const pages = {
+// Dashboard pages
+const Dashboard = lazyWithPreload(() => import('@/pages/Dashboard'));
+
+const publicPages = {
   '/': HomePage,
   '/about': AboutUsPage,
   '/services': ServicesPage,
@@ -46,6 +50,8 @@ const pages = {
   '/data-security': DataSecurityPage,
   '*': NotFoundPage,
 };
+
+
 
 function App() {
   const location = useLocation();
@@ -64,41 +70,64 @@ function App() {
   // Track page views only if analytics cookies allowed
   useGAPageTracking(prefs.analytics && ENV_CONFIG.GA_MEASUREMENT_ID && ENV_CONFIG.ENABLE_ANALYTICS);
 
-
-
-  // Preload pages on hover
+  // Preload pages on hover - Enhanced for parameterized routes
   const handleLinkHover = (path) => {
-    const PageComponent = pages[path];
-    if (PageComponent && PageComponent.preload) {
-      PageComponent.preload();
+    // Handle exact path matches first
+    if (publicPages[path] && publicPages[path].preload) {
+      publicPages[path].preload();
+      return;
+    }
+
+    // Handle parameterized routes by checking patterns
+    if (path.startsWith('/resources/')) {
+      if (publicPages['/resources/:slug'] && publicPages['/resources/:slug'].preload) {
+        publicPages['/resources/:slug'].preload();
+      }
     }
   };
 
   return (
-    <AppLayout onLinkHover={handleLinkHover}>
-      <RouteChangeTracker />
-      <ErrorBoundary>
-        <AnimatePresence mode="wait">
-          <Suspense fallback={<PageLoader />}>
-            <Routes location={location} key={location.pathname}>
-              {Object.entries(pages).map(([path, Component]) => (
-                <Route
-                  key={path}
-                  path={path}
-                  element={
-                    <PageTransition>
-                      <Component />
-                    </PageTransition>
-                  }
-                />
-              ))}
-            </Routes>
-          </Suspense>
-        </AnimatePresence>
-      </ErrorBoundary>
-    </AppLayout>
+    <Routes location={location} key={location.pathname}>
+      {/* Public routes with AppLayout */}
+      <Route element={
+        <AppLayout onLinkHover={handleLinkHover}>
+          <RouteChangeTracker />
+          <ErrorBoundary>
+            <AnimatePresence mode="wait">
+              <Suspense fallback={<PageLoader />}>
+                <Outlet />
+              </Suspense>
+            </AnimatePresence>
+          </ErrorBoundary>
+        </AppLayout>
+      }>
+        {Object.entries(publicPages).map(([path, Component]) => (
+          <Route
+            key={path}
+            path={path}
+            element={
+              <PageTransition>
+                <Component />
+              </PageTransition>
+            }
+          />
+        ))}
+      </Route>
+
+      {/* Dashboard routes with ClientLayout */}
+      <Route path="/dashboard" element={
+        <ClientLayout>
+          <ErrorBoundary>
+            <AnimatePresence mode="wait">
+              <Suspense fallback={<PageLoader />}>
+                <Dashboard />
+              </Suspense>
+            </AnimatePresence>
+          </ErrorBoundary>
+        </ClientLayout>
+      } />
+    </Routes>
   );
 }
 
 export default App;
-  

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { setCookie, getCookie } from '@/lib/cookieUtils';
 
 const COOKIE_PREF_KEY = 'cookie_preferences';

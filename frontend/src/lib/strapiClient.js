@@ -1,10 +1,14 @@
 import { ENV_CONFIG } from '@/config/envConfig';
+import { sampleBlogPosts, sampleCategories, SAMPLE_PAGINATION } from '@/data/sampleBlogPosts';
 
 const STRAPI_URL = ENV_CONFIG.STRAPI_URL?.replace(/\/$/, '') || 'http://localhost:1337';
 const STRAPI_TOKEN = ENV_CONFIG.STRAPI_TOKEN;
 const POST_CT = ENV_CONFIG.STRAPI_POST_CT || 'posts';
 const CATEGORY_CT = ENV_CONFIG.STRAPI_CATEGORY_CT || 'categories';
 const PUBLICATION_STATE = ENV_CONFIG.STRAPI_PUBLICATION_STATE || 'live';
+
+// Check if we should use fallback data (disable live CMS for now)
+const USE_FALLBACK_DATA = ENV_CONFIG.VITE_USE_FALLBACK_DATA === 'true';
 
 function buildHeaders() {
   const headers = { 'Content-Type': 'application/json' };
@@ -23,6 +27,44 @@ export function mapImageUrl(maybeRelativeUrl) {
 }
 
 export async function fetchStrapiPosts({ locale = 'en', page = 1, pageSize = 9, categorySlug } = {}) {
+  // Use fallback data if enabled or CMS not available
+  if (USE_FALLBACK_DATA) {
+    try {
+      // Filter posts by category if specified
+      let filteredPosts = sampleBlogPosts;
+      if (categorySlug) {
+        filteredPosts = sampleBlogPosts.filter(post => post.categorySlug === categorySlug);
+      }
+
+      // Sort by date descending
+      filteredPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+      // Paginate results
+      const totalPosts = filteredPosts.length;
+      const startIndex = (page - 1) * pageSize;
+      const endIndex = startIndex + pageSize;
+      const paginatedPosts = filteredPosts.slice(startIndex, endIndex);
+
+      const pagination = {
+        page,
+        pageSize,
+        pageCount: Math.ceil(totalPosts / pageSize),
+        total: totalPosts
+      };
+
+      return { posts: paginatedPosts, pagination };
+    } catch (error) {
+      console.warn('Using fallback data due to CMS unavailability:', error.message);
+      // Fallback to limited hardcoded data
+      const fallbackPosts = sampleBlogPosts.slice(0, pageSize);
+      return {
+        posts: fallbackPosts,
+        pagination: SAMPLE_PAGINATION
+      };
+    }
+  }
+
+  // Original Strapi implementation
   const params = new URLSearchParams();
   params.set('locale', locale);
   params.set('sort', 'publishedAt:desc');
@@ -75,6 +117,32 @@ export async function fetchStrapiPosts({ locale = 'en', page = 1, pageSize = 9, 
 }
 
 export async function fetchStrapiPostBySlug({ locale = 'en', slug }) {
+  // Use fallback data if enabled or CMS not available
+  if (USE_FALLBACK_DATA) {
+    try {
+      // Find the post by slug in sample data
+      const post = sampleBlogPosts.find(p => p.slug === slug);
+      if (!post) return null;
+
+      return {
+        id: post.id,
+        slug: post.slug,
+        title: post.title,
+        date: post.date,
+        content: post.content,
+        excerpt: post.excerpt,
+        category: post.category,
+        imageUrl: post.imageUrl,
+        imageAlt: post.imageAlt,
+        author: post.author,
+      };
+    } catch (error) {
+      console.warn('Using fallback data for post lookup due to CMS unavailability:', error.message);
+      return null;
+    }
+  }
+
+  // Original Strapi implementation
   const params = new URLSearchParams();
   params.set('locale', locale);
   params.set('filters[slug][$eq]', slug);
@@ -108,6 +176,19 @@ export async function fetchStrapiPostBySlug({ locale = 'en', slug }) {
 }
 
 export async function fetchStrapiCategories({ locale = 'en' } = {}) {
+  // Use fallback data if enabled or CMS not available
+  if (USE_FALLBACK_DATA) {
+    try {
+      // Return sample categories sorted by name
+      const sortedCategories = [...sampleCategories].sort((a, b) => a.name.localeCompare(b.name));
+      return sortedCategories;
+    } catch (error) {
+      console.warn('Using fallback categories due to CMS unavailability:', error.message);
+      return sampleCategories.slice(0, 5); // Return first 5 categories as fallback
+    }
+  }
+
+  // Original Strapi implementation
   const params = new URLSearchParams();
   params.set('locale', locale);
   params.set('sort', 'name:asc');
@@ -129,5 +210,3 @@ export async function fetchStrapiCategories({ locale = 'en' } = {}) {
     slug: item.attributes?.slug,
   }));
 }
-
-

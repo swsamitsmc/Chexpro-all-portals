@@ -1,37 +1,138 @@
 
-    import { useState } from 'react';
-    import PageTransition from '@/components/ui/PageTransition';
-    import PageSection from '@/components/PageSection';
-    import { Button } from '@/components/ui/button';
-    import { Input } from '@/components/ui/input';
-    import { Label } from '@/components/ui/label';
-    import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-    import { Link } from 'react-router-dom';
-    import { motion } from 'framer-motion';
-    import { LogIn, UserCircle } from 'lucide-react';
-    import { useToast } from '@/components/ui/use-toast';
-    import { Helmet } from 'react-helmet-async';
-    import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
+import PageTransition from '@/components/ui/PageTransition';
+import PageSection from '@/components/PageSection';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { LogIn, UserCircle, Loader2 } from 'lucide-react';
+import { useToast } from '@/components/ui/use-toast';
+import { Helmet } from 'react-helmet-async';
+import { useTranslation } from 'react-i18next';
+import { ENV_CONFIG } from '@/config/envConfig';
 
+const ClientLoginPage = () => {
+  const { t } = useTranslation();
+  const [formData, setFormData] = useState({
+    username: '',
+    password: '',
+    rememberMe: false
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const { toast } = useToast();
 
-    const ClientLoginPage = () => {
-      const { t } = useTranslation();
-      const [username, setUsername] = useState('');
-      const [password, setPassword] = useState('');
-      const { toast } = useToast();
+  const validateForm = () => {
+    const newErrors = {};
 
-      const handleSubmit = (e) => {
-        e.preventDefault();
-        // This is a placeholder for actual login logic.
-        // In a real app, you would make an API call here.
+    if (!formData.username.trim()) {
+      newErrors.username = 'Username is required';
+    }
+
+    if (!formData.password) {
+      newErrors.password = 'Password is required';
+    } else if (formData.password.length < 6) {
+      newErrors.password = 'Password must be at least 6 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleInputChange = (field) => (e) => {
+    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      [field]: value
+    }));
+
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!validateForm()) {
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      // Get CSRF token for the request
+      const csrfResponse = await fetch(`${ENV_CONFIG.API_BASE_URL}/api/auth/csrf-token`, {
+        credentials: 'include'
+      });
+
+      if (!csrfResponse.ok) {
+        throw new Error('Failed to get CSRF token');
+      }
+
+      const { csrfToken } = await csrfResponse.json();
+
+      // Attempt login
+      const loginResponse = await fetch(`${ENV_CONFIG.API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'x-csrf-token': csrfToken
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+          rememberMe: formData.rememberMe
+        })
+      });
+
+      const data = await loginResponse.json();
+
+      if (loginResponse.ok) {
         toast({
-          title: "Login Attempt (Placeholder)",
-          description: "Functionality not implemented. Username: " + username,
+          title: "Login Successful",
+          description: `Welcome back, ${formData.username}!`,
         });
-        // console.log('Login attempt:', { username, password });
-        setUsername('');
-        setPassword('');
-      };
+
+        // Reset form
+        setFormData({
+          username: '',
+          password: '',
+          rememberMe: false
+        });
+
+        // Redirect to dashboard
+        setTimeout(() => {
+          window.location.href = '/dashboard';
+        }, 1500);
+
+      } else {
+        toast({
+          title: "Login Failed",
+          description: data.error || 'Invalid credentials. Please try again.',
+          variant: "destructive"
+        });
+      }
+
+    } catch (error) {
+      console.error('Login error:', error);
+      toast({
+        title: "Login Error",
+        description: "Unable to connect to the server. Please try again later.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
       return (
         <PageTransition>
@@ -60,25 +161,56 @@
                       <Input
                         id="username"
                         type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={formData.username}
+                        onChange={handleInputChange('username')}
                         placeholder="yourusername or email@example.com"
+                        className={errors.username ? 'border-red-500' : ''}
+                        disabled={isLoading}
                         required
                       />
+                      {errors.username && (
+                        <p className="text-sm text-red-500 mt-1">{errors.username}</p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="password">Password</Label>
                       <Input
                         id="password"
                         type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
+                        value={formData.password}
+                        onChange={handleInputChange('password')}
                         placeholder="••••••••"
+                        className={errors.password ? 'border-red-500' : ''}
+                        disabled={isLoading}
                         required
                       />
+                      {errors.password && (
+                        <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+                      )}
                     </div>
-                    <Button type="submit" className="w-full">
-                      <LogIn className="mr-2 h-4 w-4" /> Login
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="rememberMe"
+                        checked={formData.rememberMe}
+                        onChange={handleInputChange('rememberMe')}
+                        disabled={isLoading}
+                        className="rounded"
+                      />
+                      <Label htmlFor="rememberMe" className="text-sm">Remember me</Label>
+                    </div>
+                    <Button type="submit" className="w-full" disabled={isLoading}>
+                      {isLoading ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Logging in...
+                        </>
+                      ) : (
+                        <>
+                          <LogIn className="mr-2 h-4 w-4" />
+                          Login
+                        </>
+                      )}
                     </Button>
                   </form>
                   <div className="mt-6 text-center text-sm">
@@ -103,4 +235,3 @@
     };
 
     export default ClientLoginPage;
-  

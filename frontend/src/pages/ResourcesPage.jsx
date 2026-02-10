@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
     import PageTransition from '@/components/ui/PageTransition';
     import PageSection from '@/components/PageSection';
     import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -8,7 +8,7 @@ import React, { useEffect, useMemo, useState } from 'react';
     import { motion } from 'framer-motion';
     import { BookOpen, HelpCircle, FileText, Lightbulb, ArrowRight } from 'lucide-react';
     import { useTranslation } from 'react-i18next';
-    import { fetchStrapiPosts, fetchStrapiCategories } from '@/lib/strapiClient';
+    import { fetchPosts, fetchCategories } from '@/lib/sanityClient';
     import { Helmet } from 'react-helmet-async';
 
     const fadeInStagger = {
@@ -41,7 +41,7 @@ import React, { useEffect, useMemo, useState } from 'react';
         setIsLoading(true);
         setError(null);
         const categorySlug = activeCategory !== 'all' ? activeCategory : undefined;
-        fetchStrapiPosts({ locale: currentLocale, page, pageSize: 9, categorySlug })
+        fetchPosts({ locale: currentLocale, page, pageSize: 9, categorySlug })
           .then(({ posts, pagination }) => {
             if (!isActive) return;
             setBlogPosts(posts);
@@ -49,7 +49,6 @@ import React, { useEffect, useMemo, useState } from 'react';
           })
           .catch((err) => {
             if (!isActive) return;
-            // Provide more debug info for 400s
             setError(err.message || 'Failed to load posts');
           })
           .finally(() => isActive && setIsLoading(false));
@@ -60,7 +59,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 
       useEffect(() => {
         let active = true;
-        fetchStrapiCategories({ locale: currentLocale })
+        fetchCategories({ locale: currentLocale })
           .then((cats) => {
             if (!active) return;
             setCategories(cats);

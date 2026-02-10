@@ -1,10 +1,10 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import PageTransition from '@/components/ui/PageTransition';
 import PageSection from '@/components/PageSection';
 import { Helmet } from 'react-helmet-async';
 import { useParams, Link } from 'react-router-dom';
-import { fetchStrapiPostBySlug } from '@/lib/strapiClient';
-import { renderMarkdownToHtml } from '@/lib/markdown';
+import { fetchPostBySlug } from '@/lib/sanityClient';
+import { PortableText } from '@/components/ui/PortableText';
 import { useTranslation } from 'react-i18next';
 
 const ResourcePostPage = () => {
@@ -19,7 +19,7 @@ const ResourcePostPage = () => {
     let isActive = true;
     setIsLoading(true);
     setError(null);
-    fetchStrapiPostBySlug({ locale: currentLocale, slug })
+    fetchPostBySlug({ locale: currentLocale, slug })
       .then((p) => {
         if (!isActive) return;
         setPost(p);
@@ -53,10 +53,17 @@ const ResourcePostPage = () => {
               <h1 className="text-3xl font-bold text-foreground mb-3">{post.title}</h1>
               <p className="text-sm text-muted-foreground mb-6">{post.date}</p>
               {post.imageUrl ? (
-                <img src={post.imageUrl} alt={post.imageAlt} className="w-full h-auto rounded mb-8" />
+                <img 
+                  src={post.imageUrl} 
+                  alt={post.imageAlt} 
+                  className="w-full h-auto rounded mb-8" 
+                  loading="lazy"
+                />
               ) : null}
               {post.content ? (
-                <div className="prose prose-invert prose-headings:text-foreground prose-p:text-muted-foreground" dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(post.content) }} />
+                <div className="prose prose-invert prose-headings:text-foreground prose-p:text-muted-foreground">
+                  <PortableText value={post.content} />
+                </div>
               ) : (
                 <p className="text-muted-foreground">No content.</p>
               )}
@@ -69,5 +76,3 @@ const ResourcePostPage = () => {
 };
 
 export default ResourcePostPage;
-
-

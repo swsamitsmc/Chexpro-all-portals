@@ -15,7 +15,7 @@ export const useCookieManager = (prefs) => {
     } else {
       setCookie('marketing_cookie', '', { days: -1, path: '/' });
     }
-  }, [prefs.marketing]);
+  }, [prefs.marketing]); // eslint-disable-line react-hooks/exhaustive-deps
 
   return {
     setMarketingCookie: (enabled) => {

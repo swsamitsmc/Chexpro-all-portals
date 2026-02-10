@@ -18,6 +18,13 @@ const loginLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
+// CSRF token endpoint for forms
+router.get('/csrf-token', (req, res) => {
+  const newCsrfToken = crypto.randomBytes(32).toString('hex');
+  setCSRFCookie(res, newCsrfToken);
+  res.json({ csrfToken: newCsrfToken });
+});
+
 // Example login route - demo purposes only, intentionally simplified
 // In production, implement proper authentication and CSRF protection
 router.post('/login', loginLimiter, async (req, res) => {
