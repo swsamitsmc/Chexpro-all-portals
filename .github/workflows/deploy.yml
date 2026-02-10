@@ -11,17 +11,37 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Install OCI CLI (Uses your NEW secrets)
-      - name: Install OCI CLI
-        uses: oracle-actions/setup-oci-cli@v1.2.1
-        with:
-          user: ${{ secrets.OCI_CLI_USER }}
-          fingerprint: ${{ secrets.OCI_CLI_FINGERPRINT }}
-          key_file: ${{ secrets.OCI_CLI_KEY_CONTENT }}
-          tenancy: ${{ secrets.OCI_CLI_TENANCY }}
-          region: ${{ secrets.OCI_CLI_REGION }}
+      # 1. Install OCI CLI (Manual Method - Fail Safe)
+      - name: Install OCI CLI and Configure
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          # Install OCI CLI using Python (Standard method)
+          pip install oci-cli
+          
+          # Create .oci directory
+          mkdir -p ~/.oci
+          
+          # Write the private key to a file
+          echo "$OCI_CLI_KEY_CONTENT" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+          
+          # Create the config file
+          echo "[DEFAULT]" > ~/.oci/config
+          echo "user=$OCI_CLI_USER" >> ~/.oci/config
+          echo "fingerprint=$OCI_CLI_FINGERPRINT" >> ~/.oci/config
+          echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
+          echo "tenancy=$OCI_CLI_TENANCY" >> ~/.oci/config
+          echo "region=$OCI_CLI_REGION" >> ~/.oci/config
+          
+          # Fix permissions for the directory
+          chmod -R 700 ~/.oci
 
-      # 2. Get Runner IP and Whitelist it in OCI (Uses your NEW secrets)
+      # 2. Get Runner IP and Whitelist it in OCI
       - name: Whitelist Runner IP
         id: whitelist
         run: |
@@ -30,6 +50,7 @@ jobs:
           echo "Whitelisting IP: $RUNNER_IP"
           
           # Add Security Rule to NSG (Port 22, TCP)
+          # Note: We use the full path or just 'oci' if in path. Pip usually puts it in path.
           oci network nsg rules add \
             --nsg-id ${{ secrets.OCI_NSG_OCID }} \
             --direction INGRESS \
@@ -89,6 +110,11 @@ jobs:
         if: always()
         run: |
           RUNNER_IP=${{ steps.whitelist.outputs.runner_ip }}
+          if [ -z "$RUNNER_IP" ]; then
+            echo "No IP to revoke."
+            exit 0
+          fi
+          
           echo "Revoking access for IP: $RUNNER_IP"
           
           # Find the specific rule ID for this runner's IP
