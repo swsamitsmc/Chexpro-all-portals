@@ -81,12 +81,13 @@ jobs:
 
             echo "### 2. Building frontend ###"
             GIT_HASH=$(git rev-parse --short HEAD)
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
             cd frontend
             npm install --legacy-peer-deps
             npm run build
 
             if [ -f dist/index.html ]; then
-              sed -i "s#</body>#</body>|" dist/index.html
+              sed -i "s#</body>#<!-- Deployed: ${TIMESTAMP} | Commit: ${GIT_HASH} --></body>#" dist/index.html
             fi
 
             echo "### 3. Deploying files ###"
@@ -105,6 +106,8 @@ jobs:
       - name: Revoke Runner IP
         if: always()
         run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          
           RUNNER_IP=${{ steps.whitelist.outputs.runner_ip }}
           if [ -z "$RUNNER_IP" ]; then
             echo "No IP to revoke."
