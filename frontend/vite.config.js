@@ -58,12 +58,12 @@ export default defineConfig({
           const cssRegex = /\.css$/;
           
           if (imageRegex.test(assetInfo.name)) {
-            return 'assets/images/[name]-[hash][ext]';
+            return 'assets/images/[name]-[hash].[ext]';
           }
           if (cssRegex.test(assetInfo.name)) {
-            return 'assets/css/[name]-[hash][ext]';
+            return 'assets/css/[name]-[hash].[ext]';
           }
-          return 'assets/[name]-[hash][ext]';
+          return 'assets/[name]-[hash].[ext]';
         },
         // Chunk file names
         chunkFileNames: 'assets/js/[name]-[hash].js',
