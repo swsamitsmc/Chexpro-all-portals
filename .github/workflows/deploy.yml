@@ -84,6 +84,9 @@ jobs:
             TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
             cd frontend
             export VITE_API_BASE_URL=http://localhost:3000
+            export VITE_SANITY_PROJECT_ID=c3k71ef3
+            export VITE_SANITY_DATASET=production
+            export VITE_USE_CMS=sanity
             npm install --legacy-peer-deps
             npm run build
 
