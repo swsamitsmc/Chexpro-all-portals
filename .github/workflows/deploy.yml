@@ -93,6 +93,9 @@ jobs:
             echo "### 3. Deploying files ###"
             rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
             
+            echo "### 3.5 Restarting Apache to apply changes ###"
+            sudo systemctl restart apache2
+            
             cd ../server
             rsync -av --delete --exclude '.env' --exclude 'node_modules/' . /var/www/chexpro-backend/
 
