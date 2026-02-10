@@ -24,11 +24,28 @@ yarn-error.log*
 # Build output
 /frontend/dist
 
-# VS Code editor settings
-.vscode/
+# Vite cache
+/frontend/.vite/
 
-# JetBrains IDE folder
-.idea/
+# Sanity Studio build outputs
+**/.sanity/
+**/dist/
+
+# Package manager caches
+.npm/
+.yarn/cache/
+.pnpm-store/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Editor and OS temporary files
+*.swp
+*.swo
+*~
+Thumbs.db
+ehthumbs.db
 
 # Temporary/old node_modules
 frontend/node_modules_old_1/
