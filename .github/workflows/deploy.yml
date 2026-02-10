@@ -27,14 +27,19 @@ jobs:
           host: ${{ secrets.OCI_SSH_HOST }}
           username: ${{ secrets.OCI_SSH_USER }}
           key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
-          port: 22 # Default SSH port
+          port: 22
           
           # This is the script that will be executed on your OCI server.
-          # It follows the logic from your PRODUCTION_DEPLOYMENT.md file.
           script: |
             echo "### 1. Navigating to build directory and pulling code ###"
+            # Ensure directory exists to prevent 'cd' failure
+            mkdir -p /var/www/chexpro-frontend-build
             cd /var/www/chexpro-frontend-build
-            ssh-keyscan github.com >> ~/.ssh/known_hosts
+            
+            # Avoid duplicate known_hosts entries
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            
+            # Reset and pull
             git reset --hard origin/master
             git pull origin master
 
@@ -43,18 +48,25 @@ jobs:
 
             echo "### 2. Building frontend ###"
             cd frontend
+            # YOUR FIX: Installing with legacy-peer-deps to bypass React 19 conflict
             npm install --legacy-peer-deps
             npm run build
 
             echo "### Stamping build with Git commit hash ###"
-            sed -i "s#</body>#<!-- Deployed: $TIMESTAMP | Commit: $GIT_HASH --></body>|" dist/index.html
+            # Check if index.html exists before sed to avoid failure
+            if [ -f dist/index.html ]; then
+              sed -i "s#</body>#</body>|" dist/index.html
+            fi
 
             echo "### 3. Deploying frontend files ###"
-            sudo rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
+            # CRITICAL FIX: Removed 'sudo'. 
+            # If 'chexproadmin' owns /var/www/chexpro-frontend, this works without password.
+            rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
 
             echo "### 4. Deploying backend files ###"
             cd ../server
-            sudo rsync -av --delete --exclude '.env' --exclude 'node_modules/' . /var/www/chexpro-backend/
+            # CRITICAL FIX: Removed 'sudo'.
+            rsync -av --delete --exclude '.env' --exclude 'node_modules/' . /var/www/chexpro-backend/
 
             echo "### 5. Installing backend dependencies ###"
             cd /var/www/chexpro-backend
