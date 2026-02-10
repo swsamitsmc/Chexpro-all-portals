@@ -11,7 +11,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      # 1. Install OCI CLI (Manual Method - Fail Safe)
+      # 1. Install OCI CLI (Manual Method)
       - name: Install OCI CLI and Configure
         env:
           OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
@@ -20,49 +20,49 @@ jobs:
           OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
           OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
         run: |
-          # Install OCI CLI using Python (Standard method)
           pip install oci-cli
-          
-          # Create .oci directory
           mkdir -p ~/.oci
-          
-          # Write the private key to a file
           echo "$OCI_CLI_KEY_CONTENT" > ~/.oci/oci_api_key.pem
           chmod 600 ~/.oci/oci_api_key.pem
-          
-          # Create the config file
           echo "[DEFAULT]" > ~/.oci/config
           echo "user=$OCI_CLI_USER" >> ~/.oci/config
           echo "fingerprint=$OCI_CLI_FINGERPRINT" >> ~/.oci/config
           echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
           echo "tenancy=$OCI_CLI_TENANCY" >> ~/.oci/config
           echo "region=$OCI_CLI_REGION" >> ~/.oci/config
-          
-          # Fix permissions for the directory
           chmod -R 700 ~/.oci
 
-      # 2. Get Runner IP and Whitelist it in OCI
+      # 2. Get Runner IP and Whitelist it in OCI (FIXED: Uses JSON)
       - name: Whitelist Runner IP
         id: whitelist
         run: |
-          # Get current public IP of the GitHub runner
           RUNNER_IP=$(curl -s https://api.ipify.org)
           echo "Whitelisting IP: $RUNNER_IP"
           
-          # Add Security Rule to NSG (Port 22, TCP)
-          # Note: We use the full path or just 'oci' if in path. Pip usually puts it in path.
+          # Construct the JSON rule required by OCI NSGs
+          # We use a compact JSON string here to avoid syntax errors
+          RULE_JSON='[{
+            "direction": "INGRESS",
+            "protocol": "6",
+            "source": "'$RUNNER_IP'/32",
+            "sourceType": "CIDR_BLOCK",
+            "tcpOptions": {
+              "destinationPortRange": {
+                "max": 22,
+                "min": 22
+              }
+            },
+            "description": "Temp GitHub Action Access"
+          }]'
+
+          # Add the rule using the valid --security-rules flag
           oci network nsg rules add \
             --nsg-id ${{ secrets.OCI_NSG_OCID }} \
-            --direction INGRESS \
-            --protocol 6 \
-            --source $RUNNER_IP/32 \
-            --tcp-port-range 22:22 \
-            --description "Temp GitHub Action Access"
+            --security-rules "$RULE_JSON"
 
-          # Save IP to output so we can remove it later
           echo "runner_ip=$RUNNER_IP" >> $GITHUB_OUTPUT
 
-      # 3. Deploy to Server (Uses your OLD SSH secrets)
+      # 3. Deploy to Server (Standard SSH)
       - name: Deploy to OCI Server
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -75,7 +75,6 @@ jobs:
             mkdir -p /var/www/chexpro-frontend-build
             cd /var/www/chexpro-frontend-build
             
-            # Avoid host key verification errors
             ssh-keyscan -H github.com >> ~/.ssh/known_hosts
             git reset --hard origin/master
             git pull origin master
@@ -83,17 +82,14 @@ jobs:
             echo "### 2. Building frontend ###"
             GIT_HASH=$(git rev-parse --short HEAD)
             cd frontend
-            # FIX: Use legacy-peer-deps for React 19 conflict
             npm install --legacy-peer-deps
             npm run build
 
-            # Timestamp injection
             if [ -f dist/index.html ]; then
               sed -i "s#</body>#</body>|" dist/index.html
             fi
 
             echo "### 3. Deploying files ###"
-            # FIX: Removed 'sudo'. Permissions must be correct on server.
             rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
             
             cd ../server
@@ -105,7 +101,7 @@ jobs:
             pm2 reload chexpro-backend --update-env
             pm2 status
 
-      # 4. Revoke Access (Runs even if deployment fails)
+      # 4. Revoke Access (Clean up)
       - name: Revoke Runner IP
         if: always()
         run: |
@@ -117,7 +113,7 @@ jobs:
           
           echo "Revoking access for IP: $RUNNER_IP"
           
-          # Find the specific rule ID for this runner's IP
+          # Use jq to find the rule ID created for this IP
           RULE_ID=$(oci network nsg rules list --nsg-id ${{ secrets.OCI_NSG_OCID }} --all | jq -r --arg ip "$RUNNER_IP/32" '.data[] | select(.source==$ip and .description=="Temp GitHub Action Access") | .id')
           
           if [ ! -z "$RULE_ID" ]; then
