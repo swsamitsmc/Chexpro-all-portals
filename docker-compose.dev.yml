@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: chexpro-portal-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: chexpro_root_password
+      MYSQL_DATABASE: chexpro_portal_db
+      MYSQL_USER: portal_user
+      MYSQL_PASSWORD: portal_password
+    ports:
+      - "3307:3306"
+    volumes:
+      - portal-mysql-data:/var/lib/mysql
+      - ./backend/prisma/init.sql:/docker-entrypoint-initdb.d/init.sql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci
+    networks:
+      - portal-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pchexpro_root_password"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: chexpro-portal-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - portal-redis-data:/data
+    command: redis-server --appendonly yes
+    networks:
+      - portal-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  portal-mysql-data:
+  portal-redis-data:
+
+networks:
+  portal-network:
+    driver: bridge
