@@ -1,0 +1,834 @@
+// ChexPro Client Portal - Prisma Schema
+// Database: MySQL 8.0
+// Covers all tables from spec v1.0 + v2.0
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// CORE TABLES
+// ============================================================
+
+model Client {
+  id             String       @id @default(uuid()) @db.Char(36)
+  companyName    String       @map("company_name") @db.VarChar(255)
+  primaryContact String?      @map("primary_contact") @db.VarChar(255)
+  email          String       @unique @db.VarChar(255)
+  phone          String?      @db.VarChar(20)
+  address        String?      @db.Text
+  themeConfig    Json?        @map("theme_config")
+  customLinks    Json?        @map("custom_links")
+  status         ClientStatus @default(active)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+
+  users               User[]
+  packages            Package[]
+  orders              Order[]
+  branding            ClientBranding?
+  billingAccount      BillingAccount?
+  invoices            Invoice[]
+  apiKeys             ApiKey[]
+  analyticsMetrics    AnalyticsDailyMetric[]
+  monitoringEnrollments MonitoringEnrollment[]
+  rescreeningSchedules RescreeningSchedule[]
+  complianceRuleLinks ClientComplianceRule[]
+
+  @@map("clients")
+}
+
+model User {
+  id           String     @id @default(uuid()) @db.Char(36)
+  clientId     String     @map("client_id") @db.Char(36)
+  email        String     @unique @db.VarChar(255)
+  passwordHash String     @map("password_hash") @db.VarChar(255)
+  firstName    String?    @map("first_name") @db.VarChar(100)
+  lastName     String?    @map("last_name") @db.VarChar(100)
+  role         UserRole   @default(user)
+  status       UserStatus @default(pending)
+  lastLogin    DateTime?  @map("last_login")
+  mfaSecret    String?    @map("mfa_secret") @db.VarChar(255)
+  mfaEnabled   Boolean    @default(false) @map("mfa_enabled")
+  refreshToken String?    @map("refresh_token") @db.VarChar(512)
+  passwordResetToken  String?   @map("password_reset_token") @db.VarChar(255)
+  passwordResetExpiry DateTime? @map("password_reset_expiry")
+  notificationPreferences Json?  @map("notification_preferences") @default("{}")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  updatedAt    DateTime   @updatedAt @map("updated_at")
+
+  client            Client             @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  orders            Order[]
+  notifications     Notification[]
+  auditLogs         AuditLog[]
+  adjudicationMatrices AdjudicationMatrix[]
+  orderAdjudications   OrderAdjudication[]
+  disputeAssignments   Dispute[]          @relation("DisputeAssignee")
+  monitoringAlertReviews MonitoringAlert[] @relation("AlertReviewer")
+
+  @@index([clientId])
+  @@map("users")
+}
+
+model Package {
+  id                 String    @id @default(uuid()) @db.Char(36)
+  clientId           String?   @map("client_id") @db.Char(36)
+  name               String    @db.VarChar(255)
+  description        String?   @db.Text
+  services           Json
+  price              Decimal   @db.Decimal(10, 2)
+  turnaroundTimeDays Int       @map("turnaround_time_days")
+  isActive           Boolean   @default(true) @map("is_active")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  client              Client?              @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  orders              Order[]
+  rescreeningSchedules RescreeningSchedule[]
+
+  @@index([clientId])
+  @@map("packages")
+}
+
+model Service {
+  id                      String   @id @default(uuid()) @db.Char(36)
+  name                    String   @db.VarChar(255)
+  category                String   @db.VarChar(100)
+  description             String?  @db.Text
+  basePrice               Decimal  @map("base_price") @db.Decimal(10, 2)
+  estimatedTurnaroundDays Int      @map("estimated_turnaround_days")
+  requiresSin             Boolean  @default(false) @map("requires_sin")
+  vendorType              String?  @map("vendor_type") @db.VarChar(100)
+  isActive                Boolean  @default(true) @map("is_active")
+  createdAt               DateTime @default(now()) @map("created_at")
+
+  @@map("services")
+}
+
+model Order {
+  id                   String      @id @default(uuid()) @db.Char(36)
+  orderNumber          String      @unique @map("order_number") @db.VarChar(50)
+  clientId             String      @map("client_id") @db.Char(36)
+  createdByUserId      String      @map("created_by_user_id") @db.Char(36)
+  packageId            String?     @map("package_id") @db.Char(36)
+  customServices       Json?       @map("custom_services")
+  status               OrderStatus @default(draft)
+  totalPrice           Decimal     @map("total_price") @db.Decimal(10, 2)
+  referenceNumber      String?     @map("reference_number") @db.VarChar(100)
+  positionTitle        String?     @map("position_title") @db.VarChar(255)
+  department           String?     @db.VarChar(255)
+  screeningReason      String?     @map("screening_reason") @db.VarChar(100)
+  jobLocation          String?     @map("job_location") @db.VarChar(100)
+  applicantId          String?     @map("applicant_id") @db.Char(36)
+  completionPercentage Int         @default(0) @map("completion_percentage")
+  conditionalOfferMade Boolean     @default(false) @map("conditional_offer_made")
+  submittedAt          DateTime?   @map("submitted_at")
+  completedAt          DateTime?   @map("completed_at")
+  externalId           String?     @map("external_id") @db.VarChar(255)
+  externalSystem       String?     @map("external_system") @db.VarChar(100)
+  notes                String?     @db.Text
+  createdAt            DateTime    @default(now()) @map("created_at")
+  updatedAt            DateTime    @updatedAt @map("updated_at")
+
+  client          Client          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  createdBy       User            @relation(fields: [createdByUserId], references: [id])
+  package         Package?        @relation(fields: [packageId], references: [id])
+  applicant       Applicant?      @relation(fields: [applicantId], references: [id])
+  timeline        OrderTimeline[]
+  documents       Document[]
+  reports         Report[]
+  notifications   Notification[]
+  orderNotes      OrderNote[]
+  vendorOrders    VendorOrder[]
+  adverseActions  AdverseAction[]
+  adjudication    OrderAdjudication?
+  invoiceItems    InvoiceLineItem[]
+  disputes        Dispute[]
+
+  @@index([clientId])
+  @@index([applicantId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("orders")
+}
+
+model Applicant {
+  id                String    @id @default(uuid()) @db.Char(36)
+  firstName         String    @map("first_name") @db.VarChar(100)
+  middleName        String?   @map("middle_name") @db.VarChar(100)
+  lastName          String    @map("last_name") @db.VarChar(100)
+  dateOfBirth       DateTime? @map("date_of_birth") @db.Date
+  sinEncrypted      String?   @map("sin_encrypted") @db.VarChar(512)
+  email             String?   @db.VarChar(255)
+  phone             String?   @db.VarChar(20)
+  gender            String?   @db.VarChar(20)
+  currentAddress    Json?     @map("current_address")
+  addressHistory    Json?     @map("address_history")
+  employmentHistory Json?     @map("employment_history")
+  educationHistory  Json?     @map("education_history")
+  additionalInfo    Json?     @map("additional_info")
+  otherNames        Json?     @map("other_names")
+  consentGiven      Boolean   @default(false) @map("consent_given")
+  consentSignature  String?   @map("consent_signature") @db.Text
+  consentDate       DateTime? @map("consent_date")
+  invitationToken   String?   @unique @map("invitation_token") @db.VarChar(255)
+  tokenExpiresAt    DateTime? @map("token_expires_at")
+  portalCompleted   Boolean   @default(false) @map("portal_completed")
+  portalStep        Int       @default(0) @map("portal_step")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  orders              Order[]
+  documents           Document[]
+  disputes            Dispute[]
+  monitoringEnrollments MonitoringEnrollment[]
+
+  @@index([invitationToken])
+  @@map("applicants")
+}
+
+model OrderTimeline {
+  id          String   @id @default(uuid()) @db.Char(36)
+  orderId     String   @map("order_id") @db.Char(36)
+  status      String   @db.VarChar(100)
+  description String   @db.Text
+  notes       String?  @db.Text
+  createdBy   String   @map("created_by") @db.VarChar(255)
+  isSystem    Boolean  @default(true) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_timeline")
+}
+
+model OrderNote {
+  id        String   @id @default(uuid()) @db.Char(36)
+  orderId   String   @map("order_id") @db.Char(36)
+  content   String   @db.Text
+  createdBy String   @map("created_by") @db.VarChar(255)
+  isInternal Boolean @default(true) @map("is_internal")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("order_notes")
+}
+
+model Document {
+  id           String   @id @default(uuid()) @db.Char(36)
+  orderId      String?  @map("order_id") @db.Char(36)
+  applicantId  String?  @map("applicant_id") @db.Char(36)
+  documentType String   @map("document_type") @db.VarChar(100)
+  fileName     String   @map("file_name") @db.VarChar(255)
+  filePath     String   @map("file_path") @db.VarChar(500)
+  fileSize     Int      @map("file_size")
+  mimeType     String   @map("mime_type") @db.VarChar(100)
+  uploadedBy   String   @map("uploaded_by") @db.VarChar(255)
+  isVerified   Boolean  @default(false) @map("is_verified")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  order     Order?     @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  applicant Applicant? @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([applicantId])
+  @@map("documents")
+}
+
+model Report {
+  id          String   @id @default(uuid()) @db.Char(36)
+  orderId     String   @map("order_id") @db.Char(36)
+  reportType  String   @map("report_type") @db.VarChar(100)
+  filePath    String   @map("file_path") @db.VarChar(500)
+  generatedAt DateTime @map("generated_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@map("reports")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Char(36)
+  userId    String   @map("user_id") @db.Char(36)
+  orderId   String?  @map("order_id") @db.Char(36)
+  type      String   @db.VarChar(100)
+  title     String   @db.VarChar(255)
+  message   String   @db.Text
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order Order? @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+// ============================================================
+// VENDOR INTEGRATION
+// ============================================================
+
+model VendorOrder {
+  id              String            @id @default(uuid()) @db.Char(36)
+  orderId         String            @map("order_id") @db.Char(36)
+  vendorName      VendorName
+  vendorOrderId   String?           @map("vendor_order_id") @db.VarChar(255)
+  serviceType     String            @map("service_type") @db.VarChar(100)
+  status          VendorOrderStatus @default(submitted)
+  requestPayload  Json?             @map("request_payload")
+  responsePayload Json?             @map("response_payload")
+  errorMessage    String?           @map("error_message") @db.Text
+  submittedAt     DateTime?         @map("submitted_at")
+  completedAt     DateTime?         @map("completed_at")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  order Order @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([vendorName])
+  @@index([status])
+  @@map("vendor_orders")
+}
+
+// ============================================================
+// ADVERSE ACTIONS (FCRA Compliance)
+// ============================================================
+
+model AdverseAction {
+  id                    String              @id @default(uuid()) @db.Char(36)
+  orderId               String              @map("order_id") @db.Char(36)
+  status                AdverseActionStatus @default(initiated)
+  preNoticeSentAt       DateTime?           @map("pre_notice_sent_at")
+  preNoticeMethod       String?             @map("pre_notice_method") @db.VarChar(50)
+  waitingPeriodEnd      DateTime?           @map("waiting_period_end")
+  candidateResponse     String?             @map("candidate_response") @db.Text
+  candidateResponseAt   DateTime?           @map("candidate_response_at")
+  finalNoticeSentAt     DateTime?           @map("final_notice_sent_at")
+  finalDecision         String?             @map("final_decision") @db.VarChar(100)
+  createdAt             DateTime            @default(now()) @map("created_at")
+  updatedAt             DateTime            @updatedAt @map("updated_at")
+
+  order     Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  documents AdverseActionDocument[]
+
+  @@index([status])
+  @@index([waitingPeriodEnd])
+  @@map("adverse_actions")
+}
+
+model AdverseActionDocument {
+  id              String    @id @default(uuid()) @db.Char(36)
+  adverseActionId String    @map("adverse_action_id") @db.Char(36)
+  documentType    String    @map("document_type") @db.VarChar(100)
+  filePath        String    @map("file_path") @db.VarChar(500)
+  sentTo          String?   @map("sent_to") @db.VarChar(255)
+  sentAt          DateTime? @map("sent_at")
+  deliveryStatus  String?   @map("delivery_status") @db.VarChar(50)
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  adverseAction AdverseAction @relation(fields: [adverseActionId], references: [id], onDelete: Cascade)
+
+  @@index([adverseActionId])
+  @@map("adverse_action_documents")
+}
+
+// ============================================================
+// ADJUDICATION
+// ============================================================
+
+model AdjudicationMatrix {
+  id          String   @id @default(uuid()) @db.Char(36)
+  clientId    String   @map("client_id") @db.Char(36)
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  isActive    Boolean  @default(true) @map("is_active")
+  createdBy   String?  @map("created_by") @db.Char(36)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  createdByUser User?               @relation(fields: [createdBy], references: [id], onDelete: SetNull)
+  rules         AdjudicationRule[]
+  adjudications OrderAdjudication[]
+
+  @@index([clientId])
+  @@map("adjudication_matrices")
+}
+
+model AdjudicationRule {
+  id               String              @id @default(uuid()) @db.Char(36)
+  matrixId         String              @map("matrix_id") @db.Char(36)
+  ruleOrder        Int                 @map("rule_order")
+  positionCategory String?             @map("position_category") @db.VarChar(100)
+  offenseType      String?             @map("offense_type") @db.VarChar(100)
+  severity         String?             @db.VarChar(50)
+  lookbackYears    Int?                @map("lookback_years")
+  decision         AdjudicationDecision
+  conditions       Json?
+  notes            String?             @db.Text
+  createdAt        DateTime            @default(now()) @map("created_at")
+
+  matrix AdjudicationMatrix @relation(fields: [matrixId], references: [id], onDelete: Cascade)
+
+  @@index([matrixId, ruleOrder])
+  @@map("adjudication_rules")
+}
+
+model OrderAdjudication {
+  id                  String    @id @default(uuid()) @db.Char(36)
+  orderId             String    @unique @map("order_id") @db.Char(36)
+  matrixId            String?   @map("matrix_id") @db.Char(36)
+  automatedDecision   String?   @map("automated_decision") @db.VarChar(50)
+  decisionReasoning   Json?     @map("decision_reasoning")
+  manualOverride      Boolean   @default(false) @map("manual_override")
+  manualDecision      String?   @map("manual_decision") @db.VarChar(50)
+  manualDecisionBy    String?   @map("manual_decision_by") @db.Char(36)
+  manualDecisionNotes String?   @map("manual_decision_notes") @db.Text
+  finalDecision       String?   @map("final_decision") @db.VarChar(50)
+  decidedAt           DateTime? @map("decided_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  order           Order              @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  matrix          AdjudicationMatrix? @relation(fields: [matrixId], references: [id], onDelete: SetNull)
+  manualDecidedBy User?              @relation(fields: [manualDecisionBy], references: [id], onDelete: SetNull)
+
+  @@index([orderId])
+  @@map("order_adjudications")
+}
+
+// ============================================================
+// CONTINUOUS MONITORING
+// ============================================================
+
+model MonitoringEnrollment {
+  id              String         @id @default(uuid()) @db.Char(36)
+  clientId        String         @map("client_id") @db.Char(36)
+  employeeId      String?        @map("employee_id") @db.VarChar(255)
+  applicantId     String         @map("applicant_id") @db.Char(36)
+  originalOrderId String?        @map("original_order_id") @db.Char(36)
+  monitoringType  MonitoringType
+  monitoringScope Json?          @map("monitoring_scope")
+  frequency       String?        @db.VarChar(50)
+  status          MonitoringStatus @default(active)
+  enrolledAt      DateTime       @default(now()) @map("enrolled_at")
+  lastCheckAt     DateTime?      @map("last_check_at")
+  nextCheckAt     DateTime?      @map("next_check_at")
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  client    Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  applicant Applicant @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  alerts    MonitoringAlert[]
+
+  @@index([status])
+  @@index([nextCheckAt])
+  @@map("monitoring_enrollments")
+}
+
+model MonitoringAlert {
+  id           String              @id @default(uuid()) @db.Char(36)
+  enrollmentId String              @map("enrollment_id") @db.Char(36)
+  alertType    String              @map("alert_type") @db.VarChar(100)
+  severity     AlertSeverity
+  description  String              @db.Text
+  details      Json?
+  status       AlertStatus         @default(new)
+  reviewedBy   String?             @map("reviewed_by") @db.Char(36)
+  reviewedAt   DateTime?           @map("reviewed_at")
+  actionTaken  String?             @map("action_taken") @db.Text
+  createdAt    DateTime            @default(now()) @map("created_at")
+
+  enrollment   MonitoringEnrollment @relation(fields: [enrollmentId], references: [id], onDelete: Cascade)
+  reviewedByUser User?              @relation("AlertReviewer", fields: [reviewedBy], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("monitoring_alerts")
+}
+
+model RescreeningSchedule {
+  id               String   @id @default(uuid()) @db.Char(36)
+  clientId         String   @map("client_id") @db.Char(36)
+  positionCategory String?  @map("position_category") @db.VarChar(100)
+  frequencyMonths  Int      @map("frequency_months")
+  autoInitiate     Boolean  @default(false) @map("auto_initiate")
+  packageId        String?  @map("package_id") @db.Char(36)
+  isActive         Boolean  @default(true) @map("is_active")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  client  Client   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  package Package? @relation(fields: [packageId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@map("rescreening_schedules")
+}
+
+// ============================================================
+// DISPUTES
+// ============================================================
+
+model Dispute {
+  id               String        @id @default(uuid()) @db.Char(36)
+  orderId          String        @map("order_id") @db.Char(36)
+  applicantId      String        @map("applicant_id") @db.Char(36)
+  disputedSection  String?       @map("disputed_section") @db.VarChar(100)
+  disputeReason    String?       @map("dispute_reason") @db.Text
+  status           DisputeStatus @default(submitted)
+  assignedTo       String?       @map("assigned_to") @db.Char(36)
+  submittedAt      DateTime      @default(now()) @map("submitted_at")
+  resolvedAt       DateTime?     @map("resolved_at")
+  resolutionNotes  String?       @map("resolution_notes") @db.Text
+  createdAt        DateTime      @default(now()) @map("created_at")
+
+  order         Order                   @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  applicant     Applicant               @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+  assignedUser  User?                   @relation("DisputeAssignee", fields: [assignedTo], references: [id], onDelete: SetNull)
+  communications DisputeCommunication[]
+
+  @@index([status])
+  @@map("disputes")
+}
+
+model DisputeCommunication {
+  id          String   @id @default(uuid()) @db.Char(36)
+  disputeId   String   @map("dispute_id") @db.Char(36)
+  fromParty   String   @map("from_party") @db.VarChar(50)
+  message     String   @db.Text
+  attachments Json?
+  sentAt      DateTime @default(now()) @map("sent_at")
+
+  dispute Dispute @relation(fields: [disputeId], references: [id], onDelete: Cascade)
+
+  @@index([disputeId])
+  @@map("dispute_communications")
+}
+
+// ============================================================
+// BILLING & INVOICING
+// ============================================================
+
+model BillingAccount {
+  id                   String       @id @default(uuid()) @db.Char(36)
+  clientId             String       @unique @map("client_id") @db.Char(36)
+  billingModel         BillingModel @default(pay_per_check)
+  creditBalance        Decimal      @default(0) @map("credit_balance") @db.Decimal(10, 2)
+  monthlyBudget        Decimal?     @map("monthly_budget") @db.Decimal(10, 2)
+  autoRechargeEnabled  Boolean      @default(false) @map("auto_recharge_enabled")
+  autoRechargeThreshold Decimal?    @map("auto_recharge_threshold") @db.Decimal(10, 2)
+  autoRechargeAmount   Decimal?     @map("auto_recharge_amount") @db.Decimal(10, 2)
+  stripeCustomerId     String?      @map("stripe_customer_id") @db.VarChar(255)
+  createdAt            DateTime     @default(now()) @map("created_at")
+
+  client   Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  payments Payment[]
+
+  @@map("billing_accounts")
+}
+
+model Invoice {
+  id                 String        @id @default(uuid()) @db.Char(36)
+  invoiceNumber      String        @unique @map("invoice_number") @db.VarChar(50)
+  clientId           String        @map("client_id") @db.Char(36)
+  billingPeriodStart DateTime?     @map("billing_period_start") @db.Date
+  billingPeriodEnd   DateTime?     @map("billing_period_end") @db.Date
+  subtotal           Decimal       @db.Decimal(10, 2)
+  tax                Decimal       @default(0) @db.Decimal(10, 2)
+  total              Decimal       @db.Decimal(10, 2)
+  status             InvoiceStatus @default(draft)
+  dueDate            DateTime?     @map("due_date") @db.Date
+  sentAt             DateTime?     @map("sent_at")
+  paidAt             DateTime?     @map("paid_at")
+  paymentMethod      String?       @map("payment_method") @db.VarChar(50)
+  stripePaymentId    String?       @map("stripe_payment_id") @db.VarChar(255)
+  filePath           String?       @map("file_path") @db.VarChar(500)
+  createdAt          DateTime      @default(now()) @map("created_at")
+
+  client    Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  lineItems InvoiceLineItem[]
+  payments  Payment[]
+
+  @@index([status])
+  @@index([dueDate])
+  @@map("invoices")
+}
+
+model InvoiceLineItem {
+  id          String  @id @default(uuid()) @db.Char(36)
+  invoiceId   String  @map("invoice_id") @db.Char(36)
+  orderId     String? @map("order_id") @db.Char(36)
+  description String  @db.VarChar(255)
+  quantity    Int     @default(1)
+  unitPrice   Decimal @map("unit_price") @db.Decimal(10, 2)
+  total       Decimal @db.Decimal(10, 2)
+
+  invoice Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  order   Order?  @relation(fields: [orderId], references: [id], onDelete: SetNull)
+
+  @@index([invoiceId])
+  @@map("invoice_line_items")
+}
+
+model Payment {
+  id               String   @id @default(uuid()) @db.Char(36)
+  clientId         String   @map("client_id") @db.Char(36)
+  invoiceId        String?  @map("invoice_id") @db.Char(36)
+  amount           Decimal  @db.Decimal(10, 2)
+  paymentMethod    String   @map("payment_method") @db.VarChar(50)
+  transactionId    String?  @map("transaction_id") @db.VarChar(255)
+  status           String   @db.VarChar(50)
+  processedAt      DateTime @default(now()) @map("processed_at")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  billingAccount BillingAccount @relation(fields: [clientId], references: [clientId], onDelete: Cascade)
+  invoice        Invoice?       @relation(fields: [invoiceId], references: [id], onDelete: SetNull)
+
+  @@index([clientId])
+  @@map("payments")
+}
+
+// ============================================================
+// CLIENT MANAGEMENT
+// ============================================================
+
+model ClientBranding {
+  id                      String   @id @default(uuid()) @db.Char(36)
+  clientId                String   @unique @map("client_id") @db.Char(36)
+  customDomain            String?  @map("custom_domain") @db.VarChar(255)
+  logoUrl                 String?  @map("logo_url") @db.VarChar(500)
+  primaryColor            String?  @map("primary_color") @db.VarChar(7)
+  secondaryColor          String?  @map("secondary_color") @db.VarChar(7)
+  accentColor             String?  @map("accent_color") @db.VarChar(7)
+  fontFamily              String?  @map("font_family") @db.VarChar(100)
+  removeChexproBranding   Boolean  @default(false) @map("remove_chexpro_branding")
+  emailHeaderHtml         String?  @map("email_header_html") @db.Text
+  emailFooterHtml         String?  @map("email_footer_html") @db.Text
+  customCss               String?  @map("custom_css") @db.Text
+  helpDeskUrl             String?  @map("help_desk_url") @db.VarChar(500)
+  welcomeMessage          String?  @map("welcome_message") @db.Text
+  createdAt               DateTime @default(now()) @map("created_at")
+  updatedAt               DateTime @updatedAt @map("updated_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@map("client_branding")
+}
+
+model ApiKey {
+  id          String    @id @default(uuid()) @db.Char(36)
+  clientId    String    @map("client_id") @db.Char(36)
+  name        String    @db.VarChar(255)
+  keyHash     String    @map("key_hash") @db.VarChar(255)
+  keyPrefix   String    @map("key_prefix") @db.VarChar(10)
+  lastUsedAt  DateTime? @map("last_used_at")
+  expiresAt   DateTime? @map("expires_at")
+  isActive    Boolean   @default(true) @map("is_active")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@index([clientId])
+  @@map("api_keys")
+}
+
+// ============================================================
+// COMPLIANCE
+// ============================================================
+
+model ComplianceRule {
+  id            String   @id @default(uuid()) @db.Char(36)
+  jurisdiction  String   @db.VarChar(100)
+  ruleType      String   @map("rule_type") @db.VarChar(100)
+  effectiveDate DateTime? @map("effective_date") @db.Date
+  ruleDetails   Json?    @map("rule_details")
+  isActive      Boolean  @default(true) @map("is_active")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  clientLinks ClientComplianceRule[]
+
+  @@index([jurisdiction])
+  @@index([isActive])
+  @@map("compliance_rules")
+}
+
+model ClientComplianceRule {
+  clientId         String @map("client_id") @db.Char(36)
+  complianceRuleId String @map("compliance_rule_id") @db.Char(36)
+
+  client         Client         @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  complianceRule ComplianceRule @relation(fields: [complianceRuleId], references: [id], onDelete: Cascade)
+
+  @@id([clientId, complianceRuleId])
+  @@map("client_compliance_rules")
+}
+
+// ============================================================
+// AUDIT LOGS
+// ============================================================
+
+model AuditLog {
+  id             String   @id @default(uuid()) @db.Char(36)
+  userId         String?  @map("user_id") @db.Char(36)
+  clientId       String?  @map("client_id") @db.Char(36)
+  action         String   @db.VarChar(100)
+  resourceType   String?  @map("resource_type") @db.VarChar(50)
+  resourceId     String?  @map("resource_id") @db.Char(36)
+  ipAddress      String?  @map("ip_address") @db.VarChar(45)
+  userAgent      String?  @map("user_agent") @db.Text
+  requestDetails Json?    @map("request_details")
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId, createdAt])
+  @@index([clientId, createdAt])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+// ============================================================
+// ANALYTICS
+// ============================================================
+
+model AnalyticsDailyMetric {
+  id                  String   @id @default(uuid()) @db.Char(36)
+  clientId            String   @map("client_id") @db.Char(36)
+  date                DateTime @db.Date
+  ordersSubmitted     Int      @default(0) @map("orders_submitted")
+  ordersCompleted     Int      @default(0) @map("orders_completed")
+  avgTurnaroundHours  Decimal? @map("avg_turnaround_hours") @db.Decimal(10, 2)
+  totalCost           Decimal  @default(0) @map("total_cost") @db.Decimal(10, 2)
+  passRate            Decimal? @map("pass_rate") @db.Decimal(5, 2)
+  createdAt           DateTime @default(now()) @map("created_at")
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+
+  @@unique([clientId, date])
+  @@index([date])
+  @@map("analytics_daily_metrics")
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum ClientStatus {
+  active
+  suspended
+  inactive
+}
+
+enum UserRole {
+  owner
+  admin
+  manager
+  user
+}
+
+enum UserStatus {
+  active
+  inactive
+  pending
+}
+
+enum OrderStatus {
+  draft
+  submitted
+  awaiting_applicant
+  data_verification
+  in_progress
+  pending_review
+  requires_action
+  completed
+  cancelled
+}
+
+enum AdverseActionStatus {
+  initiated
+  pre_notice_sent
+  waiting_period
+  candidate_responded
+  final_notice_sent
+  completed
+  cancelled
+}
+
+enum AdjudicationDecision {
+  auto_approve
+  auto_reject
+  manual_review
+  conditional
+}
+
+enum MonitoringType {
+  continuous
+  periodic
+}
+
+enum MonitoringStatus {
+  active
+  paused
+  cancelled
+}
+
+enum AlertSeverity {
+  critical
+  high
+  medium
+  low
+}
+
+enum AlertStatus {
+  new
+  reviewed
+  dismissed
+  actioned
+}
+
+enum DisputeStatus {
+  submitted
+  under_review
+  resolved
+  closed
+}
+
+enum BillingModel {
+  pay_per_check
+  prepaid_credits
+  monthly_invoice
+  subscription
+}
+
+enum InvoiceStatus {
+  draft
+  sent
+  paid
+  overdue
+  cancelled
+}
+
+enum VendorName {
+  cleara
+  accurate_source
+  baxter
+  ferretly
+  inform_data
+  manual
+}
+
+enum VendorOrderStatus {
+  submitted
+  processing
+  completed
+  failed
+  cancelled
+}
