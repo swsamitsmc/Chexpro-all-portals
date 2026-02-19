@@ -1,0 +1,134 @@
+name: Deploy to OCI (Secure)
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # 1. Install OCI CLI (Manual Method)
+      - name: Install OCI CLI and Configure
+        env:
+          OCI_CLI_USER: ${{ secrets.OCI_CLI_USER }}
+          OCI_CLI_TENANCY: ${{ secrets.OCI_CLI_TENANCY }}
+          OCI_CLI_FINGERPRINT: ${{ secrets.OCI_CLI_FINGERPRINT }}
+          OCI_CLI_KEY_CONTENT: ${{ secrets.OCI_CLI_KEY_CONTENT }}
+          OCI_CLI_REGION: ${{ secrets.OCI_CLI_REGION }}
+        run: |
+          pip install oci-cli
+          mkdir -p ~/.oci
+          echo "$OCI_CLI_KEY_CONTENT" > ~/.oci/oci_api_key.pem
+          chmod 600 ~/.oci/oci_api_key.pem
+          echo "[DEFAULT]" > ~/.oci/config
+          echo "user=$OCI_CLI_USER" >> ~/.oci/config
+          echo "fingerprint=$OCI_CLI_FINGERPRINT" >> ~/.oci/config
+          echo "key_file=~/.oci/oci_api_key.pem" >> ~/.oci/config
+          echo "tenancy=$OCI_CLI_TENANCY" >> ~/.oci/config
+          echo "region=$OCI_CLI_REGION" >> ~/.oci/config
+          chmod -R 700 ~/.oci
+
+      # 2. Get Runner IP and Whitelist it in OCI (FIXED: Uses JSON)
+      - name: Whitelist Runner IP
+        id: whitelist
+        run: |
+          RUNNER_IP=$(curl -s https://api.ipify.org)
+          echo "Whitelisting IP: $RUNNER_IP"
+          
+          # Construct the JSON rule required by OCI NSGs
+          # We use a compact JSON string here to avoid syntax errors
+          RULE_JSON='[{
+            "direction": "INGRESS",
+            "protocol": "6",
+            "source": "'$RUNNER_IP'/32",
+            "sourceType": "CIDR_BLOCK",
+            "tcpOptions": {
+              "destinationPortRange": {
+                "max": 22,
+                "min": 22
+              }
+            },
+            "description": "Temp GitHub Action Access"
+          }]'
+
+          # Add the rule using the valid --security-rules flag
+          oci network nsg rules add \
+            --nsg-id ${{ secrets.OCI_NSG_OCID }} \
+            --security-rules "$RULE_JSON"
+
+          echo "runner_ip=$RUNNER_IP" >> $GITHUB_OUTPUT
+
+      # 3. Deploy to Server (Standard SSH)
+      - name: Deploy to OCI Server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.OCI_SSH_HOST }}
+          username: ${{ secrets.OCI_SSH_USER }}
+          key: ${{ secrets.OCI_SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            echo "### 1. Navigating to build directory ###"
+            mkdir -p /var/www/chexpro-frontend-build
+            cd /var/www/chexpro-frontend-build
+            
+            ssh-keyscan -H github.com >> ~/.ssh/known_hosts
+            git reset --hard origin/master
+            git pull origin master
+
+            echo "### 2. Building frontend ###"
+            GIT_HASH=$(git rev-parse --short HEAD)
+            TIMESTAMP=$(date -u '+%Y-%m-%d %H:%M:%S UTC')
+            cd frontend
+            export VITE_API_BASE_URL=http://localhost:3000
+            export VITE_SANITY_PROJECT_ID=c3k71ef3
+            export VITE_SANITY_DATASET=production
+            export VITE_USE_CMS=sanity
+            npm install --legacy-peer-deps
+            npm run build
+
+            if [ -f dist/index.html ]; then
+              sed -i "s#</body>#<!-- Deployed: ${TIMESTAMP} | Commit: ${GIT_HASH} --></body>#" dist/index.html
+            fi
+
+            echo "### 3. Deploying files ###"
+            rsync -av --delete --exclude '.env' dist/ /var/www/chexpro-frontend/
+            
+            echo "### 3.5 Restarting Apache to apply changes ###"
+            sudo systemctl restart apache2
+            
+            cd ../server
+            rsync -av --delete --exclude '.env' --exclude 'node_modules/' . /var/www/chexpro-backend/
+
+            echo "### 4. Restarting Backend ###"
+            cd /var/www/chexpro-backend
+            npm install --production
+            pm2 reload chexpro-backend --update-env
+            pm2 status
+
+      # 4. Revoke Access (Clean up)
+      - name: Revoke Runner IP
+        if: always()
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq
+          
+          RUNNER_IP=${{ steps.whitelist.outputs.runner_ip }}
+          if [ -z "$RUNNER_IP" ]; then
+            echo "No IP to revoke."
+            exit 0
+          fi
+          
+          echo "Revoking access for IP: $RUNNER_IP"
+          
+          # Use jq to find the rule ID created for this IP
+          RULE_ID=$(oci network nsg rules list --nsg-id ${{ secrets.OCI_NSG_OCID }} --all | jq -r --arg ip "$RUNNER_IP/32" '.data[] | select(.source==$ip and .description=="Temp GitHub Action Access") | .id')
+          
+          if [ ! -z "$RULE_ID" ]; then
+            echo "y" | oci network nsg rules remove --nsg-id ${{ secrets.OCI_NSG_OCID }} --security-rule-ids "[\"$RULE_ID\"]"
+            echo "Access revoked."
+          else
+            echo "Rule not found or already removed."
+          fi

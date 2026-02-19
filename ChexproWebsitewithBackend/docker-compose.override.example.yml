@@ -1,0 +1,38 @@
+# Example: Add this to docker-compose.override.yml to include Zitadel
+# Copy this file to docker-compose.override.yml and uncomment the services you need
+
+# version: '3.8'
+#
+# services:
+#   # Zitadel for authentication (optional)
+#   zitadel:
+#     extends:
+#       file: docker-compose.zitadel.yml
+#       service: zitadel
+#     ports:
+#       - "8080:8080"
+#
+#   # PostgreSQL for Zitadel
+#   zitadel-db:
+#     extends:
+#       file: docker-compose.zitadel.yml
+#       service: db
+#     ports:
+#       - "5432:5432"
+#
+#   # MinIO for Zitadel assets
+#   zitadel-minio:
+#     extends:
+#       file: docker-compose.zitadel.yml
+#       service: minio
+#     ports:
+#       - "9000:9000"
+#       - "9001:9001"
+#
+#   # RabbitMQ for Zitadel events
+#   zitadel-rabbitmq:
+#     extends:
+#       file: docker-compose.zitadel.yml
+#       service: rabbitmq
+#     ports:
+#       - "5672:5672"

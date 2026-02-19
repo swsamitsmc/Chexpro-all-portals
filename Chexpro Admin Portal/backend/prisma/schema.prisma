@@ -1,0 +1,632 @@
+// ChexPro Admin Portal - Prisma Schema
+// Database: MySQL 8.0 (Shared with Client Portal)
+// Admin-specific tables + access to client portal tables
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================
+// ADMIN USER MANAGEMENT (Separate from Client Users)
+// ============================================================
+
+model AdminUser {
+  id                  String        @id @default(uuid()) @db.Char(36)
+  email               String        @unique @db.VarChar(255)
+  passwordHash        String        @map("password_hash") @db.VarChar(255)
+  firstName           String        @map("first_name") @db.VarChar(100)
+  lastName            String        @map("last_name") @db.VarChar(100)
+  role                AdminRole     @default(processor)
+  status              AdminStatus   @default(active)
+  department          String?       @db.VarChar(100)
+  phone               String?       @db.VarChar(20)
+  avatarUrl           String?       @map("avatar_url") @db.VarChar(500)
+  mfaSecret           String?       @map("mfa_secret") @db.VarChar(255)
+  mfaEnabled          Boolean       @default(false) @map("mfa_enabled")
+  mfaRequired         Boolean       @default(true) @map("mfa_required")
+  refreshToken        String?       @map("refresh_token") @db.VarChar(512)
+  passwordResetToken  String?       @map("password_reset_token") @db.VarChar(255)
+  passwordResetExpiry DateTime?     @map("password_reset_expiry")
+  lastLogin           DateTime?     @map("last_login")
+  lastLoginIp         String?       @map("last_login_ip") @db.VarChar(45)
+  failedLoginAttempts Int           @default(0) @map("failed_login_attempts")
+  lockedUntil         DateTime?     @map("locked_until")
+  sessionTimeout      Int           @default(15) @map("session_timeout") // minutes
+  createdAt           DateTime      @default(now()) @map("created_at")
+  updatedAt           DateTime      @updatedAt @map("updated_at")
+  createdBy           String?       @map("created_by") @db.Char(36)
+
+  creator             AdminUser?    @relation("AdminUserCreator", fields: [createdBy], references: [id], onDelete: SetNull)
+  createdUsers        AdminUser[]   @relation("AdminUserCreator")
+  assignedOrders      OrderAssignment[]
+  qaReviews           QAReview[]
+  adjudicationReviews AdjudicationReview[]
+  auditLogs           AdminAuditLog[]
+  notifications       AdminNotification[]
+  teamMemberships     TeamMember[]
+  credentialingAssignments CredentialingWorkflow[]
+  ledTeams            Team[]           @relation("TeamLead")
+
+  @@index([role])
+  @@index([status])
+  @@index([email])
+  @@map("admin_users")
+}
+
+enum AdminRole {
+  super_admin          // Full system access
+  operations_manager   // View all orders, reassign, override SLA
+  processor            // Process assigned orders
+  qa_specialist        // Review reports before delivery
+  client_success_mgr   // Manage client settings
+  credentialing_spec   // Onboard new clients
+  compliance_officer   // Compliance & audit access
+}
+
+enum AdminStatus {
+  active
+  inactive
+  suspended
+  pending
+}
+
+// ============================================================
+// TEAM MANAGEMENT
+// ============================================================
+
+model Team {
+  id          String   @id @default(uuid()) @db.Char(36)
+  name        String   @db.VarChar(255)
+  description String?  @db.Text
+  teamType    String   @map("team_type") @db.VarChar(50) // processing, qa, adjudication, client_success
+  leadId      String?  @map("lead_id") @db.Char(36)
+  isActive    Boolean  @default(true) @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  lead      AdminUser?  @relation("TeamLead", fields: [leadId], references: [id], onDelete: SetNull)
+  members   TeamMember[]
+
+  @@index([teamType])
+  @@map("teams")
+}
+
+model TeamMember {
+  id       String   @id @default(uuid()) @db.Char(36)
+  teamId   String   @map("team_id") @db.Char(36)
+  adminId  String   @map("admin_id") @db.Char(36)
+  role     String   @db.VarChar(50) // member, lead, supervisor
+  joinedAt DateTime @default(now()) @map("joined_at")
+
+  team     Team      @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  admin    AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, adminId])
+  @@map("team_members")
+}
+
+// ============================================================
+// ORDER ASSIGNMENT & WORKLOAD
+// ============================================================
+
+model OrderAssignment {
+  id           String           @id @default(uuid()) @db.Char(36)
+  orderId      String           @map("order_id") @db.Char(36)
+  adminId      String           @map("admin_id") @db.Char(36)
+  assignedBy   String           @map("assigned_by") @db.Char(36)
+  assignmentType AssignmentType @map("assignment_type")
+  status       AssignmentStatus @default(active)
+  priority     Int              @default(0)
+  assignedAt   DateTime         @default(now()) @map("assigned_at")
+  completedAt  DateTime?        @map("completed_at")
+  notes        String?          @db.Text
+
+  admin        AdminUser        @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([adminId])
+  @@index([status])
+  @@map("order_assignments")
+}
+
+enum AssignmentType {
+  processing
+  qa_review
+  adjudication
+  client_success
+  credentialing
+}
+
+enum AssignmentStatus {
+  active
+  completed
+  reassigned
+  cancelled
+}
+
+// ============================================================
+// QUALITY ASSURANCE MODULE
+// ============================================================
+
+model QAReview {
+  id               String        @id @default(uuid()) @db.Char(36)
+  orderId          String        @unique @map("order_id") @db.Char(36)
+  reviewerId       String        @map("reviewer_id") @db.Char(36)
+  status           QAReviewStatus @default(pending)
+  reviewStartedAt  DateTime?     @map("review_started_at")
+  reviewCompletedAt DateTime?    @map("review_completed_at")
+  decision         QADecision?
+  notes            String?       @db.Text
+  failureReasons   Json?         @map("failure_reasons")
+  correctionsNeeded Json?        @map("corrections_needed")
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  reviewer         AdminUser     @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([status])
+  @@index([reviewerId])
+  @@map("qa_reviews")
+}
+
+enum QAReviewStatus {
+  pending
+  in_review
+  approved
+  failed
+  resubmitted
+}
+
+enum QADecision {
+  approve
+  fail
+  escalate
+}
+
+// ============================================================
+// ADJUDICATION REVIEW (Extends Client Portal)
+// ============================================================
+
+model AdjudicationReview {
+  id                  String    @id @default(uuid()) @db.Char(36)
+  orderId             String    @unique @map("order_id") @db.Char(36)
+  reviewerId          String    @map("reviewer_id") @db.Char(36)
+  automatedDecision   String?   @map("automated_decision") @db.VarChar(50)
+  manualOverride      Boolean   @default(false) @map("manual_override")
+  manualDecision      String?   @map("manual_decision") @db.VarChar(50)
+  decisionReasoning   Json?     @map("decision_reasoning")
+  individualAssessment Json?    @map("individual_assessment")
+  mitigatingFactors   Json?     @map("mitigating_factors")
+  aggravatingFactors  Json?     @map("aggravating_factors")
+  finalDecision       String?   @map("final_decision") @db.VarChar(50)
+  notes               String?   @db.Text
+  reviewStartedAt     DateTime? @map("review_started_at")
+  decidedAt           DateTime? @map("decided_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  reviewer            AdminUser @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@index([reviewerId])
+  @@map("adjudication_reviews")
+}
+
+// ============================================================
+// CLIENT CREDENTIALING WORKFLOW
+// ============================================================
+
+model CredentialingWorkflow {
+  id                    String                @id @default(uuid()) @db.Char(36)
+  clientId              String?               @map("client_id") @db.Char(36)
+  prospectName          String?               @map("prospect_name") @db.VarChar(255)
+  prospectEmail         String?               @map("prospect_email") @db.VarChar(255)
+  prospectPhone         String?               @map("prospect_phone") @db.VarChar(20)
+  companyInfo           Json?                 @map("company_info")
+  status                CredentialingStatus   @default(new_application)
+  currentStep           Int                   @default(1) @map("current_step")
+  assignedTo            String?               @map("assigned_to") @db.Char(36)
+  applicationDate       DateTime              @default(now()) @map("application_date")
+  approvedDate          DateTime?             @map("approved_date")
+  rejectionReason       String?               @map("rejection_reason") @db.Text
+  notes                 String?               @db.Text
+  createdAt             DateTime              @default(now()) @map("created_at")
+  updatedAt             DateTime             @updatedAt @map("updated_at")
+
+  assignedAdmin         AdminUser?            @relation(fields: [assignedTo], references: [id], onDelete: SetNull)
+  steps                 CredentialingStep[]
+  documents             CredentialingDocument[]
+
+  @@index([status])
+  @@index([assignedTo])
+  @@map("credentialing_workflows")
+}
+
+enum CredentialingStatus {
+  new_application
+  under_review
+  pending_documents
+  business_verification
+  compliance_review
+  contract_execution
+  system_configuration
+  approved
+  rejected
+  on_hold
+}
+
+model CredentialingStep {
+  id                   String   @id @default(uuid()) @db.Char(36)
+  workflowId           String   @map("workflow_id") @db.Char(36)
+  stepNumber           Int      @map("step_number")
+  stepName             String   @map("step_name") @db.VarChar(100)
+  status               String   @db.VarChar(50) // pending, in_progress, completed, failed
+  completedAt          DateTime? @map("completed_at")
+  completedBy          String?  @map("completed_by") @db.Char(36)
+  notes                String?  @db.Text
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  workflow             CredentialingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@map("credentialing_steps")
+}
+
+model CredentialingDocument {
+  id              String    @id @default(uuid()) @db.Char(36)
+  workflowId      String    @map("workflow_id") @db.Char(36)
+  documentType    String    @map("document_type") @db.VarChar(100)
+  documentName    String    @map("document_name") @db.VarChar(255)
+  filePath        String    @map("file_path") @db.VarChar(500)
+  status          String    @default("pending") @db.VarChar(50) // pending, verified, rejected
+  verifiedAt      DateTime? @map("verified_at")
+  verifiedBy      String?   @map("verified_by") @db.Char(36)
+  notes           String?   @db.Text
+  uploadedAt      DateTime  @default(now()) @map("uploaded_at")
+
+  workflow        CredentialingWorkflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@index([workflowId])
+  @@map("credentialing_documents")
+}
+
+// ============================================================
+// VENDOR MANAGEMENT
+// ============================================================
+
+model Vendor {
+  id              String   @id @default(uuid()) @db.Char(36)
+  name            String   @unique @db.VarChar(255)
+  displayName     String   @map("display_name") @db.VarChar(255)
+  vendorType      String   @map("vendor_type") @db.VarChar(100)
+  status          VendorStatus @default(active)
+  description     String?  @db.Text
+  website         String?  @db.VarChar(500)
+  apiEndpoint     String?  @map("api_endpoint") @db.VarChar(500)
+  healthCheckUrl String?  @map("health_check_url") @db.VarChar(500)
+  apiKey          String?  @map("api_key") @db.VarChar(255)
+  apiSecret       String?  @map("api_secret") @db.VarChar(255)
+  webhookUrl      String?  @map("webhook_url") @db.VarChar(500)
+  webhookSecret   String?  @map("webhook_secret") @db.VarChar(255)
+  integrationType String?  @map("integration_type") @db.VarChar(50) // rest_api, sftp, soap
+  contractStart   DateTime? @map("contract_start")
+  contractEnd     DateTime? @map("contract_end")
+  autoRenew       Boolean  @default(true) @map("auto_renew")
+  terminationDays Int?     @map("termination_days")
+  contactName     String?  @map("contact_name") @db.VarChar(255)
+  contactEmail    String?  @map("contact_email") @db.VarChar(255)
+  contactPhone    String?  @map("contact_phone") @db.VarChar(20)
+  supportEmail    String?  @map("support_email") @db.VarChar(255)
+  supportPhone    String?  @map("support_phone") @db.VarChar(20)
+  notes           String?  @db.Text
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  services        VendorService[]
+  pricing         VendorPricing[]
+  performance     VendorPerformance[]
+  routingRules    VendorRoutingRule[]
+  issues          VendorIssue[]
+
+  @@index([status])
+  @@map("vendors")
+}
+
+enum VendorStatus {
+  active
+  inactive
+  maintenance
+  suspended
+  offline
+}
+
+model VendorService {
+  id              String   @id @default(uuid()) @db.Char(36)
+  vendorId        String   @map("vendor_id") @db.Char(36)
+  serviceType     String   @map("service_type") @db.VarChar(100)
+  serviceName     String   @map("service_name") @db.VarChar(255)
+  vendorProductCode String? @map("vendor_product_code") @db.VarChar(100)
+  description     String?  @db.Text
+  isActive        Boolean  @default(true) @map("is_active")
+  estimatedTatDays Int?    @map("estimated_tat_days")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  vendor          Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([serviceType])
+  @@map("vendor_services")
+}
+
+model VendorPricing {
+  id              String   @id @default(uuid()) @db.Char(36)
+  vendorId        String   @map("vendor_id") @db.Char(36)
+  serviceType     String   @map("service_type") @db.VarChar(100)
+  basePrice       Decimal  @map("base_price") @db.Decimal(10, 2)
+  volumeDiscounts Json?    @map("volume_discounts")
+  effectiveDate   DateTime @map("effective_date") @db.Date
+  expiryDate      DateTime? @map("expiry_date") @db.Date
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  vendor          Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@map("vendor_pricing")
+}
+
+model VendorPerformance {
+  id                   String   @id @default(uuid()) @db.Char(36)
+  vendorId             String   @map("vendor_id") @db.Char(36)
+  date                 DateTime @db.Date
+  ordersSubmitted      Int      @default(0) @map("orders_submitted")
+  ordersCompleted      Int      @default(0) @map("orders_completed")
+  ordersFailed         Int      @default(0) @map("orders_failed")
+  avgTatHours          Decimal? @map("avg_tat_hours") @db.Decimal(10, 2)
+  onTimeRate           Decimal? @map("on_time_rate") @db.Decimal(5, 2)
+  errorRate            Decimal? @map("error_rate") @db.Decimal(5, 2)
+  qualityScore         Decimal? @map("quality_score") @db.Decimal(5, 2)
+  createdAt            DateTime @default(now()) @map("created_at")
+
+  vendor               Vendor   @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@unique([vendorId, date])
+  @@index([vendorId])
+  @@index([date])
+  @@map("vendor_performance")
+}
+
+model VendorRoutingRule {
+  id              String    @id @default(uuid()) @db.Char(36)
+  serviceType     String    @map("service_type") @db.VarChar(100)
+  jurisdiction    String?   @db.VarChar(100)
+  clientId        String?   @map("client_id") @db.Char(36) // null = global rule
+  vendorId        String    @map("vendor_id") @db.Char(36)
+  priority        Int       @default(1)
+  conditions      Json?
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  vendor          Vendor    @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([serviceType])
+  @@index([clientId])
+  @@map("vendor_routing_rules")
+}
+
+model VendorIssue {
+  id              String        @id @default(uuid()) @db.Char(36)
+  vendorId        String        @map("vendor_id") @db.Char(36)
+  issueType       String        @map("issue_type") @db.VarChar(100)
+  description     String        @db.Text
+  severity        IssueSeverity
+  status          IssueStatus   @default(open)
+  affectedOrders  Int           @default(0) @map("affected_orders")
+  resolvedAt      DateTime?     @map("resolved_at")
+  resolvedBy      String?       @map("resolved_by") @db.Char(36)
+  resolution      String?       @db.Text
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  vendor          Vendor        @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+
+  @@index([vendorId])
+  @@index([status])
+  @@map("vendor_issues")
+}
+
+enum IssueSeverity {
+  low
+  medium
+  high
+  critical
+}
+
+enum IssueStatus {
+  open
+  in_progress
+  resolved
+  closed
+}
+
+// ============================================================
+// SLA MONITORING
+// ============================================================
+
+model SLAConfig {
+  id                    String   @id @default(uuid()) @db.Char(36)
+  clientId              String?  @map("client_id") @db.Char(36) // null = default
+  packageId             String?  @map("package_id") @db.Char(36)
+  serviceType           String?  @map("service_type") @db.VarChar(100)
+  targetTatDays         Int      @map("target_tat_days")
+  warningThresholdHrs   Int      @map("warning_threshold_hrs") // hours before due
+  criticalThresholdHrs  Int      @map("critical_threshold_hrs")
+  escalationEmail       String?  @map("escalation_email") @db.VarChar(255)
+  autoEscalate          Boolean  @default(false) @map("auto_escalate")
+  isActive              Boolean  @default(true) @map("is_active")
+  createdAt             DateTime @default(now()) @map("created_at")
+  updatedAt             DateTime @updatedAt @map("updated_at")
+
+  @@index([clientId])
+  @@index([serviceType])
+  @@map("sla_configs")
+}
+
+model SLAAlert {
+  id              String        @id @default(uuid()) @db.Char(36)
+  orderId         String        @map("order_id") @db.Char(36)
+  alertType       SLAAlertType  @map("alert_type")
+  severity        SLASeverity
+  message         String        @db.Text
+  dueDate         DateTime      @map("due_date")
+  hoursRemaining  Decimal       @map("hours_remaining") @db.Decimal(10, 2)
+  acknowledged    Boolean       @default(false)
+  acknowledgedAt  DateTime?     @map("acknowledged_at")
+  acknowledgedBy  String?       @map("acknowledged_by") @db.Char(36)
+  createdAt       DateTime      @default(now()) @map("created_at")
+
+  @@index([orderId])
+  @@index([severity])
+  @@index([acknowledged])
+  @@map("sla_alerts")
+}
+
+enum SLAAlertType {
+  warning
+  critical
+  breached
+}
+
+enum SLASeverity {
+  low
+  medium
+  high
+  critical
+}
+
+// ============================================================
+// ESCALATION RULES
+// ============================================================
+
+model EscalationRule {
+  id              String            @id @default(uuid()) @db.Char(36)
+  name            String            @db.VarChar(255)
+  description     String?           @db.Text
+  isActive        Boolean           @default(true) @map("is_active")
+  triggerType     EscalationTrigger @map("trigger_type") // sla_breach, manual, automatic
+  triggerConfig   Json?             @map("trigger_config") // conditions that trigger escalation
+  escalationPath  Json              @map("escalation_path") // ["email1", "email2"] or user IDs
+  delayMinutes    Int               @default(0) @map("delay_minutes") // wait before escalating
+  notifyOnEscalation Boolean         @default(true) @map("notify_on_escalation")
+  autoResolve     Boolean           @default(false) @map("auto_resolve")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  @@index([isActive])
+  @@index([triggerType])
+  @@map("escalation_rules")
+}
+
+enum EscalationTrigger {
+  sla_warning
+  sla_breach
+  manual
+  automatic
+}
+
+// ============================================================
+// AUDIT LOGGING
+// ============================================================
+
+model AdminAuditLog {
+  id               String   @id @default(uuid()) @db.Char(36)
+  adminId          String?  @map("admin_id") @db.Char(36)
+  action           String   @db.VarChar(100)
+  resourceType     String?  @map("resource_type") @db.VarChar(50)
+  resourceId       String?  @map("resource_id") @db.Char(36)
+  clientId         String?  @map("client_id") @db.Char(36)
+  orderId          String?  @map("order_id") @db.Char(36)
+  ipAddress        String?  @map("ip_address") @db.VarChar(45)
+  userAgent        String?  @map("user_agent") @db.Text
+  requestDetails   Json?    @map("request_details")
+  responseStatus   Int?     @map("response_status")
+  duration         Int?     // milliseconds
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  admin            AdminUser? @relation(fields: [adminId], references: [id], onDelete: SetNull)
+
+  @@index([adminId, createdAt])
+  @@index([action])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("admin_audit_logs")
+}
+
+// ============================================================
+// ADMIN NOTIFICATIONS
+// ============================================================
+
+model AdminNotification {
+  id          String   @id @default(uuid()) @db.Char(36)
+  adminId     String   @map("admin_id") @db.Char(36)
+  type        String   @db.VarChar(100)
+  title       String   @db.VarChar(255)
+  message     String   @db.Text
+  priority    String   @default("normal") @db.VarChar(20)
+  isRead      Boolean  @default(false) @map("is_read")
+  readAt      DateTime? @map("read_at")
+  actionUrl   String?  @map("action_url") @db.VarChar(500)
+  metadata    Json?
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  admin       AdminUser @relation(fields: [adminId], references: [id], onDelete: Cascade)
+
+  @@index([adminId, isRead])
+  @@index([type])
+  @@index([createdAt])
+  @@map("admin_notifications")
+}
+
+// ============================================================
+// SYSTEM CONFIGURATION
+// ============================================================
+
+model SystemConfig {
+  id          String   @id @default(uuid()) @db.Char(36)
+  key         String   @unique @db.VarChar(100)
+  value       Json
+  description String?  @db.Text
+  category    String   @db.VarChar(50)
+  isPublic    Boolean  @default(false) @map("is_public")
+  updatedBy   String?  @map("updated_by") @db.Char(36)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@map("system_configs")
+}
+
+// ============================================================
+// ADMIN DASHBOARD WIDGETS
+// ============================================================
+
+model AdminDashboardWidget {
+  id          String   @id @default(uuid()) @db.Char(36)
+  adminId     String   @map("admin_id") @db.Char(36)
+  widgetType  String   @map("widget_type") @db.VarChar(100)
+  position    Int
+  size        String   @default("medium") @db.VarChar(20)
+  config      Json?
+  isVisible   Boolean  @default(true) @map("is_visible")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([adminId, widgetType])
+  @@index([adminId])
+  @@map("admin_dashboard_widgets")
+}

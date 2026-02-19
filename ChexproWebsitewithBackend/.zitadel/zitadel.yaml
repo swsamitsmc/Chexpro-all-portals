@@ -1,0 +1,109 @@
+# Zitadel configuration for local development
+# All values must be set here or as environment variables
+
+# Database configuration (PostgreSQL)
+Database:
+  postgres:
+    # Connection string components
+    Host: db
+    Port: 5432
+    Database: zitadel
+    User: postgres
+    Password: postgres
+    SSL:
+      Mode: disable
+    MaxOpenConns: 25
+    MaxIdleConns: 25
+    MaxConnLifetime: 5m
+    MaxConnIdleTime: 5m
+
+# Eventstore configuration
+Eventstore:
+  Postgres:
+    Host: db
+    Port: 5432
+    Database: zitadel
+    User: postgres
+    Password: postgres
+    SSL:
+      Mode: disable
+    MaxOpenConns: 25
+    MaxIdleConns: 25
+    MaxConnLifetime: 5m
+
+# Audit log configuration
+AuditLog:
+  Postgres:
+    Host: db
+    Port: 5432
+    Database: zitadel
+    User: postgres
+    Password: postgres
+    SSL:
+      Mode: disable
+    MaxOpenConns: 25
+    MaxIdleConns: 25
+    MaxConnLifetime: 5m
+
+# Feature flag configuration
+FeatureFlags:
+  Postgres:
+    Host: db
+    Port: 5432
+    Database: zitadel
+    User: postgres
+    Password: postgres
+    SSL:
+      Mode: disable
+    MaxOpenConns: 25
+    MaxIdleConns: 25
+    MaxConnLifetime: 5m
+
+# RabbitMQ configuration (for async events)
+Broker:
+  RabbitMQ:
+    Endpoint: amqp://rabbitmq:5672
+
+# S3/MinIO configuration (for assets)
+AssetStorage:
+  S3:
+    Endpoint: http://minio:9000
+    BucketName: assets
+    AccessKeyID: minioadmin
+    SecretAccessKey: minioadmin
+    UseAWSClient: false
+
+# Telemetry
+Telemetry:
+  Pprof:
+    Enabled: false
+    Port: 7078
+  Metrics:
+    Enabled: false
+    Port: 7079
+
+# GRPC server configuration
+GRPC:
+  Port: 8080
+  ExternalSecure: true
+
+# HTTP server configuration
+HTTP:
+  Port: 8080
+  ExternalSecure: true
+
+# TLS configuration
+TLS:
+  Enabled: false
+
+# Masterkey for encryption
+Masterkey: Secretzitadel123456789
+
+# Default instance configuration
+DefaultInstance:
+  OrganizationName: ChexPro
+  OrgDomain: chexpro-local
+  AdminUser:
+    Username: admin
+    Password: Admin123!
+    Email: admin@chexpro.local

@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  zitadel:
+    image: ghcr.io/zitadel/zitadel:v2.37.0
+    container_name: chexpro-zitadel
+    ports:
+      - "8080:8080"
+    command: >
+      start
+      --masterkey Secretzitadel123456789
+      --externalDomain localhost
+      --tlsMode disabled
+    environment:
+      - ZITADEL_DATABASE_POSTGRES_HOST=db
+      - ZITADEL_DATABASE_POSTGRES_PORT=5432
+      - ZITADEL_DATABASE_POSTGRES_DATABASE=zitadel
+      - ZITADEL_DATABASE_POSTGRES_USER=postgres
+      - ZITADEL_DATABASE_POSTGRES_PASSWORD=postgres
+      - ZITADEL_DATABASE_POSTGRES_SSL_MODE=disable
+      - ZITADEL_LOG_LEVEL=info
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - chexpro-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/debug/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    volumes:
+      - zitadel_data:/var/lib/zitadel
+      - zitadel_logs:/var/log/zitadel
+
+  db:
+    image: postgres:15-alpine
+    container_name: chexpro-zitadel-db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=zitadel
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - chexpro-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  chexpro-network:
+    driver: bridge
+
+volumes:
+  zitadel_data:
+  zitadel_logs:
+  postgres_data:

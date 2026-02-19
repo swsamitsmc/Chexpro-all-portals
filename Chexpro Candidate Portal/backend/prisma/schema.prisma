@@ -1,0 +1,245 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String    @id @default(uuid())
+  username        String?   @unique
+  email           String    @unique
+  passwordHash    String    @map("password_hash")
+  role            String    @default("candidate")
+  firstName       String?   @map("first_name")
+  lastName        String?   @map("last_name")
+  clientId        String?   @map("client_id")
+  isActive        Boolean   @default(true) @map("is_active")
+  deletedAt       DateTime? @map("deleted_at")
+  lastLoginAt     DateTime? @map("last_login_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  client              Client?              @relation(fields: [clientId], references: [id])
+  candidateProfile    CandidateProfile?
+  candidateInvitations CandidateInvitation[]
+  notifications       Notification[]
+  documents           Document[]
+  applicants          Applicant[]
+
+  @@map("users")
+}
+
+model Client {
+  id              String    @id @default(uuid())
+  companyName     String    @map("company_name")
+  contactEmail    String    @map("contact_email")
+  contactPhone    String?   @map("contact_phone")
+  industry        String?
+  companySize     String?   @map("company_size")
+  address         String?
+  subscriptionTier String?  @map("subscription_tier")
+  apiKey          String?   @map("api_key")
+  isActive        Boolean   @default(true) @map("is_active")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  users        User[]
+  applicants   Applicant[]
+  orders       Order[]
+
+  @@map("clients")
+}
+
+model Applicant {
+  id              String    @id @default(uuid())
+  userId          String?   @map("user_id")
+  clientId        String    @map("client_id")
+  orderId         String?   @map("order_id")
+  firstName       String    @map("first_name")
+  lastName        String    @map("last_name")
+  email           String?
+  phone           String?
+  dateOfBirth     DateTime? @map("date_of_birth")
+  sin             String?
+  address         String?
+  positionApplied String?   @map("position_applied")
+  
+  // Wizard data stored as JSON
+  currentAddress  Json?     @map("current_address")
+  addressHistory  Json?     @map("address_history")
+  employmentHistory Json?   @map("employment_history")
+  educationHistory Json?     @map("education_history")
+  otherNames      Json?     @map("other_names")
+  additionalInfo  Json?     @map("additional_info")
+  
+  // Completion tracking
+  completedSteps   Json?    @map("completed_steps")
+  portalCompleted  Boolean  @default(false) @map("portal_completed")
+  consentGiven    Boolean  @default(false) @map("consent_given")
+  consentDate     DateTime? @map("consent_date")
+  eSignature      String?  @map("e_signature")
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  user            User?     @relation(fields: [userId], references: [id])
+  client          Client    @relation(fields: [clientId], references: [id])
+  order           Order?    @relation(fields: [orderId], references: [id])
+  documents       Document[]
+  notifications   Notification[]
+  timeline        OrderTimeline[]
+
+  @@map("applicants")
+}
+
+model Order {
+  id              String    @id @default(uuid())
+  clientId        String    @map("client_id")
+  applicantId     String?   @map("applicant_id")
+  orderNumber     String    @unique @map("order_number")
+  positionTitle   String?   @map("position_title")
+  packageName     String?   @map("package_name")
+  
+  // Status tracking
+  status          String    @default("draft")
+  
+  // Services requested
+  criminalCheck   Boolean   @default(false) @map("criminal_check")
+  employmentVerification Boolean @default(false) @map("employment_verification")
+  educationVerification   Boolean @default(false) @map("education_verification")
+  creditCheck     Boolean   @default(false) @map("credit_check")
+  referenceCheck  Boolean   @default(false) @map("reference_check")
+  drugScreening   Boolean   @default(false) @map("drug_screening")
+  
+  // Order details
+  turnaroundTimeRequested Int?   @map("turnaround_time_requested")
+  specialInstructions    String? @map("special_instructions")
+  internalNotes          String? @map("internal_notes")
+  
+  // Timestamps
+  submittedAt     DateTime? @map("submitted_at")
+  startedAt       DateTime? @map("started_at")
+  completedAt     DateTime? @map("completed_at")
+  dueDate         DateTime? @map("due_date")
+  
+  // Results
+  reportUrl       String?   @map("report_url")
+  overallResult   String?   @map("overall_result")
+  
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  client          Client    @relation(fields: [clientId], references: [id])
+  applicant       Applicant? @relation(fields: [applicantId], references: [id])
+  timeline        OrderTimeline[]
+  documents       Document[]
+  notifications   Notification[]
+  screeningReports ScreeningReport[]
+
+  @@map("orders")
+}
+
+model Document {
+  id              String    @id @default(uuid())
+  applicantId     String?   @map("applicant_id")
+  orderId         String?   @map("order_id")
+  uploadedBy      String?   @map("uploaded_by")
+  fileName        String    @map("file_name")
+  filePath        String    @map("file_path")
+  fileType        String?   @map("file_type")
+  fileSize        Int?      @map("file_size")
+  documentType    String?   @map("document_type")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  applicant       Applicant? @relation(fields: [applicantId], references: [id])
+  order           Order?    @relation(fields: [orderId], references: [id])
+  user            User?     @relation(fields: [uploadedBy], references: [id])
+
+  @@map("documents")
+}
+
+model Notification {
+  id              String    @id @default(uuid())
+  userId          String    @map("user_id")
+  orderId         String?   @map("order_id")
+  applicantId     String?   @map("applicant_id")
+  type            String
+  title           String
+  message         String
+  isRead          Boolean   @default(false) @map("is_read")
+  emailSent       Boolean   @default(false) @map("email_sent")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  user            User      @relation(fields: [userId], references: [id])
+  order           Order?    @relation(fields: [orderId], references: [id])
+  applicant       Applicant? @relation(fields: [applicantId], references: [id])
+
+  @@map("notifications")
+}
+
+model OrderTimeline {
+  id              String    @id @default(uuid())
+  orderId         String    @map("order_id")
+  applicantId     String?   @map("applicant_id")
+  status          String
+  description     String
+  notes           String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  order           Order     @relation(fields: [orderId], references: [id])
+  applicant       Applicant? @relation(fields: [applicantId], references: [id])
+
+  @@map("order_timeline")
+}
+
+model ScreeningReport {
+  id              String    @id @default(uuid())
+  orderId         String    @map("order_id")
+  reportType      String?   @map("report_type")
+  status          String    @default("pending")
+  findings        String?
+  riskLevel       String?   @map("risk_level")
+  verifiedAt      DateTime? @map("verified_at")
+  expiresAt       DateTime? @map("expires_at")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  order           Order     @relation(fields: [orderId], references: [id])
+
+  @@map("screening_reports")
+}
+
+model CandidateProfile {
+  id                  String    @id @default(uuid())
+  userId              String    @unique @map("user_id")
+  preferredName       String?   @map("preferred_name")
+  communicationPrefs  Json?     @map("communication_prefs")
+  timezone            String?   @default("America/Toronto")
+  language            String?   @default("en")
+  lastActiveAt        DateTime? @map("last_active_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+  user                User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("candidate_profiles")
+}
+
+model CandidateInvitation {
+  id                       String    @id @default(uuid())
+  orderId                  String    @map("order_id")
+  applicantEmail           String    @map("applicant_email")
+  invitationToken          String    @unique @map("invitation_token")
+  tokenExpiresAt           DateTime  @map("token_expires_at")
+  registrationCompletedAt  DateTime? @map("registration_completed_at")
+  userId                   String?   @map("user_id")
+  createdAt                DateTime  @default(now()) @map("created_at")
+
+  user                     User?     @relation(fields: [userId], references: [id])
+
+  @@index([invitationToken])
+  @@index([applicantEmail])
+  @@map("candidate_invitations")
+}
