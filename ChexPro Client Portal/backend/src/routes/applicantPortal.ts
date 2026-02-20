@@ -181,8 +181,7 @@ router.post('/invite', authenticate as any, async (req: any, res: Response, next
     });
 
     // Send invitation email - point to Candidate Portal register page
-    const candidatePortalUrl = process.env.CANDIDATE_PORTAL_URL || 'http://localhost:5174';
-    const portalLink = `${candidatePortalUrl}/register?token=${invitationToken}`;
+    const portalLink = `${env.candidatePortalUrl}/register?token=${invitationToken}`;
     await sendEmail({
       to: applicantEmail,
       subject: `Complete Your Background Check for ${client?.companyName ?? 'ChexPro'}`,

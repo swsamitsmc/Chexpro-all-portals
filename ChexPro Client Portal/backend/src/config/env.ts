@@ -15,6 +15,7 @@ export const env = {
   nodeEnv: optional('NODE_ENV', 'development'),
   port: parseInt(optional('PORT', '3001'), 10),
   frontendUrl: optional('FRONTEND_URL', 'http://localhost:5173'),
+  candidatePortalUrl: optional('CANDIDATE_PORTAL_URL', 'http://localhost:5174'),
   apiUrl: optional('API_URL', 'http://localhost:3001'),
 
   databaseUrl: optional('DATABASE_URL', 'mysql://portal_user:portal_password@localhost:3306/chexpro_portal_db'),
